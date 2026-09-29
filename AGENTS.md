@@ -103,6 +103,21 @@ docs: documentazione
   per ora.
 - L'autenticazione vera (Supabase Auth, ruoli) sostituirà il token in una fase successiva.
 
+## Portale pubblico (`apps/web/src/app`)
+
+- Route territoriali annidate: `/[region]/[province]/[category]/[group]`. I codici sono
+  brevi (`LAZ`, `RM`), non i nomi estesi: `/laz/rm/u15/a`.
+- Route indice: `/` (home), `/calcio`, `/risultati`, `/classifiche`, `/live`.
+- Lo stile del portale usa classi `.portal-*` in `globals.css` (nav, hero, card, tabella,
+  riga partita). Non riusare `.proto-*` (prototipo) né `.pres-*` (presentazione): sono
+  prefissi separati per non interferire.
+- La riga partita è il componente condiviso `apps/web/src/components/MatchRow.tsx`.
+- Classifiche: sempre `computeStandings` di `packages/football-domain`, mai la tabella
+  `standings` salvata (valore derivato).
+- `revalidate`: 300s per gli indici, 120s per risultati/gironi, 30s per `/live`.
+- Nota: con Turbo, dopo modifiche alle pagine può servire `rm -rf apps/web/.next` — la cache
+  può servire output vecchio e far sembrare le modifiche non applicate.
+
 ## Database
 
 - Il database è **versionato a migrazioni**: `db/migrations/*.sql`, applicate da
@@ -114,6 +129,9 @@ docs: documentazione
 - Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
 - Gli script DB **leggono `.env.local`** (poi `.env`) da `scripts/load-env.mjs`: non serve
   esportare `DATABASE_URL` a mano per `pnpm db:setup`.
+- **Anche `apps/web/next.config.ts` carica `.env.local` dalla radice**, perché Next.js di
+  default cerca l'env solo in `apps/web`: senza, il prerender delle pagine ISR fallisce con
+  `ENOENT /tmp/.s.PGSQL.5433`. Le variabili già presenti nell'ambiente hanno la precedenza.
 - In locale senza Docker: il container può avere un Postgres temporaneo su `PGHOST=/tmp`, `PGPORT=5433`.
   In alternativa, senza Docker: `sudo pg_ctlcluster 17 main start` e poi creare utente e
   database come in `.env.example`.

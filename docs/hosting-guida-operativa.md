@@ -58,6 +58,10 @@ richiesta dopo la pausa c'e' qualche secondo di risveglio. Accettabile in valida
    - `ADMIN_TOKEN` — un token lungo e casuale per il backoffice
 4. **Deploy**. Da qui in avanti ogni push su `main` pubblica automaticamente.
 
+Le pagine del portale leggono dal database già in fase di build (prerender ISR): se
+`DATABASE_URL` non è impostata su Vercel, la build **fallisce**. Vanno aggiunte *prima* del
+primo deploy, non dopo.
+
 ### Il punto delicato: monorepo
 
 L'app dipende dai pacchetti condivisi (`@extra-time/database`, `@extra-time/football-domain`,
