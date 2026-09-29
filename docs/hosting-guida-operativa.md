@@ -11,45 +11,37 @@
 
 | # | Cosa | Costo | Tempo |
 |---|---|---|---|
-| 1 | Dominio (es. `extratime.it`) | ~10-15 €/anno | 10 min |
-| 2 | Account GitHub (esiste gia') | gratis | — |
-| 3 | Account Vercel collegato a GitHub | gratis (Hobby) | 5 min |
-| 4 | Database Postgres su Neon | gratis (Free) | 5 min |
-| 5 | DNS su Cloudflare | gratis | 15 min |
-| 6 | Storage asset su Cloudflare R2 | gratis (10 GB) | 15 min |
-| 7 | Email su Resend | gratis (100/giorno) | 20 min |
-| 8 | Deploy: Vercel costruisce dal repo | gratis | 10 min |
+| 1 | Account GitHub (esiste gia') | gratis | — |
+| 2 | Account Vercel collegato a GitHub | gratis (Hobby) | 5 min |
+| 3 | Database Postgres su Neon | gratis (Free) | 5 min |
+| 4 | Deploy: Vercel costruisce dal repo | gratis | 10 min |
+| 5 | Dominio (es. `extratime.it`) | ~10-15 €/anno | 10 min |
+| 6 | DNS su Cloudflare | gratis | 15 min |
+| 7 | Storage asset su Cloudflare R2 | gratis (10 GB) | 15 min |
+| 8 | Email su Resend | gratis (100/giorno) | 20 min |
 
-Totale: **il costo reale e' il dominio**, tutto il resto parte a zero.
+**Si puo' partire senza dominio.** Con i passi 1-4 il sito e' gia' online, raggiungibile
+all'indirizzo `*.vercel.app` che Vercel assegna. Dominio, DNS, R2 e Resend (passi 5-8) si
+aggiungono dopo, senza rifare nulla: sono solo nomi e record che puntano allo stesso
+progetto.
 
-## 1. Dominio
+## 1. Database su Neon
 
-Registra il dominio dove preferisci (Cloudflare Registrar, Namecheap, Aruba). Poi **sposta
-i nameserver su Cloudflare**: da quel momento DNS, CDN e protezione si gestiscono da un
-unico pannello, e i record per Resend e Vercel si aggiungono li'.
-
-Non serve registrare il dominio *presso* Cloudflare: basta puntarci i nameserver.
-
-## 2. Database su Neon
-
-Vercel Hobby non include un database, quindi il Postgres va da un'altra parte. Neon e' la
-scelta piu' naturale perche' e' Postgres puro e ha un piano gratuito reale.
-
-1. Crea un progetto su neon.tech (regione: Europa, es. Frankfurt).
-2. Copia la **connection string** (`postgresql://...neon.tech/...?sslmode=require`).
-3. Applica lo schema dal tuo Mac, puntando al database Neon:
+Vai su neon.tech, crea il progetto (regione **Francoforte** per l'Italia) e copia la
+connection string. Poi applica lo schema dal tuo Mac, puntando al database Neon:
 
 ```bash
 DATABASE_URL="postgresql://...neon.tech/...?sslmode=require" pnpm db:setup
 ```
 
-Lo stesso runner di migrazioni usato in locale funziona identico sul database remoto:
-e' il vantaggio di avere le migrazioni versionate nel repo.
+Lo stesso runner di migrazioni usato in locale funziona identico sul database remoto: e' il
+vantaggio di avere le migrazioni versionate nel repo. Va eseguito **prima** del primo deploy,
+altrimenti il portale si costruisce su tabelle vuote.
 
 Attenzione: il piano Free di Neon **sospende il database dopo inattivita'**. Alla prima
 richiesta dopo la pausa c'e' qualche secondo di risveglio. Accettabile in validazione.
 
-## 3. Deploy su Vercel
+## 2. Deploy su Vercel (senza dominio)
 
 1. Su vercel.com: **Add New → Project → Import** il repository `ecopraf/extra-time`.
 2. Vercel riconosce il monorepo pnpm. Imposta la **Root Directory** su `apps/web`.
@@ -58,33 +50,45 @@ richiesta dopo la pausa c'e' qualche secondo di risveglio. Accettabile in valida
    - `ADMIN_TOKEN` — un token lungo e casuale per il backoffice
 4. **Deploy**. Da qui in avanti ogni push su `main` pubblica automaticamente.
 
-Le pagine del portale leggono dal database già in fase di build (prerender ISR): se
-`DATABASE_URL` non è impostata su Vercel, la build **fallisce**. Vanno aggiunte *prima* del
+Le pagine del portale leggono dal database gia' in fase di build (prerender ISR): se
+`DATABASE_URL` non e' impostata su Vercel, la build **fallisce**. Va aggiunta *prima* del
 primo deploy, non dopo.
+
+A deploy finito il sito risponde su un indirizzo tipo `extra-time.vercel.app`. **Questo e'
+gia' il portale online**, senza spendere nulla.
 
 ### Il punto delicato: monorepo
 
 L'app dipende dai pacchetti condivisi (`@extra-time/database`, `@extra-time/football-domain`,
 `@extra-time/ui`), quindi la build **deve** partire dalla radice, non da `apps/web`.
 
-Con la Root Directory su `apps/web`, Vercel di solito rileva il workspace pnpm e installa
-dalla radice da solo. Se la build non trova i pacchetti `@extra-time/*`, correggi in
-**Settings → Build and Deployment**:
+`apps/web/vercel.json` è già nel repo e imposta i comandi corretti, quindi normalmente non
+devi toccare nulla: Vercel li legge da solo.
+
+Se dovessi configurarli a mano in **Settings → Build and Deployment**, usa:
 
 | Campo | Valore |
 |---|---|
 | Install Command | `cd ../.. && pnpm install` |
-| Build Command | `cd ../.. && pnpm --filter @extra-time/web build` |
+| Build Command | `cd ../.. && pnpm build` |
 
-Il progetto usa Turborepo: il comando `pnpm build` dalla radice costruisce tutti i
-pacchetti nell'ordine giusto. Usare `--filter @extra-time/web` fa costruire solo cio' che
-serve al portale e le sue dipendenze.
+**Attenzione al comando di build.** `pnpm --filter @extra-time/web build` (senza `...`)
+**non** funziona: costruisce solo `web`, senza compilare prima `@extra-time/football-domain`,
+e la build fallisce con `Module not found: Can't resolve '@extra-time/football-domain'`.
+Le due forme corrette sono `pnpm build` (Turborepo risolve l'ordine) oppure
+`pnpm --filter @extra-time/web... build` (i tre puntini includono le dipendenze).
 
 **Non** committare la cartella `.next`: la produce Vercel a ogni deploy.
 
-## 4. Dominio su Vercel
+## 3. Dominio (quando si decide di spenderlo)
 
-Nel progetto Vercel: **Settings → Domains → Add**. Inserisci il dominio (e `www`).
+Registra il dominio dove preferisci (Cloudflare Registrar, Namecheap, Aruba). Poi **sposta
+i nameserver su Cloudflare**: da quel momento DNS, CDN e protezione si gestiscono da un
+unico pannello, e i record per Resend e Vercel si aggiungono li'.
+
+Non serve registrare il dominio *presso* Cloudflare: basta puntarci i nameserver.
+
+Poi, nel progetto Vercel: **Settings → Domains → Add**. Inserisci il dominio (e `www`).
 Vercel mostra il record da creare. Su Cloudflare:
 
 - crea il record **CNAME** indicato da Vercel;
@@ -94,7 +98,7 @@ Vercel mostra il record da creare. Su Cloudflare:
 
 Vercel emette e rinnova il certificato HTTPS da solo.
 
-## 5. Storage asset su Cloudflare R2
+## 4. Storage asset su Cloudflare R2
 
 Per immagini e allegati. **Non** metterli nel repository git ne' nel database.
 
@@ -105,7 +109,7 @@ Per immagini e allegati. **Non** metterli nel repository git ne' nel database.
 R2 Free: 10 GB di archiviazione e nessun costo di uscita dati — per questo e' preferibile
 a soluzioni con egress a consumo.
 
-## 6. Email con Resend
+## 5. Email con Resend
 
 Dettagli completi in `hosting-e-archivio.md` §4. In sintesi:
 
@@ -116,7 +120,7 @@ Dettagli completi in `hosting-e-archivio.md` §4. In sintesi:
    verifichera' mai.
 4. Aggiungi `RESEND_API_KEY` alle environment di Vercel.
 
-## 7. Cosa NON fare adesso
+## 6. Cosa NON fare adesso
 
 - Non passare a Vercel Pro finche' il progetto non genera ricavi o serve piu' banda.
 - Non aggiungere Cloudflare Workers per l'app Next.js: il piano Free ha un limite di CPU
@@ -126,14 +130,12 @@ Dettagli completi in `hosting-e-archivio.md` §4. In sintesi:
 - Non mettere video in R2 o nel database: quando arrivera' il video (Fase 7) servira' un
   servizio dedicato (Cloudflare Stream, alternativa Mux).
 
-## 8. Checklist finale
+## 7. Checklist finale
 
-- [ ] Dominio registrato e nameserver su Cloudflare
 - [ ] Database Neon creato e schema applicato
 - [ ] Repository importato su Vercel, Root Directory = `apps/web`
 - [ ] Environment: `DATABASE_URL`, `ADMIN_TOKEN`
-- [ ] Deploy verde
-- [ ] Dominio collegato, HTTPS attivo
-- [ ] Bucket R2 creato e sottodominio pubblico
-- [ ] Dominio verificato su Resend, SPF/DKIM/DMARC pubblicati
-- [ ] Prima pagina pubblica raggiungibile all'indirizzo reale
+- [ ] Deploy verde, sito raggiungibile su `*.vercel.app`
+- [ ] (dopo) Dominio registrato, nameserver su Cloudflare, HTTPS attivo
+- [ ] (dopo) Bucket R2 creato e sottodominio pubblico
+- [ ] (dopo) Dominio verificato su Resend, SPF/DKIM/DMARC pubblicati
