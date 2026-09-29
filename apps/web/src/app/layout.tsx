@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Inter, Barlow_Condensed } from "next/font/google";
-import { Mark, Wordmark } from "@extra-time/ui";
 import "./globals.css";
 
 // Font self-hosted da next/font: nessuna richiesta a Google a runtime, nessun
@@ -28,6 +27,10 @@ export const metadata: Metadata = {
     "Piattaforma digitale per dare visibilità al calcio dilettantistico e giovanile italiano.",
 };
 
+export const viewport = {
+  themeColor: "#011c4e",
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="it" className={`${inter.variable} ${barlowCondensed.variable}`}>
@@ -35,8 +38,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="site-header">
           <div className="site-header-inner">
             <Link href="/" className="brand" aria-label="EXTRA TIME — home">
-              <Mark size={30} />
-              <Wordmark size={20} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-extra-time.svg" alt="EXTRA TIME" className="brand-logo" />
             </Link>
             <nav className="portal-nav" aria-label="Navigazione principale">
               <Link href="/calcio">Calcio</Link>

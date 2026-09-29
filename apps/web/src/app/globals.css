@@ -1,20 +1,41 @@
 :root {
-  /* Palette EXTRA TIME (fonte di verità: packages/ui/src/tokens.ts) */
-  --navy: #0b132b;
-  --navy-raised: #111c3a;
-  --navy-line: #22304f;
-  --blue: #2563eb;
-  --orange: #ff6b2c;
-  --green: #16a34a;
-  --red: #e23b3b;
-  --light-gray: #f4f6f8;
+  /* Palette EXTRA TIME — tema chiaro, allineato al riferimento grafico
+     dei collaboratori (index). Grammatica di colore invariata:
+     blu = info/navigazione, arancio = LIVE, verde = positivo, rosso = alert. */
+  --navy-950: #00142d;
+  --navy-900: #011c4e;
+  --blue-700: #0041cc;
+  --blue-600: #0051fb;
+  --blue-500: #2f74ff;
+  --sky-400: #6ea4ff;
 
-  /* Alias di tema (scuri per il portale) */
-  --bg: var(--navy);
-  --fg: #e8edf6;
-  --muted: #9aa7bd;
-  --card: var(--navy-raised);
-  --accent: var(--blue);
+  --ice-050: #f4f7fc;
+  --ice-100: #eaf0fa;
+  --line: #d3dcec;
+  --ink-900: #0b1424;
+  --ink-500: #65728a;
+
+  --orange: #ff6b2c;
+  --green: #1f9d55;
+  --red: #b8402f;
+
+  /* Alias semantici usati nel resto del CSS del portale. */
+  --navy: var(--navy-900);
+  --navy-raised: var(--ice-100);
+  --navy-line: var(--line);
+  --blue: var(--blue-600);
+  --light-gray: var(--ice-050);
+
+  /* Tema chiaro. */
+  --bg: var(--ice-050);
+  --surface: #ffffff;
+  --surface-2: var(--ice-100);
+  --fg: var(--ink-900);
+  --muted: var(--ink-500);
+  --card: var(--surface);
+  --border: var(--line);
+  --accent: var(--blue-600);
+  --shadow: 0 1px 2px rgba(0, 20, 50, 0.06), 0 6px 20px -8px rgba(0, 20, 50, 0.2);
 
   /* Font: self-hosted da next/font (layout.tsx). Inter = interfaccia,
      Barlow Condensed = numeri e titoli (punteggi, classifiche). */
@@ -46,9 +67,9 @@ h3 {
 }
 
 main {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 48px 20px;
+  padding: 32px 20px 80px;
 }
 
 h1 {
@@ -65,16 +86,18 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--card);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
   overflow: hidden;
   margin-top: 24px;
+  box-shadow: var(--shadow);
 }
 
 th,
 td {
   text-align: left;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--navy-line);
+  border-bottom: 1px solid var(--border);
 }
 
 th {
@@ -107,21 +130,22 @@ table td.actions {
 
 /* Header di sito */
 .site-header {
-  border-bottom: 1px solid var(--navy-line);
-  background: rgba(19, 28, 46, 0.7);
-  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 16px -8px rgba(0, 20, 50, 0.15);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .site-header-inner {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 10px 20px;
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
 }
 
 .brand {
@@ -129,12 +153,31 @@ table td.actions {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  flex: 0 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 8px -3px rgba(0, 20, 50, 0.15);
+}
+
+.brand-logo {
+  height: 30px;
+  width: auto;
+  display: block;
 }
 
 .brand-tag {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+@media (max-width: 720px) {
+  .brand-tag {
+    display: none;
+  }
 }
 
 /* Navigazione e liste */
@@ -1014,25 +1057,30 @@ table td.actions {
 .portal-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-left: auto;
+  gap: 6px;
 }
 
 .portal-nav a {
   color: var(--fg);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  padding: 9px 15px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: all 0.18s ease;
 }
 
 .portal-nav a:hover {
-  background: var(--navy-raised);
+  border-color: var(--blue-500);
+  color: var(--blue-600);
 }
 
 .portal-nav a.is-live {
   color: var(--orange);
+  border-color: var(--orange);
 }
 
 /* Indicatore LIVE: pallino arancione, grammatica di colore. */
@@ -1057,19 +1105,45 @@ table td.actions {
   }
 }
 
-/* Testata di pagina con titolo e sottotitolo. */
+/* Hero: blocco a gradiente navy->blu, unica zona scura del tema chiaro. */
 .portal-hero {
-  padding: 8px 0 24px;
-  border-bottom: 1px solid var(--navy-line);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    120deg,
+    var(--navy-950) 0%,
+    var(--navy-900) 55%,
+    var(--blue-700) 140%
+  );
+  border-radius: 22px;
+  padding: 34px 30px;
   margin-bottom: 28px;
+  color: #fff;
+  box-shadow: 0 16px 40px -18px rgba(0, 20, 50, 0.6);
+}
+
+.portal-hero::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(110, 164, 255, 0.35), transparent 70%);
+  pointer-events: none;
 }
 
 .portal-hero h1 {
   margin: 0 0 6px;
+  color: #fff;
+  font-size: clamp(26px, 4.5vw, 38px);
+  position: relative;
 }
 
 .portal-hero .lead {
   max-width: 680px;
+  color: #c3d3f5;
+  position: relative;
 }
 
 /* Contatori (regioni, campionati, ...). */
@@ -1078,20 +1152,22 @@ table td.actions {
   flex-wrap: wrap;
   gap: 8px;
   margin: 16px 0 0;
+  position: relative;
 }
 
 .portal-chip {
-  background: var(--navy-raised);
-  border: 1px solid var(--navy-line);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--fg);
+  font-weight: 700;
+  color: #fff;
 }
 
 .portal-chip.is-live {
-  color: var(--orange);
+  color: #fff;
+  background: var(--orange);
   border-color: var(--orange);
 }
 
@@ -1115,9 +1191,10 @@ table td.actions {
 
 .portal-card {
   background: var(--card);
-  border: 1px solid var(--navy-line);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   padding: 18px 20px;
+  box-shadow: var(--shadow);
 }
 
 .portal-card > h3 {
@@ -1157,9 +1234,10 @@ table td.actions {
   font-size: 1.25rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  background: var(--navy);
-  border: 1px solid var(--navy-line);
-  border-radius: 7px;
+  color: var(--navy-900);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 3px 10px;
   min-width: 62px;
   text-align: center;
@@ -1221,17 +1299,20 @@ table td.actions {
 .portal-links a {
   display: block;
   background: var(--card);
-  border: 1px solid var(--navy-line);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 14px 16px;
   color: var(--fg);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .portal-links a:hover {
-  border-color: var(--blue);
-  background: var(--navy-raised);
+  border-color: var(--blue-500);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -12px rgba(0, 20, 50, 0.3);
 }
 
 .portal-links .count {
