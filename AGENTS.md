@@ -59,8 +59,10 @@ docs: documentazione
 - Repo GitHub: `ecopraf/extra-time` (**privato**, branch di default `main`).
 - Il token della GitHub App di OpenHands **non può creare repository**: la creazione va
   fatta a mano dal proprietario. Può però creare branch, PR, label, issue e workflow.
-- Flusso: lavorare su un branch `fase-N-...`, poi **pull request verso `main`**.
-  Non committare direttamente su `main`.
+- Flusso: normalmente branch `fase-N-...` e **pull request verso `main`**.
+  **Eccezione temporanea (concordata)**: finché il committente è l'unico a lavorare sul
+  repo, si committa direttamente su `main`. Quando arriveranno i collaboratori, si torna
+  alle PR.
 
 ## Tooling
 
@@ -84,6 +86,10 @@ docs: documentazione
 - `src/Logo.tsx` espone `Mark` (simbolo X + punto live), `Wordmark`, `Logo` e `TimeLine`.
 - I valori CSS in `apps/web/src/app/globals.css` rispecchiano i token: se cambi la palette
   in `tokens.ts`, aggiorna anche lì.
+- **Tipografia (via di mezzo concordata)**: Inter per l'interfaccia (testo, form, admin),
+  Barlow Condensed per numeri e titoli (punteggi, colonne numeriche delle classifiche,
+  intestazioni). Caricati con `next/font` in `apps/web/src/app/layout.tsx` (self-hosted,
+  nessuna richiesta a Google a runtime). Variabili CSS: `--font-ui`, `--font-numeric`.
 - Nessun pallone realistico/scudetto/silhouette nell'identità: il simbolo deve restare
   riconoscibile anche a 32×32.
 - Anteprima condivisibile: `/presentazione` (pagina di presentazione, non prodotto finale).
@@ -106,7 +112,11 @@ docs: documentazione
 - Comandi: `pnpm db:setup` (migrazioni + seed), `pnpm db:migrate`, `pnpm db:seed`,
   `pnpm db:migrate:status`.
 - Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
+- Gli script DB **leggono `.env.local`** (poi `.env`) da `scripts/load-env.mjs`: non serve
+  esportare `DATABASE_URL` a mano per `pnpm db:setup`.
 - In locale senza Docker: il container può avere un Postgres temporaneo su `PGHOST=/tmp`, `PGPORT=5433`.
+  In alternativa, senza Docker: `sudo pg_ctlcluster 17 main start` e poi creare utente e
+  database come in `.env.example`.
 - `db/smoke_test.sql` verifica lo schema su DB appena migrato e termina con `rollback`
   (non lascia dati). In CI è eseguito con `psql -f` tra migrazioni e seed.
 - **Non usare meta-comandi psql (`\gset`, ecc.) dentro script passati con `-c`**:
