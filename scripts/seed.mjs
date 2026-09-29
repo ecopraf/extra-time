@@ -11,6 +11,9 @@ import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { loadEnv } from "./load-env.mjs";
+
+loadEnv();
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const seedsDir = join(root, "db", "seeds");
