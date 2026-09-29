@@ -3,6 +3,33 @@
 > Scelta di partenza: **Next.js + TypeScript + PostgreSQL/Supabase + Vercel**, con
 > architettura modulare e un Football Data Core separato concettualmente dal frontend.
 
+## 0. Stato attuale vs obiettivo
+
+Questo documento descrive **due cose distinte**: com'è il repository **oggi** (ciò che è
+realmente costruito e verificato in CI) e dove vogliamo arrivare (**struttura target**).
+Le sezioni sono etichettate di conseguenza.
+
+**Attuale (Fase 1).** Monorepo pnpm/Turborepo. Il Football Data Core vive **fuori** dal
+frontend, in package dedicati:
+
+```
+apps/web/                     Next.js — solo presentazione (app/, server components)
+packages/football-domain/     logica di dominio pura (classifiche, calendario) + test
+packages/database/            accesso PostgreSQL: query di lettura e scrittura (pg)
+packages/types/               tipi condivisi del Football Data Core (ID condivisi con YFM)
+packages/ui/                  design system (palette, token, componenti)
+db/migrations/ + db/seeds/    schema versionato e dati pilota (idempotenti)
+scripts/                      runner di migrazioni e seed
+```
+
+Principi già in vigore: la business logic non sta nel frontend né nel database; le pagine
+pubbliche leggono dal Core; il backoffice scrive tramite Server Actions.
+
+**Obiettivo.** La struttura a `modules/` descritta nella sezione 3 è la **destinazione**
+(modular monolith con moduli football/editorial/live/scouting/media), non lo stato attuale:
+va introdotta man mano che i verticali maturano (news in Fase 3, live in Fase 4, scouting in
+Fase 6), senza riscrivere ciò che già funziona.
+
 ## 1. Perché Next.js e non una SPA Vite
 
 EXTRA TIME ha un requisito che YFM non ha nella stessa misura: la **SEO**.
@@ -55,6 +82,10 @@ Server Components, SSR, Static Generation, ISR e Client Components.
 
 Non un monolite con 200 endpoint dentro Next.js, ma **moduli ben separati nello stesso
 repository**. Non microservizi: **modular monolith**.
+
+> **Struttura target** (non ancora implementata): la logica resterà nei package del Core,
+> mentre `app/` raccoglierà le rotte. I moduli `editorial/`, `live/`, `scouting/`, `media/`
+> nascono con i rispettivi verticali; oggi esiste solo `football/`.
 
 ```
 src/

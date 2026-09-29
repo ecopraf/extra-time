@@ -81,12 +81,11 @@ extra-time/
 │   ├── types/                   tipi del Football Data Core
 │   ├── football-domain/         logica di dominio (classifiche) + test
 │   ├── database/                accesso al core (schema in db/)
-│   ├── ui/                      componenti condivisi (placeholder)
-│   └── config/                  configurazioni condivise
+│   └── ui/                      design system (palette, token, componenti)
 ├── db/
 │   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)
 │   ├── seeds/                   dati pilota (scripts/seed.mjs)
-│   └── smoke_test.sql           smoke test del modello dati
+│   └── smoke_test.sql           smoke test dello schema (rollback, non lascia dati)
 ├── scripts/                     runner di migrazioni e seed
 └── infrastructure/docker/       Postgres locale
 ```

@@ -1,6 +1,6 @@
 /**
  * Tipi del Football Data Core di EXTRA TIME.
- * Allineati allo schema PostgreSQL (db/schema.sql) e a docs/data-model.md.
+ * Allineati allo schema PostgreSQL (db/migrations/) e a docs/data-model.md.
  *
  * Gli `id` di Club, Team, Player e Match sono identificativi UUID condivisi con YFM.
  */

@@ -7,7 +7,7 @@ import {
   resolveGroup,
 } from "@extra-time/database";
 import { computeStandings } from "@extra-time/football-domain";
-import { formatKickoff, matchStatusLabel } from "@/lib/format";
+import { formatKickoff } from "@/lib/format";
 
 export const revalidate = 120;
 

@@ -70,6 +70,12 @@ docs: documentazione
 - Se una modifica riguarda il package di dominio, eseguire:
   `pnpm --filter @extra-time/football-domain test`.
 
+## Lint e formattazione
+
+- Lint: `pnpm lint` (ESLint, config in `apps/web/.eslintrc.cjs`). È eseguito in CI.
+  Aggiungere le regole ESLint qui quando servono, non usare `next lint` (deprecato in Next 16).
+- Non è ancora configurato un formatter: introdurre Prettier/Biome è un lavoro a sé.
+
 ## Backoffice
 
 - Pannello minimo su `/admin`, protetto da token condiviso `ADMIN_TOKEN` via query string.
@@ -89,7 +95,8 @@ docs: documentazione
   `pnpm db:migrate:status`.
 - Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
 - In locale senza Docker: il container può avere un Postgres temporaneo su `PGHOST=/tmp`, `PGPORT=5433`.
-- `db/smoke_test.sql` resta la verifica manuale del modello con `psql -f`.
+- `db/smoke_test.sql` verifica lo schema su DB appena migrato e termina con `rollback`
+  (non lascia dati). In CI è eseguito con `psql -f` tra migrazioni e seed.
 - **Non usare meta-comandi psql (`\gset`, ecc.) dentro script passati con `-c`**:
   vanno eseguiti da file con `-f`.
 - La classifica salvata in `standings` è un **valore derivato**: la fonte di verità è la

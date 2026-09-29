@@ -1,6 +1,7 @@
--- EXTRA TIME — Smoke test del Football Data Core
--- Carica una catena di dati minima e verifica le query principali.
--- Uso: psql -v ON_ERROR_STOP=1 -f db/schema.sql -f db/smoke_test.sql
+-- EXTRA TIME — Smoke test dello schema del Football Data Core
+-- Carica una catena di dati minima, verifica le query principali e NON lascia dati:
+-- la transazione termina con rollback. Va eseguito subito dopo le migrazioni, su DB vuoto.
+-- Uso: psql -v ON_ERROR_STOP=1 -f db/smoke_test.sql
 
 begin;
 
@@ -45,8 +46,6 @@ insert into ingestion_runs (id,source_id,status,records_total,records_ok) values
 insert into ingestion_records (run_id,entity_type,external_id,status,canonical_id) values
  ('00000000-0000-0000-0000-000000000052','club','LND-001','merged','00000000-0000-0000-0000-000000000011');
 
-commit;
-
 \echo '=== alias canonici ==='
 select c.canonical_name, a.source, a.external_name from clubs c join club_aliases a on a.club_id=c.id order by a.source;
 
@@ -61,3 +60,5 @@ select e.minute, e.type, p.last_name from match_events e join players p on p.id=
 
 \echo '=== classifica ==='
 select c.canonical_name, s.position, s.points from standings s join teams t on t.id=s.team_id join clubs c on c.id=t.club_id order by s.position;
+
+rollback;
