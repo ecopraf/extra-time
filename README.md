@@ -71,8 +71,10 @@ extra-time/
 │   ├── ui/                      componenti condivisi (placeholder)
 │   └── config/                  configurazioni condivise
 ├── db/
-│   ├── schema.sql               schema PostgreSQL di riferimento
+│   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)
+│   ├── seeds/                   dati pilota (scripts/seed.mjs)
 │   └── smoke_test.sql           smoke test del modello dati
+├── scripts/                     runner di migrazioni e seed
 └── infrastructure/docker/       Postgres locale
 ```
 
@@ -88,9 +90,12 @@ Database locale:
 
 ```bash
 docker compose -f infrastructure/docker/docker-compose.yml up -d
-psql "$DATABASE_URL" -f db/schema.sql
-psql "$DATABASE_URL" -f db/smoke_test.sql   # verifica il modello
+cp .env.example .env.local        # DATABASE_URL verso il Postgres locale
+pnpm db:setup                     # migrazioni + seed (idempotente)
+pnpm db:migrate:status            # stato delle migrazioni
 ```
+
+Con `DATABASE_URL` impostato, in alternativa gli script usano `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`.
 
 ## Licenza
 

@@ -1,7 +1,8 @@
 # EXTRA TIME — Modello Dati (Football Data Core)
 
-Design del modello dati. Lo schema PostgreSQL di riferimento è in
-[`db/schema.sql`](../db/schema.sql). Nessuna applicazione: questa è una bozza progettuale.
+Design del modello dati. Lo schema PostgreSQL di riferimento è versionato in
+[`db/migrations/`](../db/migrations). Questa è ancora una bozza progettuale, ma applicabile
+e verificabile (vedi `pnpm db:setup`).
 
 ## 1. Principi
 

@@ -1,7 +1,6 @@
 -- EXTRA TIME — Football Data Core
--- Schema PostgreSQL di riferimento (bozza di progettazione, Fase 0)
+-- Migrazione 0001: schema iniziale (Fase 0)
 -- Design document: docs/data-model.md
---
 -- NOTE
 --  * Gli UUID di clubs, teams, players, matches sono gli identificativi condivisi con YFM.
 --  * Le fonti esterne sono mappate tramite le tabelle *_aliases: le fonti non influenzano

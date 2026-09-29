@@ -72,9 +72,15 @@ docs: documentazione
 
 ## Database
 
-- Schema di riferimento: `db/schema.sql`; smoke test: `db/smoke_test.sql`.
-- In locale: `docker compose -f infrastructure/docker/docker-compose.yml up -d`,
-  poi `psql "$DATABASE_URL" -f db/schema.sql`.
+- Il database è **versionato a migrazioni**: `db/migrations/*.sql`, applicate da
+  `scripts/migrate.mjs` (tabella di controllo `schema_migrations`). Non modificare una
+  migrazione già applicata: aggiungine una nuova.
+- Seed dati: `db/seeds/*.sql`, applicati da `scripts/seed.mjs` (idempotenti, `ON CONFLICT`).
+- Comandi: `pnpm db:setup` (migrazioni + seed), `pnpm db:migrate`, `pnpm db:seed`,
+  `pnpm db:migrate:status`.
+- Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
+- In locale senza Docker: il container può avere un Postgres temporaneo su `PGHOST=/tmp`, `PGPORT=5433`.
+- `db/smoke_test.sql` resta la verifica manuale del modello con `psql -f`.
 - **Non usare meta-comandi psql (`\gset`, ecc.) dentro script passati con `-c`**:
   vanno eseguiti da file con `-f`.
 - La classifica salvata in `standings` è un **valore derivato**: la fonte di verità è la
