@@ -22,8 +22,10 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 ## Documentazione
 
 - [`docs/product-vision.md`](docs/product-vision.md) — vision, target, perimetro, roadmap, KPI
+- [`docs/master-plan.md`](docs/master-plan.md) — master plan Fase 0→10: deliverable, dipendenze, KPI
 - [`docs/football-data-core.md`](docs/football-data-core.md) — modello dati e ID condivisi YFM↔EXTRA TIME
 - [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack
+- [`docs/open-questions.md`](docs/open-questions.md) — domande aperte da chiarire prima dello sviluppo
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
 
 ## Roadmap (verticali a valore autonomo)
