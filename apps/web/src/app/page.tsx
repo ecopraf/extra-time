@@ -1,48 +1,44 @@
-import type { Match } from "@extra-time/types";
+import {
+  getGroupSummary,
+  getTeamNames,
+  listClubsInGroup,
+  listMatchesByGroup,
+} from "@extra-time/database";
 import { computeStandings } from "@extra-time/football-domain";
 
-// Dati dimostrativi: la classifica mostrata è calcolata dalla logica del core,
-// non hardcoded. Stessa logica di db/smoke_test.sql.
-const teams = {
-  albalonga: "00000000-0000-0000-0000-000000000021",
-  frascati: "00000000-0000-0000-0000-000000000022",
-} as const;
+// Girone di esempio creato da db/smoke_test.sql (Fase 0).
+const DEMO_GROUP_ID = "00000000-0000-0000-0000-000000000005";
 
-const names: Record<string, string> = {
-  [teams.albalonga]: "Albalonga U15",
-  [teams.frascati]: "LVPA Frascati U15",
-};
+export const dynamic = "force-dynamic";
 
-const matches: Match[] = [
-  {
-    id: "00000000-0000-0000-0000-000000000041",
-    groupId: "00000000-0000-0000-0000-000000000005",
-    seasonId: "00000000-0000-0000-0000-000000000004",
-    matchday: 1,
-    homeTeamId: teams.albalonga,
-    awayTeamId: teams.frascati,
-    kickoffAt: "2025-09-20T15:00:00+02:00",
-    venue: null,
-    status: "finished",
-    homeScore: 3,
-    awayScore: 1,
-    homeScoreHt: null,
-    awayScoreHt: null,
-  },
-];
+export default async function Home() {
+  const [summary, matches, clubs] = await Promise.all([
+    getGroupSummary(DEMO_GROUP_ID),
+    listMatchesByGroup(DEMO_GROUP_ID),
+    listClubsInGroup(DEMO_GROUP_ID),
+  ]);
 
-export default function Home() {
+  const teamNames = await getTeamNames(
+    matches.flatMap((m) => [m.homeTeamId, m.awayTeamId]),
+  );
+
   const standings = computeStandings(matches, {
-    teamIds: [teams.albalonga, teams.frascati],
+    teamIds: clubs.map((c) => c.id),
   });
 
   return (
     <main>
       <h1>EXTRA TIME</h1>
       <p className="lead">
-        Football Data Core — Fase 0. Classifica calcolata dai risultati dal package
-        <code> @extra-time/football-domain</code>.
+        Fase 0 — la pagina legge dal Football Data Core (PostgreSQL) e calcola la
+        classifica con <code>@extra-time/football-domain</code>.
       </p>
+
+      {summary && (
+        <p className="lead">
+          {summary.competitionName} · {summary.groupName} · {summary.seasonLabel}
+        </p>
+      )}
 
       <table>
         <thead>
@@ -63,7 +59,7 @@ export default function Home() {
           {standings.map((row) => (
             <tr key={row.teamId}>
               <td className="pos">{row.position}</td>
-              <td>{names[row.teamId] ?? row.teamId}</td>
+              <td>{teamNames[row.teamId] ?? row.teamId}</td>
               <td>{row.played}</td>
               <td>{row.won}</td>
               <td>{row.drawn}</td>
@@ -76,6 +72,34 @@ export default function Home() {
           ))}
         </tbody>
       </table>
+
+      {matches.length > 0 && (
+        <>
+          <h2 style={{ marginTop: 40 }}>Risultati</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Casa</th>
+                <th>Risultato</th>
+                <th>Ospite</th>
+                <th>Stato</th>
+              </tr>
+            </thead>
+            <tbody>
+              {matches.map((m) => (
+                <tr key={m.id}>
+                  <td>{teamNames[m.homeTeamId] ?? m.homeTeamId}</td>
+                  <td>
+                    {m.homeScore ?? "-"}-{m.awayScore ?? "-"}
+                  </td>
+                  <td>{teamNames[m.awayTeamId] ?? m.awayTeamId}</td>
+                  <td>{m.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </main>
   );
 }
