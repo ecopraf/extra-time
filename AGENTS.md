@@ -70,12 +70,38 @@ docs: documentazione
 - Se una modifica riguarda il package di dominio, eseguire:
   `pnpm --filter @extra-time/football-domain test`.
 
+## Backoffice
+
+- Pannello minimo su `/admin`, protetto da token condiviso `ADMIN_TOKEN` via query string.
+  Se la variabile non è impostata il pannello è disabilitato.
+- Le scritture passano da **Server Actions** in `apps/web/src/app/admin/actions.ts`, che
+  chiamano le funzioni di scrittura di `@extra-time/database`. Non creare API route separate
+  per ora.
+- L'autenticazione vera (Supabase Auth, ruoli) sostituirà il token in una fase successiva.
+
 ## Database
 
-- Schema di riferimento: `db/schema.sql`; smoke test: `db/smoke_test.sql`.
-- In locale: `docker compose -f infrastructure/docker/docker-compose.yml up -d`,
-  poi `psql "$DATABASE_URL" -f db/schema.sql`.
+- Il database è **versionato a migrazioni**: `db/migrations/*.sql`, applicate da
+  `scripts/migrate.mjs` (tabella di controllo `schema_migrations`). Non modificare una
+  migrazione già applicata: aggiungine una nuova.
+- Seed dati: `db/seeds/*.sql`, applicati da `scripts/seed.mjs` (idempotenti, `ON CONFLICT`).
+- Comandi: `pnpm db:setup` (migrazioni + seed), `pnpm db:migrate`, `pnpm db:seed`,
+  `pnpm db:migrate:status`.
+- Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
+- In locale senza Docker: il container può avere un Postgres temporaneo su `PGHOST=/tmp`, `PGPORT=5433`.
+- `db/smoke_test.sql` resta la verifica manuale del modello con `psql -f`.
 - **Non usare meta-comandi psql (`\gset`, ecc.) dentro script passati con `-c`**:
   vanno eseguiti da file con `-f`.
 - La classifica salvata in `standings` è un **valore derivato**: la fonte di verità è la
   logica in `packages/football-domain` (`computeStandings`).
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

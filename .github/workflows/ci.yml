@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: extra_time
+          POSTGRES_PASSWORD: extra_time
+          POSTGRES_DB: extra_time
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U extra_time"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://extra_time:extra_time@localhost:5432/extra_time
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Installa le dipendenze
+        run: pnpm install --frozen-lockfile
+
+      - name: Applica migrazioni
+        run: pnpm db:migrate
+
+      - name: Applica seed
+        run: pnpm db:seed
+
+      - name: Verifica dati del core (smoke)
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "
+            select
+              (select count(*) from clubs)  as clubs,
+              (select count(*) from teams)  as teams,
+              (select count(*) from matches) as matches;
+          "
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm --filter @extra-time/football-domain test
+
+      - name: Build
+        run: pnpm build
