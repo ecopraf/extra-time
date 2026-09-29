@@ -46,11 +46,21 @@ export const semantic = {
 
 export type SemanticTone = keyof typeof semantic;
 
-/** Interfaccia: Inter o Manrope. Logo/wordmark: sans pesante e leggermente condensata. */
+/**
+ * Tipografia.
+ *
+ * Via di mezzo concordata: **Inter** per l'interfaccia (testo, tabelle, form, admin) e
+ * **Barlow Condensed** per numeri e titoli (punteggi, classifiche, intestazioni di
+ * tabella). Il condensato dà compattezza alle colonne numeriche senza appesantire il resto.
+ *
+ * I font sono caricati da `next/font` in `apps/web/src/app/layout.tsx`, che li self-hosta
+ * e ne espone le variabili CSS `--font-inter` e `--font-barlow-condensed`.
+ */
 export const typography = {
-  ui: "'Inter', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-  wordmark:
-    "'Inter', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+  ui: "var(--font-inter), 'Inter', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+  numeric:
+    "var(--font-barlow-condensed), 'Barlow Condensed', 'Inter', system-ui, sans-serif",
+  wordmark: "var(--font-inter), 'Inter', 'Manrope', system-ui, sans-serif",
   wordmarkWeight: 900,
 } as const;
 

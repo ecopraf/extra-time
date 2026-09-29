@@ -15,6 +15,13 @@
   --muted: #9aa7bd;
   --card: var(--navy-raised);
   --accent: var(--blue);
+
+  /* Font: self-hosted da next/font (layout.tsx). Inter = interfaccia,
+     Barlow Condensed = numeri e titoli (punteggi, classifiche). */
+  --font-ui: var(--font-inter), "Inter", "Manrope", system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-numeric: var(--font-barlow-condensed), "Barlow Condensed", "Inter",
+    system-ui, sans-serif;
 }
 
 * {
@@ -27,7 +34,15 @@ body {
   padding: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: var(--font-ui);
+}
+
+/* Titoli: condensato, per dare ritmo sportivo alle intestazioni. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-numeric);
+  letter-spacing: 0.01em;
 }
 
 main {
@@ -37,7 +52,7 @@ main {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 2.25rem;
   margin: 0 0 8px;
 }
 
@@ -68,6 +83,21 @@ th {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+/* Colonne numeriche (Pt, PG, V, N, P, GF, GS): condensato per compattezza. */
+table th:not(:first-child),
+table td:not(:first-child) {
+  font-family: var(--font-numeric);
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Celle non numeriche (azioni, note): tornano all'interfaccia. */
+table td.right,
+table td.actions {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
 }
 
 .pos {
@@ -600,6 +630,8 @@ th {
   border: 1px solid var(--navy-line);
   border-radius: 7px;
   padding: 3px 10px;
+  font-family: var(--font-numeric);
+  font-size: 1.25rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   color: var(--fg);

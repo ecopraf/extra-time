@@ -1,8 +1,26 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Inter, Barlow_Condensed } from "next/font/google";
 import { Mark, Wordmark } from "@extra-time/ui";
 import "./globals.css";
+
+// Font self-hosted da next/font: nessuna richiesta a Google a runtime, nessun
+// layout shift. Inter per l'interfaccia, Barlow Condensed per numeri e titoli
+// (punteggi, classifiche): vedi packages/ui/src/tokens.ts.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "EXTRA TIME",
@@ -12,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="it">
+    <html lang="it" className={`${inter.variable} ${barlowCondensed.variable}`}>
       <body>
         <header className="site-header">
           <div className="site-header-inner">
