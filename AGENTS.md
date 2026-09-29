@@ -52,3 +52,30 @@ docs: documentazione
 - Non replicare lo stack YFM pedissequamente.
 - Non fare Live video / Scout marketplace / AI prima delle fasi precedenti.
 - Non permettere accesso diretto ai dati dalle fonti esterne nelle viste applicative.
+- Non committare artefatti di build (`node_modules/`, `dist/`, `.next/`, `.turbo/`).
+
+## Repository e flusso di lavoro
+
+- Repo GitHub: `ecopraf/extra-time` (**privato**, branch di default `main`).
+- Il token della GitHub App di OpenHands **non può creare repository**: la creazione va
+  fatta a mano dal proprietario. Può però creare branch, PR, label, issue e workflow.
+- Flusso: lavorare su un branch `fase-N-...`, poi **pull request verso `main`**.
+  Non committare direttamente su `main`.
+
+## Tooling
+
+- Monorepo **pnpm + Turborepo**. `pnpm` si attiva con `sudo corepack enable`.
+  Node 20+; in questo ambiente è disponibile Node 24.
+- Workspace: `apps/*`, `packages/*`.
+- Se una modifica riguarda il package di dominio, eseguire:
+  `pnpm --filter @extra-time/football-domain test`.
+
+## Database
+
+- Schema di riferimento: `db/schema.sql`; smoke test: `db/smoke_test.sql`.
+- In locale: `docker compose -f infrastructure/docker/docker-compose.yml up -d`,
+  poi `psql "$DATABASE_URL" -f db/schema.sql`.
+- **Non usare meta-comandi psql (`\gset`, ecc.) dentro script passati con `-c`**:
+  vanno eseguiti da file con `-f`.
+- La classifica salvata in `standings` è un **valore derivato**: la fonte di verità è la
+  logica in `packages/football-domain` (`computeStandings`).
