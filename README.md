@@ -98,21 +98,52 @@ extra-time/
 └── infrastructure/docker/       Postgres locale
 ```
 
-Requisiti: Node 20+, pnpm 9.
+Requisiti: Node 20+, pnpm 9, Docker (per il Postgres locale).
+
+### Avvio su macOS (prima volta)
 
 ```bash
-pnpm install                # installa il workspace
-pnpm --filter @extra-time/football-domain test   # test della logica di dominio
-pnpm --filter @extra-time/web dev                # porta 3000
+# 1. Clona il repository (privato: serve l'accesso al repo su GitHub)
+git clone https://github.com/ecopraf/extra-time.git
+cd extra-time
+
+# 2. Attiva pnpm. Con corepack non serve installarlo a mano.
+corepack enable
+corepack prepare pnpm@9.15.0 --activate
+
+# 3. Dipendenze del workspace
+pnpm install
+
+# 4. Postgres locale in Docker (porta 5432)
+docker compose -f infrastructure/docker/docker-compose.yml up -d
+
+# 5. Variabili d'ambiente: copia l'esempio e lascia i valori di default
+cp .env.example .env.local
+
+# 6. Schema e dati pilota (idempotente: si puo' rilanciare)
+pnpm db:setup
+
+# 7. Avvia il portale
+pnpm --filter @extra-time/web dev
+# http://localhost:3000
 ```
 
-Database locale:
+Nota: se hai gia' un Postgres sulla porta 5432, il compose non parte. Cambia la porta in
+`infrastructure/docker/docker-compose.yml` **e** il `DATABASE_URL` in `.env.local`.
+
+`pnpm db:setup` legge `.env.local`, quindi non serve esportare nulla a mano.
+
+### Comandi utili
 
 ```bash
-docker compose -f infrastructure/docker/docker-compose.yml up -d
-cp .env.example .env.local        # DATABASE_URL verso il Postgres locale
-pnpm db:setup                     # migrazioni + seed (idempotente)
-pnpm db:migrate:status            # stato delle migrazioni
+pnpm install                                     # installa il workspace
+pnpm --filter @extra-time/football-domain test   # test della logica di dominio
+pnpm --filter @extra-time/web dev                # porta 3000
+pnpm build                                       # build di produzione
+pnpm typecheck                                   # controllo dei tipi
+pnpm lint                                        # lint
+pnpm db:setup                                    # migrazioni + seed (idempotente)
+pnpm db:migrate:status                           # stato delle migrazioni
 ```
 
 Con `DATABASE_URL` impostato, in alternativa gli script usano `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`.
