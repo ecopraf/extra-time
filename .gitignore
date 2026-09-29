@@ -35,9 +35,11 @@ Thumbs.db
 
 # Vercel
 .vercel
+.vercel-token
 
 # Python (per eventuali script/tooling)
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+.env*
