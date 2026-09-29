@@ -120,7 +120,45 @@ SUPER ADMIN → ADMIN → REDAZIONE → LIVE OPERATOR → SCOUT → CLUB → COA
 
 Non tutti implementati subito, ma il modello li supporta.
 
-## 11. Convenzioni
+## 12. Data Quality (da progettare)
+
+Quando il portale copre più regioni, il problema non è più *salvare* i dati ma **sapere se
+sono corretti**. Questa sezione definisce come misurarlo. Non serve in Fase 1 (pochi dati),
+ma il modello va previsto ora perché è ciò che rende il portale sostenibile su scala
+nazionale.
+
+### Controlli minimi
+
+| Controllo | Domanda a cui risponde |
+|---|---|
+| Anagrafiche incomplete | Quante squadre/giocatori hanno campi obbligatori mancanti? |
+| Duplicati sospetti | Ci sono due record canonici che sembrano la stessa entità? |
+| Risultati incompleti | Quante partite giocate non hanno punteggio o marcatori? |
+| Partite senza sede | Quante partite non hanno stadio o data? |
+| Classifiche incoerenti | Il numero di partite giocate corrisponde ai punti? |
+| Record non verificati | Quanti record importati non sono mai stati confermati da una persona? |
+
+### Il legame con la provenienza
+
+Data Quality si appoggia a ciò che già esiste: `ingestion_records` (§9) sa **da dove**
+viene ogni dato, e `*_aliases.source` sa **con che nome** la fonte lo chiama. Senza la
+tracciabilità delle fonti il controllo di qualità non è possibile — ed è per questo che
+quella parte va prima.
+
+### Dove vive
+
+- **Backoffice**, area `Data Quality`: un elenco di anomalie con la fonte e il collegamento
+  al record da correggere. Deve rispondere alla domanda "cosa devo sistemare oggi?".
+- **Dati**: le anomalie si **calcolano**, non si salvano (§6, stesso principio: i fatti si
+  conservano, le viste si ricalcolano). Un nuovo controllo è una nuova query, non una nuova
+  tabella da popolare.
+
+### Livelli
+
+Si parte da un conteggio per categoria (squadre da verificare, duplicati, risultati senza
+marcatori) e si cresce verso regole per competizione. In Fase 1 basta il primo livello.
+
+## 13. Convenzioni
 
 - Chiavi primarie `UUID` (`gen_random_uuid()`) per le entità condivise/core.
 - Chiavi esterne con `ON DELETE RESTRICT` per i dati storici (non si perdono le partite).
@@ -128,7 +166,7 @@ Non tutti implementati subito, ma il modello li supporta.
 - Nomi in inglese nel DB, `snake_case`; documentazione e UI in italiano.
 - Vincoli `CHECK` sui domini (es. `status`, `match_events.type`, ruoli).
 
-## 12. Estensioni future (non in questa bozza)
+## 14. Estensioni future (non in questa bozza)
 
 - Tabelle dedicata al LIVE (sessions, eventi in tempo reale) — Fase 4.
 - Tabelle di caching/precalcolo classifiche — quando servirà.
