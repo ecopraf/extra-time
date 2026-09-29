@@ -24,6 +24,7 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 - [`docs/product-vision.md`](docs/product-vision.md) — vision, target, perimetro, roadmap, KPI
 - [`docs/master-plan.md`](docs/master-plan.md) — master plan Fase 0→10: deliverable, dipendenze, KPI
 - [`docs/football-data-core.md`](docs/football-data-core.md) — modello dati e ID condivisi YFM↔EXTRA TIME
+- [`docs/data-model.md`](docs/data-model.md) — design del modello dati ([`db/schema.sql`](db/schema.sql))
 - [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack
 - [`docs/open-questions.md`](docs/open-questions.md) — domande aperte da chiarire prima dello sviluppo
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
@@ -46,7 +47,8 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 
 ## Stato
 
-**Fase 0** — definizione del modello. La documentazione è in corso; nessun codice.
+**Fase 0** — definizione del modello. Documentazione, schema dati e scaffold del monorepo
+pronti; nessuna funzionalità di prodotto ancora implementata.
 
 Modello dei tre prodotti:
 
@@ -55,6 +57,40 @@ Modello dei tre prodotti:
 3. **YFM — CLUB OPERATING SYSTEM** (B2B): gestione operativa per le società.
 
 I tre condividono un **Football Data Core**.
+
+## Struttura del monorepo
+
+```
+extra-time/
+├── apps/
+│   └── web/                     Next.js (portale pubblico)
+├── packages/
+│   ├── types/                   tipi del Football Data Core
+│   ├── football-domain/         logica di dominio (classifiche) + test
+│   ├── database/                accesso al core (schema in db/)
+│   ├── ui/                      componenti condivisi (placeholder)
+│   └── config/                  configurazioni condivise
+├── db/
+│   ├── schema.sql               schema PostgreSQL di riferimento
+│   └── smoke_test.sql           smoke test del modello dati
+└── infrastructure/docker/       Postgres locale
+```
+
+Requisiti: Node 20+, pnpm 9.
+
+```bash
+pnpm install                # installa il workspace
+pnpm --filter @extra-time/football-domain test   # test della logica di dominio
+pnpm --filter @extra-time/web dev                # porta 3000
+```
+
+Database locale:
+
+```bash
+docker compose -f infrastructure/docker/docker-compose.yml up -d
+psql "$DATABASE_URL" -f db/schema.sql
+psql "$DATABASE_URL" -f db/smoke_test.sql   # verifica il modello
+```
 
 ## Licenza
 
