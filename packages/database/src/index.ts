@@ -575,6 +575,140 @@ export async function listOpenMatchesCurrentSeason(): Promise<AdminMatchRow[]> {
 }
 
 
+export interface PortalGroupRow {
+  groupId: string;
+  groupCode: string | null;
+  groupName: string;
+  competitionName: string;
+  category: string;
+  provinceCode: string | null;
+  provinceName: string | null;
+  regionCode: string | null;
+  regionName: string | null;
+}
+
+/** Tutti i gironi della stagione corrente con il percorso territoriale completo. */
+export async function listGroupsForPortal(): Promise<PortalGroupRow[]> {
+  const { rows } = await getPool().query<PortalGroupRow>(
+    `select g.id as "groupId", g.code as "groupCode", g.name as "groupName",
+            c.name as "competitionName", c.category,
+            p.code as "provinceCode", p.name as "provinceName",
+            r.code as "regionCode", r.name as "regionName"
+       from competition_groups g
+       join competitions c on c.id = g.competition_id
+       join seasons s on s.id = g.season_id and s.is_current
+       left join provinces p on p.id = g.province_id
+       left join regions r on r.id = p.region_id
+      order by c.category, r.name nulls last, p.name nulls last,
+               g.code nulls last, g.name`,
+  );
+  return rows;
+}
+
+export interface PortalMatchRow {
+  id: string;
+  matchday: number | null;
+  kickoffAt: string | null;
+  status: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  homeName: string;
+  awayName: string;
+  groupCode: string | null;
+  groupName: string;
+  category: string;
+  provinceCode: string | null;
+  regionCode: string | null;
+}
+
+const PORTAL_MATCH_SELECT = `
+  select m.id, m.matchday, m.kickoff_at as "kickoffAt", m.status,
+         m.home_score as "homeScore", m.away_score as "awayScore",
+         ch.canonical_name as "homeName", ca.canonical_name as "awayName",
+         g.code as "groupCode", g.name as "groupName",
+         c.category, p.code as "provinceCode", r.code as "regionCode"
+    from matches m
+    join competition_groups g on g.id = m.group_id
+    join competitions c on c.id = g.competition_id
+    join seasons s on s.id = g.season_id and s.is_current
+    left join provinces p on p.id = g.province_id
+    left join regions r on r.id = p.region_id
+    join teams th on th.id = m.home_team_id
+    join clubs ch on ch.id = th.club_id
+    join teams ta on ta.id = m.away_team_id
+    join clubs ca on ca.id = ta.club_id`;
+
+function toPortalMatches(
+  rows: Array<Omit<PortalMatchRow, "kickoffAt"> & { kickoffAt: Date | null }>,
+): PortalMatchRow[] {
+  return rows.map((row) => ({
+    ...row,
+    kickoffAt: row.kickoffAt ? row.kickoffAt.toISOString() : null,
+  }));
+}
+
+/** Ultimi risultati della stagione corrente, dal più recente. */
+export async function listRecentResults(limit = 12): Promise<PortalMatchRow[]> {
+  const { rows } = await getPool().query<
+    Omit<PortalMatchRow, "kickoffAt"> & { kickoffAt: Date | null }
+  >(
+    `${PORTAL_MATCH_SELECT}
+      where m.status = 'finished'
+      order by m.kickoff_at desc nulls last, m.matchday desc nulls last
+      limit $1`,
+    [limit],
+  );
+  return toPortalMatches(rows);
+}
+
+/** Partite in corso: alimentano la sezione LIVE. */
+export async function listLiveMatches(): Promise<PortalMatchRow[]> {
+  const { rows } = await getPool().query<
+    Omit<PortalMatchRow, "kickoffAt"> & { kickoffAt: Date | null }
+  >(
+    `${PORTAL_MATCH_SELECT}
+      where m.status = 'live'
+      order by m.kickoff_at asc nulls last`,
+  );
+  return toPortalMatches(rows);
+}
+
+/** Prossime partite in programma della stagione corrente. */
+export async function listUpcomingMatches(limit = 12): Promise<PortalMatchRow[]> {
+  const { rows } = await getPool().query<
+    Omit<PortalMatchRow, "kickoffAt"> & { kickoffAt: Date | null }
+  >(
+    `${PORTAL_MATCH_SELECT}
+      where m.status = 'scheduled'
+      order by m.kickoff_at asc nulls last, m.matchday asc nulls last
+      limit $1`,
+    [limit],
+  );
+  return toPortalMatches(rows);
+}
+
+export interface PortalCounts {
+  regions: number;
+  groups: number;
+  teams: number;
+  matches: number;
+}
+
+/** Contatori per la testata del portale. */
+export async function getPortalCounts(): Promise<PortalCounts> {
+  const { rows } = await getPool().query<PortalCounts>(
+    `select
+       (select count(*)::int from regions) as regions,
+       (select count(*)::int from competition_groups g
+          join seasons s on s.id = g.season_id and s.is_current) as groups,
+       (select count(*)::int from teams) as teams,
+       (select count(*)::int from matches m
+          join competition_groups g on g.id = m.group_id
+          join seasons s on s.id = g.season_id and s.is_current) as matches`,
+  );
+  return rows[0] ?? { regions: 0, groups: 0, teams: 0, matches: 0 };
+}
+
 export async function closePool(): Promise<void> {
   await pool?.end();
   pool = undefined;

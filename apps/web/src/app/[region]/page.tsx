@@ -16,22 +16,29 @@ export default async function RegionPage({
   const provinces = await listProvincesByRegion(region.id);
 
   return (
-    <main>
-      <nav className="breadcrumb">
-        <Link href="/">Italia</Link> / {region.name}
-      </nav>
-      <h1>{region.name}</h1>
-      <p className="lead">Scegli una provincia.</p>
+    <main className="portal">
+      <section className="portal-hero">
+        <nav className="breadcrumb">
+          <Link href="/">Italia</Link> / {region.name}
+        </nav>
+        <h1>{region.name}</h1>
+        <p className="lead">Scegli una provincia.</p>
+      </section>
 
-      <ul className="card-list">
-        {provinces.map((province) => (
-          <li key={province.id}>
-            <Link href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}`}>
-              {province.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <section className="portal-section">
+        <ul className="portal-links">
+          {provinces.map((province) => (
+            <li key={province.id}>
+              <Link
+                href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}`}
+              >
+                {province.name}
+                <span className="count">Campionati e gironi</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
   );
 }

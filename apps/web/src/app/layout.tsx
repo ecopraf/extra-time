@@ -38,6 +38,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Mark size={30} />
               <Wordmark size={20} />
             </Link>
+            <nav className="portal-nav" aria-label="Navigazione principale">
+              <Link href="/calcio">Calcio</Link>
+              <Link href="/risultati">Risultati</Link>
+              <Link href="/classifiche">Classifiche</Link>
+              <Link href="/live" className="is-live">
+                <span className="live-dot" aria-hidden />
+                Live
+              </Link>
+            </nav>
             <span className="brand-tag">
               calcio dilettantistico e giovanile
             </span>

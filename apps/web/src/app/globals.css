@@ -999,6 +999,305 @@ table td.actions {
   color: var(--fg);
 }
 
+/* ------------------------------------------------------------------ Portale
+   Stili del portale reale (route Next.js). Riusano i token e, dove utile, le
+   classi del prototipo: le regole qui sono prefissate .portal- per non
+   interferire con .proto e .pres. */
+
+.portal {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 72px;
+}
+
+/* Barra di navigazione principale (in testata). */
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.portal-nav a {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.portal-nav a:hover {
+  background: var(--navy-raised);
+}
+
+.portal-nav a.is-live {
+  color: var(--orange);
+}
+
+/* Indicatore LIVE: pallino arancione, grammatica di colore. */
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Testata di pagina con titolo e sottotitolo. */
+.portal-hero {
+  padding: 8px 0 24px;
+  border-bottom: 1px solid var(--navy-line);
+  margin-bottom: 28px;
+}
+
+.portal-hero h1 {
+  margin: 0 0 6px;
+}
+
+.portal-hero .lead {
+  max-width: 680px;
+}
+
+/* Contatori (regioni, campionati, ...). */
+.portal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.portal-chip {
+  background: var(--navy-raised);
+  border: 1px solid var(--navy-line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.portal-chip.is-live {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+/* Sezione del portale. */
+.portal-section {
+  margin: 0 0 36px;
+}
+
+.portal-section > h2 {
+  font-size: 1.35rem;
+  margin: 0 0 14px;
+}
+
+/* Griglia di card (usata per partite, classifiche, liste). */
+.portal-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+
+.portal-card {
+  background: var(--card);
+  border: 1px solid var(--navy-line);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.portal-card > h3 {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/* Riga partita: casa — punteggio — ospite. */
+.portal-match {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--navy-line);
+}
+
+.portal-match:last-child {
+  border-bottom: none;
+}
+
+.portal-match .home {
+  text-align: right;
+  font-weight: 600;
+}
+
+.portal-match .away {
+  text-align: left;
+  font-weight: 600;
+}
+
+.portal-match .score {
+  font-family: var(--font-numeric);
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: var(--navy);
+  border: 1px solid var(--navy-line);
+  border-radius: 7px;
+  padding: 3px 10px;
+  min-width: 62px;
+  text-align: center;
+}
+
+/* Partita in corso: accende l'arancione. */
+.portal-match.is-live .score {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+.portal-match.is-live .home,
+.portal-match.is-live .away {
+  color: var(--orange);
+}
+
+/* Riga con metadati (girone, data) nelle viste elenco. */
+.portal-match-wrap {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--navy-line);
+}
+
+.portal-match-wrap:last-child {
+  border-bottom: none;
+}
+
+.portal-match-wrap > a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.portal-match-wrap > a:hover .home,
+.portal-match-wrap > a:hover .away {
+  color: var(--blue);
+}
+
+.portal-match-wrap .portal-match {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.portal-match-meta {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Griglia di link (regioni, province, gironi). */
+.portal-links {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.portal-links a {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--navy-line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.portal-links a:hover {
+  border-color: var(--blue);
+  background: var(--navy-raised);
+}
+
+.portal-links .count {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* Tabelle del portale: riprendono la logica numerica del prototipo. */
+.portal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.portal-table th,
+.portal-table td {
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--navy-line);
+}
+
+.portal-table th {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: right;
+}
+
+.portal-table th.team,
+.portal-table td.team {
+  text-align: left;
+}
+
+.portal-table td {
+  text-align: right;
+  font-family: var(--font-numeric);
+  font-size: 1rem;
+}
+
+.portal-table td.team {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.portal-table .pos {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* Zone della classifica: verde promozione, arancione play-off, rosso retrocessione. */
+.portal-table tr.zone-win .pos {
+  color: var(--green);
+}
+
+.portal-table tr.zone-play .pos {
+  color: var(--orange);
+}
+
+.portal-table tr.zone-out .pos {
+  color: var(--red);
+}
+
 /* Stampa / export PDF: mantiene i colori del brand e non spezza le sezioni. */
 @media print {
   * {

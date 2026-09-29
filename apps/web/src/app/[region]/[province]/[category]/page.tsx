@@ -26,33 +26,40 @@ export default async function CategoryPage({
   const groups = await listGroupsByProvinceCategory(province.id, category);
 
   return (
-    <main>
-      <nav className="breadcrumb">
-        <Link href="/">Italia</Link> /{" "}
-        <Link href={`/${region.code.toLowerCase()}`}>{region.name}</Link> /{" "}
-        <Link href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}`}>
-          {province.name}
-        </Link>{" "}
-        / {category}
-      </nav>
-      <h1>{groups[0]?.competitionName ?? category.toUpperCase()}</h1>
-      <p className="lead">Scegli un girone.</p>
+    <main className="portal">
+      <section className="portal-hero">
+        <nav className="breadcrumb">
+          <Link href="/">Italia</Link> /{" "}
+          <Link href={`/${region.code.toLowerCase()}`}>{region.name}</Link> /{" "}
+          <Link
+            href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}`}
+          >
+            {province.name}
+          </Link>{" "}
+          / {category}
+        </nav>
+        <h1>{groups[0]?.competitionName ?? category.toUpperCase()}</h1>
+        <p className="lead">Scegli un girone.</p>
+      </section>
 
-      {groups.length === 0 ? (
-        <p className="empty">Nessun girone per questa categoria.</p>
-      ) : (
-        <ul className="card-list">
-          {groups.map((group) => (
-            <li key={group.id}>
-              <Link
-                href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}/${category}/${(group.code ?? "a").toLowerCase()}`}
-              >
-                {group.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section className="portal-section">
+        {groups.length === 0 ? (
+          <p className="empty">Nessun girone per questa categoria.</p>
+        ) : (
+          <ul className="portal-links">
+            {groups.map((group) => (
+              <li key={group.id}>
+                <Link
+                  href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}/${category}/${(group.code ?? "a").toLowerCase()}`}
+                >
+                  {group.name}
+                  <span className="count">Classifica, partite e marcatori</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }

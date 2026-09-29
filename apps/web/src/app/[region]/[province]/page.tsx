@@ -23,31 +23,37 @@ export default async function ProvincePage({
   const competitions = await listCompetitionsForProvince(province.id);
 
   return (
-    <main>
-      <nav className="breadcrumb">
-        <Link href="/">Italia</Link> /{" "}
-        <Link href={`/${region.code.toLowerCase()}`}>{region.name}</Link> /{" "}
-        {province.name}
-      </nav>
-      <h1>{province.name}</h1>
-      <p className="lead">Scegli una categoria.</p>
+    <main className="portal">
+      <section className="portal-hero">
+        <nav className="breadcrumb">
+          <Link href="/">Italia</Link> /{" "}
+          <Link href={`/${region.code.toLowerCase()}`}>{region.name}</Link> /{" "}
+          {province.name}
+        </nav>
+        <h1>{province.name}</h1>
+        <p className="lead">Scegli una categoria.</p>
+      </section>
 
-      {competitions.length === 0 ? (
-        <p className="empty">Nessuna competizione nella stagione corrente.</p>
-      ) : (
-        <ul className="card-list">
-          {competitions.map((competition) => (
-            <li key={competition.id}>
-              <Link
-                href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}/${slugify(competition.category)}`}
-              >
-                {competition.name}
-              </Link>
-              <span className="tag">{competition.level}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section className="portal-section">
+        {competitions.length === 0 ? (
+          <p className="empty">Nessuna competizione nella stagione corrente.</p>
+        ) : (
+          <ul className="portal-links">
+            {competitions.map((competition) => (
+              <li key={competition.id}>
+                <Link
+                  href={`/${region.code.toLowerCase()}/${province.code.toLowerCase()}/${slugify(competition.category)}`}
+                >
+                  {competition.name}
+                  {competition.level && (
+                    <span className="count">{competition.level}</span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }
