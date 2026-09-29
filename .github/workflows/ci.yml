@@ -43,6 +43,9 @@ jobs:
       - name: Applica migrazioni
         run: pnpm db:migrate
 
+      - name: Smoke test schema (non distruttivo)
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/smoke_test.sql
+
       - name: Applica seed
         run: pnpm db:seed
 
@@ -57,6 +60,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
 
       - name: Test
         run: pnpm --filter @extra-time/football-domain test
