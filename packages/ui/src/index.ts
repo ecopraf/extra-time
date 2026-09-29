@@ -1,7 +1,18 @@
 /**
- * Componenti UI condivisi di EXTRA TIME.
+ * Design system di EXTRA TIME.
  *
- * Fase 0: placeholder. I componenti (Tailwind + shadcn/ui) arriveranno con la Fase 1.
+ * Fase 1: token (palette, tipografia, grammatica di colore) e identità visiva
+ * (simbolo X + punto live, wordmark, logo, timeline).
+ * I componenti di prodotto (Tailwind + shadcn/ui) arriveranno coi verticali.
  */
 
-export {};
+export {
+  palette,
+  semantic,
+  typography,
+  cssVariables,
+  cssVariableBlock,
+} from "./tokens";
+export type { PaletteToken, SemanticTone } from "./tokens";
+
+export { Mark, Wordmark, Logo, TimeLine } from "./Logo";

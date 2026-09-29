@@ -101,6 +101,12 @@ importers:
 
   packages/ui:
     devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.3.0
+      react:
+        specifier: ^19
+        version: 19.3.0
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
