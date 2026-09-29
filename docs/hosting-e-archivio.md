@@ -166,7 +166,81 @@ l'infrastruttura che già abbiamo.
 già esistente bastano. Payload si aggiunge dopo, senza migrare i contenuti, perché il
 database è lo stesso.
 
-## 4. Archivio: rendere i contenuti consultabili nel tempo
+## 4. Email con Resend
+
+### Cos'è (e cosa non è)
+
+**Resend non è una casella di posta.** Non ha una inbox, non sostituisce
+`extratime.italia@gmail.com`. È un servizio per **inviare** email dal codice.
+
+| Cosa | Strumento |
+|---|---|
+| **Inviare** email automatiche dal sito | **Resend** |
+| **Ricevere** email (casella reale `info@extratime.it`) | Google Workspace, Zoho Mail o simili |
+
+### Come funziona
+
+```
+Il sito (Next.js) → API Resend → Amazon SES → casella del destinatario
+```
+
+1. Nel codice si chiama Resend con una **API key** (`RESEND_API_KEY`), una variabile
+   d'ambiente come le altre.
+2. Si passano mittente, destinatario, oggetto e corpo.
+3. Resend consegna il messaggio (usa l'infrastruttura di Amazon SES; per questo l'SPF
+   punta a `amazonses.com`).
+4. Torna un **ID del messaggio**; via **webhook** si sa se è stato consegnato, aperto o
+   rimbalzato.
+
+Nessun server di posta da gestire.
+
+### La verifica del dominio
+
+Perché Gmail accetti i messaggi invece di metterli nello spam, il dominio va dimostrato
+proprio con tre record DNS:
+
+| Record | A cosa serve | Dove va |
+|---|---|---|
+| **SPF** (TXT) | Autorizza i server di Resend a spedire a nome tuo | sottodominio `send` |
+| **DKIM** (TXT) | Firma crittografica: prova che il messaggio non è alterato | `resend._domainkey` |
+| **DMARC** (TXT) | Dice ai riceventi cosa fare se i controlli falliscono | `_dmarc` |
+
+**L'errore classico:** pubblicare i record sul dominio principale invece che sul
+sottodominio `send`. La verifica non passa mai, senza spiegazioni. L'SPF va su
+`send.extratime.it`, non su `extratime.it`. Resend mostra i valori esatti da copiare; il
+record DMARC **non lo crea Resend**, lo suggerisce soltanto.
+
+### React Email
+
+I template si scrivono in **React e TypeScript** (libreria React Email) invece che in HTML
+da email. Vantaggio concreto: si riusano i token del design system (`packages/ui`), quindi
+le email hanno la stessa identità del sito senza riscrivere il CSS.
+
+### Cosa ci faremo
+
+| Email | Quando | A chi |
+|---|---|---|
+| Form contatti / assistenza | l'utente scrive dal sito | al team |
+| Credenziali staff | dal pannello admin | al nuovo redattore |
+| Reset password | area scout con login | all'utente |
+| Notifiche | "la partita che segui è iniziata" | all'utente |
+| Newsletter | con la redazione | agli iscritti |
+
+### Limiti del piano gratuito
+
+**3.000 email al mese, ma 100 al giorno.** È il limite giornaliero a mordere per primo:
+superato, i messaggi successivi vengono messi in coda o persi (nessun addebito).
+Attenzione: **ogni destinatario conta come un'email**, e anche le email in entrata
+consumano la stessa quota.
+
+### Un miglioramento concreto
+
+L'index dei collaboratori usa un link `mailto:`, che apre il **programma di posta
+dell'utente**. Se l'utente legge la posta solo dal telefono via web, o non ha un client
+configurato, **il form non funziona e il messaggio si perde**. Con Resend il form invia
+direttamente al team, da qualsiasi dispositivo, e resta traccia dell'invio.
+
+## 5. Archivio: rendere i contenuti consultabili nel tempo
 
 Questa è la parte che conta davvero. "Consultabile nel tempo" significa quattro cose
 distinte, che vanno progettate adesso perché cambiarle dopo è costoso.
@@ -228,7 +302,7 @@ Il piano gratuito di Supabase **non ha backup automatici** e mette in pausa i pr
 - **In più**: dump logico settimanale (`pg_dump`) su R2. Costo quasi nullo
   ($0,015/GB/mese), e ci mette al riparo anche da un errore del fornitore.
 
-## 5. Costi per fase (riepilogo)
+## 6. Costi per fase (riepilogo)
 
 | Fase | Stack | Costo mensile |
 |---|---|---|
@@ -237,7 +311,7 @@ Il piano gratuito di Supabase **non ha backup automatici** e mette in pausa i pr
 | News e media (Fase 3) | + R2 a consumo | ~$45–70 |
 | Live e video (Fase 7) | + Cloudflare Stream | +$50–500 secondo il video |
 
-## 6. Decisioni
+## 7. Decisioni
 
 **Prese:**
 - Database e ambiente **separati da YFM** (entità distinte; YFM resta di Vittorio).
