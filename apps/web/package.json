@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@extra-time/database": "workspace:*",
     "@extra-time/football-domain": "workspace:*",
     "@extra-time/types": "workspace:*",
     "@extra-time/ui": "workspace:*",
