@@ -30,6 +30,8 @@ export default async function Home() {
 
       <p className="pres-back">
         <Link href="/presentazione">Identità visiva e percorso →</Link>
+        <br />
+        <Link href="/prototipo">Prototipo navigabile (proposta collaboratori) →</Link>
       </p>
     </main>
   );

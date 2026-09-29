@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EXTRA TIME</title>
+<meta name="theme-color" content="#011c4e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-950:#00142d;--navy-900:#011c4e;--blue-700:#0041cc;--blue-600:#0051fb;--blue-500:#2f74ff;--sky-400:#6ea4ff;
+  --ice-050:#f4f7fc;--ice-100:#eaf0fa;--line:#d3dcec;--ink-900:#0b1424;--ink-500:#65728a;--ok-600:#1f9d55;--red-600:#b8402f;
+  --bg:var(--ice-050);--surface:#fff;--surface-2:var(--ice-100);--text:var(--ink-900);--text-dim:var(--ink-500);--border:var(--line);
+  --shadow:0 1px 2px rgba(0,20,50,.06),0 6px 20px -8px rgba(0,20,50,.2);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#050d1d;--surface:#0b1830;--surface-2:#10213f;--text:#eaf0fb;--text-dim:#93a3c0;--border:#1c3157;}}
+:root[data-theme="dark"]{--bg:#050d1d;--surface:#0b1830;--surface-2:#10213f;--text:#eaf0fb;--text-dim:#93a3c0;--border:#1c3157;}
+*{box-sizing:border-box;}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+html,body{margin:0;padding:0;height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100%;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;margin:0;}
+.container{max-width:1180px;margin:0 auto;padding:0 16px;}
+.hidden{display:none!important;}
+button{font-family:inherit;cursor:pointer;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:11px;border:1px solid var(--border);font-weight:700;font-size:14px;background:var(--surface-2);color:var(--text);transition:all .15s ease;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;border-color:transparent;box-shadow:0 6px 18px -6px rgba(0,81,251,.55);}
+.btn-primary:hover{box-shadow:0 8px 22px -6px rgba(0,81,251,.7);}
+.btn-danger{border-color:var(--red-600);color:var(--red-600);background:transparent;}
+.btn-sm{padding:7px 12px;font-size:12.5px;border-radius:9px;}
+input,select,textarea{font-family:inherit;font-size:14px;padding:9px 10px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);width:100%;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-500);}
+label{font-size:12px;font-weight:700;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px;}
+.field{margin-bottom:12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);transition:box-shadow .2s ease,transform .2s ease;}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,var(--navy-950) 0%,var(--navy-900) 55%,var(--blue-700) 140%);border-radius:22px;padding:34px 30px;margin-bottom:22px;color:#fff;box-shadow:0 16px 40px -18px rgba(0,20,50,.6);}
+.hero::after{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(110,164,255,.35),transparent 70%);}
+.hero h1{font-size:clamp(26px,4.5vw,38px);color:#fff;position:relative;}
+.hero p{color:#c3d3f5;margin-top:6px;max-width:60ch;position:relative;font-size:14px;}
+.hero .tag-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;}
+.hero .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;}
+
+/* Floating support button */
+.fab-support{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:80;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;border:none;padding:13px 20px;border-radius:999px;font-weight:700;font-size:14px;box-shadow:0 10px 26px -8px rgba(0,81,251,.6);}
+.fab-support:hover{transform:translateY(-2px);}
+@media (max-width:600px){.fab-support span.txt{display:none;}.fab-support{padding:14px;}}
+
+/* Topbar */
+.appbar{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 16px -8px rgba(0,20,50,.15);}
+.appbar-inner{display:flex;align-items:center;gap:16px;padding:10px 16px;max-width:1180px;margin:0 auto;top:env(safe-area-inset-top,0px);position:relative;}
+.brandlogo{display:flex;align-items:center;flex:0 0 auto;background:#ffffff;border:1px solid var(--border);border-radius:12px;padding:6px 12px;box-shadow:0 2px 8px -3px rgba(0,20,50,.15);}
+.brandlogo img{height:42px;width:auto;display:block;}
+@media (max-width:480px){.brandlogo{padding:5px 9px;}.brandlogo img{height:32px;}}
+nav.mainnav{display:flex;gap:6px;flex:1;justify-content:center;position:relative;flex-wrap:wrap;}
+.navbtn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:9px 15px;border-radius:10px;font-size:13.5px;font-weight:700;letter-spacing:.2px;transition:all .18s ease;}
+.navbtn:hover{border-color:var(--blue-500);color:var(--blue-600);}
+.navbtn.active{background:linear-gradient(135deg,var(--navy-900),var(--blue-700));border-color:transparent;color:#fff;box-shadow:0 4px 14px -4px rgba(0,65,204,.5);}
+.dropdown{position:absolute;top:calc(100% + 8px);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 32px -8px rgba(0,0,0,.35);padding:14px;min-width:280px;z-index:60;}
+.appbar-actions{display:flex;gap:8px;flex:0 0 auto;align-items:center;}
+.iconbtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s ease;}
+.iconbtn:hover{background:var(--blue-600);color:#fff;border-color:transparent;transform:translateY(-1px);}
+.helpbar-link{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--blue-600);background:rgba(0,81,251,.08);border:1px solid rgba(0,81,251,.2);padding:8px 12px;border-radius:10px;white-space:nowrap;}
+.helpbar-link:hover{background:rgba(0,81,251,.15);}
+@media (max-width:760px){nav.mainnav{order:3;width:100%;justify-content:flex-start;overflow-x:auto;}.appbar-inner{flex-wrap:wrap;}.helpbar-link{display:none;}}
+
+main{padding:24px 0 80px;}
+.pagehead{margin-bottom:18px;}
+.pagehead p{color:var(--text-dim);font-size:13.5px;margin-top:4px;}
+
+/* Risultati */
+.selrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.selrow select{max-width:220px;}
+.matchgrid{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
+@media (max-width:760px){.matchgrid{grid-template-columns:1fr;}}
+.matchrow{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px;}
+.matchrow:last-child{border-bottom:none;}
+.matchrow .score{font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--border);}
+th:first-child,td:first-child{text-align:left;}
+tr:first-child td{font-weight:700;}
+
+/* Cards grid (news/live/scout) */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media (max-width:820px){.grid3{grid-template-columns:1fr 1fr;}}
+@media (max-width:560px){.grid3{grid-template-columns:1fr;}}
+.newscard{padding:18px;display:flex;flex-direction:column;gap:7px;border-top:3px solid var(--blue-600);}
+.newscard:hover{transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(0,20,50,.3);}
+.newscard .date{font-size:11px;font-weight:700;color:var(--blue-600);text-transform:uppercase;letter-spacing:.4px;}
+.newscard h3{font-size:19px;}
+.newscard p{font-size:13.5px;color:var(--text-dim);margin:0;flex:1;}
+.livecard{padding:0;overflow:hidden;}
+.livecard:hover{transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(0,20,50,.3);}
+.livecard .thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--navy-900),var(--blue-700));display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;position:relative;}
+.livecard .thumb::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(110,164,255,.35),transparent 60%);}
+.livecard .info{padding:13px 14px;}
+.scoutbox{padding:36px 28px;text-align:center;max-width:640px;margin:0 auto;}
+.scoutbox .icon{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--blue-600),var(--blue-500));display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;margin:0 auto 16px;box-shadow:0 10px 24px -8px rgba(0,81,251,.5);}
+
+/* Modal */
+.modalbg{position:fixed;inset:0;background:rgba(0,10,25,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.modal{background:var(--surface);border-radius:16px;padding:22px;width:100%;max-width:480px;max-height:88vh;overflow:auto;}
+
+/* Admin */
+.admin-layout{display:grid;grid-template-columns:200px 1fr;gap:18px;}
+@media (max-width:760px){.admin-layout{grid-template-columns:1fr;}}
+.adminnav{display:flex;flex-direction:column;gap:4px;}
+.adminnav button{text-align:left;padding:9px 12px;border-radius:9px;border:none;background:transparent;color:var(--text);font-size:13.5px;font-weight:600;}
+.adminnav button.active{background:var(--surface-2);}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--text-dim);}
+.tablewrap{overflow-x:auto;}
+</style>
+</head>
+<body>
+<div class="appbar"><div class="appbar-inner">
+  <div class="brandlogo"><img id="logoImg" alt="EXTRA TIME"></div>
+  <nav class="mainnav" id="mainnav"></nav>
+  <div class="appbar-actions">
+    <button class="helpbar-link" id="btnHelpTop">🛟 Assistenza</button>
+    <button class="iconbtn" id="btnSettings" title="Impostazioni">⚙️</button>
+    <button class="iconbtn" id="btnProfile" title="Profilo">👤</button>
+  </div>
+</div></div>
+<main><div class="container" id="app"></div></main>
+<button class="fab-support" id="fabSupport">🛟 <span class="txt">Assistenza</span></button>
+<div id="modalRoot"></div>
+
+<script>
+const $=(s,el=document)=>el.querySelector(s);
+let session={ isAdmin:false, name:'Ospite' };
+let page='results';
+const LOGO_SRC='data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiID8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTI3IiBoZWlnaHQ9IjUzMiIgdmlld0JveD0iMCAwIDkyNyA1MzIiPjxwYXRoIGZpbGw9IiMwMTQ4RjAiIGQ9Ik03NjUuMTE0IDE4Ny45MDhMNzY1LjM0OCAxODcuOTk2TDc2NS41ODQgMTg4LjU0NkM3NjQuNDE2IDE5MS42MDkgNzQ2LjQzOCAyMTAuODgzIDc0Mi45NDcgMjE0LjYzMUM3MzIuNTY0IDIyNS43OCA3MjIuMDY3IDIzOC4yMjYgNzExLjQwOSAyNDkuMTdDNzAwLjcyMyAyNjAuMTQzIDY5MC42MTMgMjcyLjU5OSA2ODAuMDk4IDI4My40NjVDNjk1LjAzOSAyODEuMTM1IDcxMi42NTMgMjc5LjY3MiA3MjcuNzUzIDI3Ny44NDlDNzM4LjY5NiAyNzYuNTI4IDc1Ni4wNTMgMjc0LjQyNyA3NjYuODE0IDI3NC4xNTdMNTY1LjE5NCA0MDIuMDg0QzU2MS42MDUgNDA0LjI4NyA1NTcuOTI0IDQwNi4yNzkgNTU0LjMzMSA0MDguNTYzQzU0OS44ODQgNDExLjM5IDU0NS41NTEgNDE0LjU2MSA1NDAuOTEzIDQxNy4wMThDNTQzLjU3IDQxMi44OTkgNTU5LjMxMiAzOTcgNTYzLjUzOCAzOTIuNTMxQzU4MC4xNjggMzc0LjgxOCA1OTcuMTE4IDM1Ny40MSA2MTQuMzgxIDM0MC4zMTRDNjIzLjE1NCAzMzEuNTM4IDYyOS45MjcgMzI0LjA5OSA2MzkuMjU4IDMxNS43MjRMNTc5LjUyNyAzMTUuNDc5QzU4OS45NSAzMDYuMTEyIDYxMS42MzEgMjkyLjY0NSA2MjMuNzQyIDI4My45NjhDNjQ1LjM0IDI2OC40MzggNjY3LjEwOSAyNTMuMTQ3IDY4OS4wNDQgMjM4LjA5OUM3MTQuMjM0IDIyMS4xMTYgNzM5LjU5MiAyMDQuMzg1IDc2NS4xMTQgMTg3LjkwOFoiLz48cGF0aCBmaWxsPSIjMDE0OEYwIiBkPSJNMzIzLjc1OCAzMDkuNjY3TDM1Ni4zNTIgMzA5LjY2NEMzNTguNzY0IDMxNi4wNDkgMzYxLjI4NyAzMjcuMDE0IDM2Mi45ODMgMzMzLjgxOEwzNzEuMDE1IDM2NS4xNDFDMzc5LjI0NCAzNTQuNjc2IDM4OS4zODYgMzQzLjYyOCAzOTguMjQzIDMzMy42MDFDNDAzLjcwNiAzMjcuNDE2IDQxMy45NzMgMzE0LjU4OSA0MTkuNTI1IDMwOS43MzVDNDI5LjAzNyAzMDkuNjUzIDQzOC41NSAzMDkuNjYzIDQ0OC4wNjIgMzA5Ljc2NUM0NDYuNzUzIDMxNS44ODkgNDQyLjQwMiAzMjguNDYxIDQ0MC4zNTkgMzM1LjEwN0w0MjYuNDU4IDM4MC43OTNDNDIzLjgwMiAzODkuNDgyIDQyMC41OCAzOTguODM4IDQxOC4zOTYgNDA3LjU0OUwzOTAuMTc2IDQwNy41NTNDMzkwLjcwMyA0MDQuODEzIDM5Mi4zOSAzOTkuODE5IDM5My4yNzIgMzk2Ljk2OUMzOTcuMzA3IDM4NC44ODMgNDAwLjY5NiAzNzIuMzU0IDQwNC44MjEgMzYwLjEwN0MzOTQuMzA3IDM3Mi43MSAzODEuNzI3IDM4NS43NjQgMzcwLjc1NSAzOTguMzc2QzM2NC44MDIgMzk4LjQyNCAzNTguODQ4IDM5OC40MTkgMzUyLjg5NSAzOTguMzYzQzM1MC4xMDcgMzg3LjYwMSAzNDQuNjgyIDM3MC4wNzcgMzQyLjggMzU5Ljk1NEMzMzcuMDM5IDM3NS43NTcgMzMyLjIyMiAzOTEuOSAzMjYuNjU0IDQwNy44MjZDMzE3LjQ0NyA0MDcuNjU4IDMwOC4yMzkgNDA3LjU4OSAyOTkuMDMxIDQwNy42MTlDMzAxLjg5OSAzOTcuMTI3IDMwNS44ODMgMzg1Ljg5IDMwOS4zMDUgMzc1LjQ2OEwzMjcuNDU4IDMyMC4wNzFDMzI2LjE2NiAzMTYuODg5IDMyNC45MDQgMzEyLjk2MyAzMjMuNzU4IDMwOS42NjdaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTQzMi4yMjMgMTg4LjMyMUM0MzkuNzU2IDE4Ny43NDIgNDUwLjg1NCAxODguMjg5IDQ1OC43MzQgMTg4LjEzNEM0NjguNTg2IDE4OC4yNzcgNDc4LjcxIDE4Ny44MjEgNDg4LjUxNCAxODguNTA1QzUxMS42NDQgMTkwLjEyIDUyMS4wNTkgMjA3LjIwOCA1MTIuMDg3IDIyOC4xMTJDNTA1LjYxNSAyNDMuMTkxIDUwMC40MTIgMjQ4LjIyMyA0ODUuNDM0IDI1NC41NTFDNDg5LjQwMyAyNjQuNjMgNDkyLjYwMiAyNzQuMjg5IDQ5Ni4zOTIgMjg0LjIxNkM0ODcuNzE3IDI4NC40OTIgNDc4LjQ0NCAyODQuMzMzIDQ2OS43MjQgMjg0LjMyNEM0NjguNjU0IDI4NC4zNjMgNDY4LjUzOCAyODQuMzE1IDQ2Ny40ODggMjg0LjA0OUM0NjUuMDI1IDI4MS40NTMgNDU4LjY3NiAyNjIuMjQ2IDQ1Ny45NjQgMjU4LjIzOEM0NTIuNjQ4IDI1OC4xMjYgNDQ3LjIyNCAyNTguMTE4IDQ0MS44OTggMjU4LjA2MkM0MzkuNzIgMjY2LjcxOCA0MzYuMzY4IDI3NS4zNTggNDM0LjE4NiAyODQuMzI3QzQyNS4xMzkgMjg0LjU3NSA0MTUuMTMgMjg0LjM2MiA0MDYuMDA2IDI4NC4zNjNDNDA2LjkyNSAyNzkuMDQ1IDQxMC45NzUgMjY3LjIwMSA0MTIuNzQ3IDI2MS43MjVDNDE2Ljc3MiAyNDkuMTQgNDIwLjczMiAyMzYuNTM0IDQyNC42MjUgMjIzLjkwOEM0MjYuNjYxIDIxNy4zNjQgNDI4Ljc5NyAyMTAuNjQ2IDQzMC42ODkgMjA0LjA1MUM0MzEuMDYgMjAyLjc1OCA0MzAuOTk0IDIwMi42NTcgNDMwLjQ2NCAyMDEuODE1TDQyOC4yODMgMjAxLjM0QzQyNy41NSAxOTkuMjcxIDQzMS4yMjYgMTkwLjkxNiA0MzIuMjIzIDE4OC4zMjFaTTQ0OS43MjYgMjM0LjU0QzQ1OC42MDMgMjM0LjYyNSA0NzAuNDIyIDIzNS42ODIgNDc4LjMyIDIzMi4zNzhDNDg2LjM5MyAyMjYuODg0IDQ5MS41NTMgMjEzLjY1NCA0NzguMTAzIDIxMS43MDVDNDcxLjY1MyAyMTAuNzcxIDQ2Mi45ODYgMjExLjUyOCA0NTYuMjM5IDIxMS4zNTRDNDU0LjE2NCAyMTguODA1IDQ1Mi4wMTIgMjI3LjIxNyA0NDkuNzI2IDIzNC41NFoiLz48cGF0aCBmaWxsPSIjMDE0OEYwIiBkPSJNNDYxLjY5OSAzMDkuODQ5QzQ3OS41ODYgMzA5LjI5OCA0OTguNzU0IDMwOS45NzggNTE2Ljc3OCAzMDkuNzA4QzUyMy4zODQgMzA5LjYwOSA1NDQuMzE4IDMwOS4zNDggNTQ5Ljg5NiAzMTAuMjQ2QzU1MC4xNjEgMzEyLjUxNyA1NDQuMjk3IDMyOS41IDU0My4xODQgMzMzLjM3OEM1MjguMjM0IDMzMy42MjggNTA2LjEyMSAzMzQuMDY2IDQ5MS40OTcgMzMzLjMyNUM0OTAuNjQyIDMzNy4yMTIgNDg4LjUyIDM0My4zMTcgNDg3LjI3NSAzNDcuMjczQzUwMS43OTMgMzQ3LjI0NyA1MTYuMzEgMzQ3LjM0MyA1MzAuODI2IDM0Ny41NjFDNTMwLjI1OSAzNTEuNTE5IDUyNS4zNjggMzYzLjQxOSA1MjMuNzk4IDM2OC45NzZDNTA5LjQwNiAzNjkuMTE0IDQ5NS4wMTIgMzY5LjEyIDQ4MC42MiAzNjguOTk0TDQ3OC43MiAzNzQuMzI5QzQ3Ny45MDQgMzc2LjE0NiA0NzYuMTQ5IDM4MS44NyA0NzUuNDE3IDM4NC4wMzdDNDgwLjI4MyAzODQuMzE4IDQ4Ny4yNzggMzg0LjA4NCA0OTIuMjg2IDM4NC4wOUM1MDQuODUxIDM4NC4wMTMgNTE3LjQxNyAzODQuMSA1MjkuOTggMzg0LjM1QzUyNy43MjggMzkxLjI5NyA1MjMuNzMxIDM5OS44NTUgNTIxLjA5OCA0MDcuNTUxQzQ5NC40ODEgNDA3LjUwMSA0NjUuNjM1IDQwNi45NjEgNDM5LjE2NyA0MDcuNzA5QzQ0MS4xODIgMzk4LjE0OCA0NDYuMzk5IDM4NC40MDcgNDQ5LjI4NCAzNzQuNzY4QzQ1NC42NTQgMzU2LjgzMSA0NjAuMzQzIDMzOS4xNjggNDY2LjUxMSAzMjEuNDlDNDY1LjE5OSAzMTguOTI1IDQ2Mi42MjIgMzEyLjUwNCA0NjEuNjk5IDMwOS44NDlaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTE0Mi4yMTggMTg4LjEwNUMxNDkuOTQzIDE4Ny41NDYgMTYzLjY3OSAxODcuOTc4IDE3MS44NTUgMTg3Ljk4M0MxODguMzIxIDE4Ny45OTMgMjA1LjQ3MSAxODcuNzM1IDIyMS44ODIgMTg4LjEzMUMyMTkuODU4IDE5Ni4yMzMgMjE3LjAxOSAyMDMuMzU5IDIxNC45NTEgMjExLjMyNkMxOTguOTMyIDIxMS44NDggMTgxLjA2NSAyMTEuNDgyIDE2NC45MSAyMTEuNDQ0TDE2MC45NDQgMjI1LjAxMUMxNzQuMzUgMjI1LjQ0OSAxODkuMzUyIDIyNS4wMjIgMjAzIDIyNS4xNTVDMjAxLjYxNCAyMzEuNDA1IDE5OC40NzkgMjQwLjU1MiAxOTYuNjIgMjQ3LjE2QzE4Mi41MjcgMjQ3LjM4MyAxNjguMDE0IDI0Ny4yMSAxNTMuODkgMjQ3LjIwNUMxNTMuMTg4IDI0OS44NzUgMTUyLjIgMjUyLjgwOSAxNTEuMzY5IDI1NS40NjlMMTQ5LjUzNyAyNjEuMDFDMTY3LjE0MyAyNjEuMzA1IDE4NC43MjEgMjYxLjA2MyAyMDIuMzI3IDI2MS4xODZDMTk5Ljg2MiAyNjguNjQyIDE5Ni41MzIgMjc2LjY2NiAxOTMuODczIDI4NC4zMzJDMTY3LjI5NCAyODQuNDIzIDEzOS43MDQgMjgzLjk1NyAxMTMuMjU4IDI4NC41MTJDMTE0LjYwMSAyNzcuMDI5IDEyMi43NDEgMjUzLjgxNCAxMjUuNjYxIDI0NS4xODlDMTMwLjQ1MyAyMzEuMDM0IDEzNS44MyAyMTEuNDgzIDE0MS4wOTkgMTk3Ljk5NUMxMzkuMDQ1IDE5NC42MDggMTM3LjY4OSAxOTEuOTY1IDEzNi4xOTkgMTg4LjMyMkwxNDIuMjE4IDE4OC4xMDVaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTU2Ny41NTEgMTg4LjM1NUM1NzYuMDI0IDE4Ny43NjIgNTg5LjA3IDE4OC4yMTkgNTk3Ljg5OSAxODguMjE3QzYwMi4wNTcgMjIwLjYzIDYwNy4xMDkgMjUxLjg5IDYxMC4yMTggMjg0LjQ5QzYwMC42MTYgMjg0LjQyMiA1OTEuMDE1IDI4NC40MSA1ODEuNDEzIDI4NC40NTVMNTc5LjgxMyAyNjYuODg3QzU2Ni45MzEgMjY3LjAxNiA1NTMuOTA3IDI2Ni42ODQgNTQwLjk5MSAyNjYuNzMzQzUzOC44ODIgMjY4LjE4IDUzMC4yNDIgMjgxLjExOCA1MjcuMzY2IDI4NC4yOTVDNTE3LjQxOSAyODQuNDE4IDUwNy40NzEgMjg0LjQzNyA0OTcuNTIzIDI4NC4zNUM0OTkuMzQ2IDI4MS4xMDYgNTA0LjE5OSAyNzQuODQyIDUwNi41OTYgMjcxLjU4M0w1MjMuMTg1IDI0OC45NDVDNTMzLjM1MSAyMzQuODI0IDU0My41OTQgMjIwLjc1OCA1NTMuOTE0IDIwNi43NDlDNTU4LjEzNSAyMDEuMDI3IDU2My4xMTUgMTkzLjY2NyA1NjcuNTUxIDE4OC4zNTVaTTU1OC41MjcgMjQ0LjczOEM1NjQuODA1IDI0NC42ODIgNTcxLjI5OCAyNDQuOTE0IDU3Ny41MTYgMjQ0Ljc1OEM1NzYuNzQ4IDIzNy4xNDIgNTc2LjE4OCAyMjQuNDI4IDU3NC41OTYgMjE3LjYzNkM1NzIuNzI2IDIxOS44NCA1NTYuMDc0IDI0Mi45NDQgNTU1LjczMiAyNDQuNzQ1QzU1Ni4zOTEgMjQ0LjczMiA1NTcuOTU0IDI0NC42NTkgNTU4LjUyNyAyNDQuNzM4WiIvPjxwYXRoIGZpbGw9IiMwMzE5M0UiIGQ9Ik0yOTkuNDY5IDE4OC40NjVDMzA1LjIzNyAxODcuNTExIDMyNi40NTYgMTg3LjkxNyAzMzMuNjM4IDE4Ny45MTdDMzI3LjY5OCAxOTUuNjU3IDMxMi42NzIgMjA4Ljc4IDMwNS4yOTcgMjE2LjEwMkMzMDAuMTk2IDIyMS4xNjcgMjkwLjAyNiAyMzEuNjE1IDI4NS4wMDYgMjM1Ljc0OUMyODguMjU3IDI0My4wNjIgMjkxLjA2IDI1MC40MjEgMjk0LjUxOSAyNTcuODAxQzI5OC4zOCAyNjYuMDM3IDMwMy4zODcgMjc1Ljc3MyAzMDYuMjM4IDI4NC4zMzFMMzAwLjcxNiAyODQuMzI4TDI3NC40ODYgMjg0LjQxOEMyNzIuMTE3IDI3Ny42NyAyNjUuMDY1IDI2MS41NyAyNjMuNjcyIDI1Ni4yMjFDMjU1LjE2NyAyNjMuMzYyIDI0Mi43ODQgMjc2LjA2NSAyMzUuMjczIDI4NC4yODlDMjI5LjY4MSAyODQuMzA3IDIwNy4zNDMgMjg0LjcxOSAyMDMuMDk5IDI4NC4wMUwyMDIuNzI5IDI4My40NTlDMjA0LjM4NyAyNzkuNDA4IDI0Ny4wOTEgMjM5LjYyIDI1My4yNTUgMjM0LjIyNEMyNDkuMTQ1IDIyMy45MTIgMjQzLjgzNSAyMTMuMzAyIDIzOS41NjcgMjAzLjAxNEMyMzguMDIyIDE5OS4yODkgMjM0LjIyNiAxOTEuNjU3IDIzMy42MzUgMTg4LjAyN0MyNDMuNzE1IDE4OC40MDUgMjU0Ljc3MSAxODguMDY3IDI2NS4wNTMgMTg4LjI4MkMyNjcuODkyIDE5My43MjQgMjcyLjYzMiAyMDYuODY0IDI3NS4wODkgMjEzLjExN0MyNzguMTM0IDIwOS4zODUgMjgyLjc2MSAyMDUuMzcgMjg2LjIzNSAyMDEuODc3QzI5MC42MzMgMTk3LjQ1NiAyOTUuMDA0IDE5Mi43NzMgMjk5LjQ2OSAxODguNDY1WiIvPjxwYXRoIGZpbGw9IiMwMTQ4RjAiIGQ9Ik0xNzAuOTA1IDMwOS43MTFMMjYzLjA4NSAzMDkuODAzQzI2MS41OSAzMTYuNTE2IDI1Ny45ODkgMzI2LjU2NCAyNTUuOTE3IDMzMy42NTJDMjQ1LjQ3MSAzMzMuNjI0IDIzNS4wMjYgMzMzLjY1NCAyMjQuNTggMzMzLjc0M0MyMjIuOTcyIDM0MC4xMjEgMjIwLjIwNiAzNDcuODcgMjE4LjExOSAzNTQuMjM0QzIxNC44NjggMzY0LjE1IDIxMS42OTggMzc0LjA5MiAyMDguNjEgMzg0LjA2QzIwNi4yNDEgMzkxLjk0OCAyMDMuNjY0IDM5OS43NzIgMjAwLjg4MiA0MDcuNTI0QzE5MS40MTYgNDA3LjcwNCAxODEuNjc1IDQwNy41NjIgMTcyLjE1OCA0MDcuNjY2TDE4Ny42MjIgMzU5LjQ1NEMxOTAuNDI0IDM1MC44NjIgMTkzLjQ3NiAzNDIuMzg0IDE5Ni4wMzUgMzMzLjcxOEwxNjMuMDc1IDMzMy42NjNDMTYzLjg4NiAzMjkuNDc3IDE2OS4xMzIgMzEzLjY0MiAxNzAuOTA1IDMwOS43MTFaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTMzOC4yNjQgMTg4LjEyOUMzNDcuMzM5IDE4Ny43OSAzNTcuNzg0IDE4Ny45OSAzNjYuOTczIDE4Ny45NzZMNDI0LjIxOCAxODguMDMzQzQyMi41MzMgMTk0LjcxMiA0MTkuMTcyIDIwNS4wMiA0MTYuODk4IDIxMS41MjNDNDA3LjMwOCAyMTEuNzkgMzk2LjgxIDIxMS4yMjIgMzg3LjM2MiAyMTEuODQ3QzM4NS44OTIgMjE4LjI0MiAzODMuNDI5IDIyNS42NjkgMzgxLjUxNyAyMzIuMDIxQzM3OC40NTkgMjQyLjM2NSAzNzUuMzAxIDI1Mi42OCAzNzIuMDQ0IDI2Mi45NjNDMzY5Ljc4MSAyNzAuMDggMzY3LjU3NyAyNzcuMjE1IDM2NS40MzIgMjg0LjM2OEwzMzcuMTk1IDI4NC4zMTlDMzM4LjY5OCAyNzYuNDg4IDM0NC4zMzUgMjYwLjA0OCAzNDcuMDM2IDI1MS45ODNDMzUxLjM3MSAyMzkuMDQzIDM1NS4zOTcgMjI0LjU3OSAzNTkuODc2IDIxMS44NzhDMzUwLjA4OCAyMTIuMDY4IDMzOS41MjggMjExLjg5NSAzMjkuNjg3IDIxMS44OThDMzMwLjc4MyAyMDUuODI1IDMzNC4yMjggMTk1Ljg0NyAzMzYuMjM3IDE4OS42NjdDMzM2LjYyNSAxODguNDczIDMzNy4yODkgMTg4LjQ0MiAzMzguMjY0IDE4OC4xMjlaIi8+PHBhdGggZmlsbD0iIzAxNDhGMCIgZD0iTTI2OS41NDMgMzA5LjcxQzI4MS45NTEgMzA5LjYwOCAyOTQuMzU5IDMwOS42MSAzMDYuNzY3IDMwOS43MTdDMzA0Ljg0OSAzMTcuMDY4IDMwMS43MzkgMzI2LjExNSAyOTkuNDMyIDMzMy40N0wyODMuODU3IDM4Mi4zOTRDMjgxLjQ1MiAzODkuOTA4IDI3OC4wMjggMzk5LjI4MiAyNzYuMTg2IDQwNi43NTlMMjc2LjExNiA0MDYuOTE4QzI3NC43MDUgNDA3Ljk2NCAyNTAuMDUyIDQwNy41OTYgMjQ2LjMwNSA0MDcuNjAxTDI1OS45NTYgMzY1LjA4M0MyNjQuODA3IDM1MC4zMzUgMjY5LjM3NSAzMzcuMTk0IDI3My41MDcgMzIyLjE2NkwyNjcuOTg0IDMyMC44ODlDMjY5LjY1MyAzMTUuNDk1IDI3MS4yMDggMzE0LjczOCAyNjkuNTQzIDMwOS43MVoiLz48cGF0aCBmaWxsPSIjMDE0OEYwIiBkPSJNNzY2LjE3MiAxMTkuNzIyQzc2OC44MjYgMTIxLjA4NCA3NzQuNTIyIDEyNy4yMjggNzc2LjkxIDEyOS42OTJDNzcxLjQ4NyAxMzcuMDQ4IDc1OC45NzkgMTQ5LjEzIDc1Mi4wNjggMTU3LjI1N0w3NTEuMzYyIDE1Ny40MjhDNzUwLjAzNyAxNTYuOTI4IDc0My4xNjQgMTUwLjc0NCA3NDEuMjg5IDE0OS4yMTFDNzQ4LjczNyAxMzkuMzU3IDc1Ny45OTUgMTI5LjE0NCA3NjYuMTcyIDExOS43MjJaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTcwNS42NDUgODUuNzU4QzcwOS43NjEgODYuOTM2OCA3MTUuNTc2IDg5LjM5NDYgNzE5LjQ3IDkxLjE4NjNDNzE0LjM4MyAxMDEuNjc1IDcwOC43OTYgMTEzLjYyNiA3MDQuMzg5IDEyNC4zMjNMNzAzLjg5OCAxMjQuNjU4QzcwMS4xMTkgMTI0LjY0NCA2OTQuNzE4IDEyMS4xMDIgNjkxLjkxMyAxMTkuNjhDNjk1LjYxNCAxMDkuNjI3IDcwMC43OCA5NC45OTY3IDcwNS42NDUgODUuNzU4WiIvPjxwYXRoIGZpbGw9IiMwMzE5M0UiIGQ9Ik02NDAuMDI0IDczLjc5MDdDNjQ0Ljg0IDczLjc1NzggNjQ5LjY1NiA3My44MTM5IDY1NC40NyA3My45NTlDNjUzLjgxOSA4NC45MTQ2IDY1MS43MzkgOTguMzA1NiA2NTAuNDk1IDEwOS40NjNMNjUwLjEzMSAxMTAuMzQ4QzY0Ny43NjkgMTEwLjY5MyA2NDAuMzI0IDExMC4wOTEgNjM3LjM1MyAxMDkuOTg4QzYzNy45MjYgOTcuNzE0OSA2MzguNTQyIDg2LjAyOCA2NDAuMDI0IDczLjc5MDdaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTgxMi4xNTggMTgzLjMyNUw4MTMuMDcxIDE4My41MDFDODE0LjYwMiAxODUuNDU3IDgxNy4wNjUgMTkzLjM1MiA4MTcuOTU4IDE5NS45ODFDODA5Ljk0NyAyMDAuMjE3IDc5NS45NiAyMDUuNTMzIDc4Ni44ODkgMjA5LjgxOEw3ODYuNTgyIDIwOS44NjNDNzg1LjA0MyAyMDguOTA5IDc4Mi4wMjQgMjAwLjU1OSA3ODEuMDY0IDE5OC4xOTVDNzg5LjgxMiAxOTMuNTI3IDgwMy4xMTkgMTg3LjMyMiA4MTIuMTU4IDE4My4zMjVaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTU4NC4xNTMgODIuOTIyNkw1ODUuNzE0IDgyLjY3NzdDNTg3LjY3NyA4NC4yMTgzIDU5Mi4zODggMTExLjA5NiA1OTMuMTg2IDExNS41MzJDNTkwLjE5OCAxMTYuNzA5IDU4NS4wNTEgMTE4LjA4NCA1ODEuODM0IDExOS4wNDRDNTc5Ljg4OCAxMTYuNTMyIDU3My43MTEgOTEuMjkwMyA1NzIuMzg0IDg2LjIxNDdDNTc2LjI3OSA4NS4wMiA1ODAuMjAzIDgzLjkyMjMgNTg0LjE1MyA4Mi45MjI2WiIvPjxwYXRoIGZpbGw9IiMwMzE5M0UiIGQ9Ik04MjcuMzM3IDI1Mi44MzlMODI4LjQwOSAyNTIuODgzQzgyOS4yNTYgMjU0LjY4NCA4MjguODcxIDI2NC4yMTggODI4LjgyOSAyNjYuNTYxQzgxOS43ODcgMjY2LjY5MyA4MDkuMzA5IDI2Ni45OSA4MDAuMzE4IDI2Ny44MzdDNzk5LjUzIDI2Ny45MTMgNzk5LjkxOCAyNjcuOTgxIDc5OS4xNjIgMjY3LjQ3MkM3OTguNyAyNjUuMDIyIDc5OC44MDIgMjU5LjQzNiA3OTguNzg1IDI1Ni42OTNDODA4LjI3OCAyNTUuMjM3IDgxNy43OTcgMjUzLjk1MiA4MjcuMzM3IDI1Mi44MzlaIi8+PHBhdGggZmlsbD0iIzAxNDhGMCIgZD0iTTUxOS4wNTYgMTIwLjA1NEM1MjEuMzIyIDExOC4yNjUgNTIzLjgzNSAxMTYuMzY4IDUyNS45NzYgMTE0LjQ2MUM1MzEuMTUxIDEyMS4xMDkgNTM3LjExMiAxMzEuNjQgNTQxLjQ1OCAxMzguOTYyQzUzOC41NTQgMTQxLjM3MSA1MzUuNjEyIDE0My43MzYgNTMyLjYzNCAxNDYuMDU0QzUzMC4xNjMgMTQzLjAzMiA1MjAuODc4IDEzMC45NTIgNTE5LjM4OCAxMjcuNzEyQzUxOC4yNjYgMTI2LjQyIDUxNi43NDkgMTI0LjYzNSA1MTYuNjY3IDEyMi45MzlDNTE3LjI3MiAxMjEuMTE5IDUxNy4zNTggMTIxLjQ4MyA1MTkuMDU2IDEyMC4wNTRaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTY1MC42ODQgNDM3LjEyN0M2NTEuOTEgNDM3LjAxNCA2NTEuMzMgNDM2LjkwOSA2NTIuNDY0IDQzNy41NDJDNjU0LjAxOSA0NDAuNjkyIDY1NC41NTYgNDYwLjQ1NCA2NTQuNjM3IDQ2NS4xMDdDNjUxLjg3NiA0NjUuMjg1IDY0OS4xMTcgNDY1LjQ5NyA2NDYuMzYxIDQ2NS43NDNDNjQ0LjkxOSA0NjUuOTA0IDY0Mi43OCA0NjYuMzk1IDY0MS44MSA0NjUuNjlDNjQxLjIwNSA0NjEuMjAzIDY0MS42ODQgNDQzLjU3OSA2NDEuNzI3IDQzNy44ODRMNjUwLjY4NCA0MzcuMTI3WiIvPjxwYXRoIGZpbGw9IiMwMzE5M0UiIGQ9Ik03NzQuMzM5IDM1NS4xMzNDNzc4LjA1NyAzNTUuNjM3IDc5NC44ODkgMzY2LjQ4MiA3OTkuMDYyIDM2OS4xMDNDNzk3Ljc2MSAzNzEuODUgNzk0LjgyMSAzNzYuNTcxIDc5My4yMzggMzc5LjI2NUM3OTMuMjA2IDM3OS4yNzQgNzkzLjE3NSAzNzkuMjg5IDc5My4xNDIgMzc5LjI5MkM3OTAuMDM3IDM3OS41NjMgNzcyLjIxNyAzNjYuNjk0IDc2OC44OTkgMzY0LjA1Qzc3MC42MiAzNjAuOTAzIDc3Mi40MDIgMzU4LjE1IDc3NC4zMzkgMzU1LjEzM1oiLz48cGF0aCBmaWxsPSIjMDMxOTNFIiBkPSJNNzk0LjMxMiAzMDYuMTlDODAyLjQ0MyAzMDguMDI0IDgxMy40NSAzMTEuMTQ3IDgyMS40NTUgMzEzLjQ5M0M4MjAuOTA2IDMxNi43MzkgODE5LjM0IDMyMi4wNjMgODE4LjQ2MSAzMjUuNDAxQzgxNS45NjMgMzI1LjI4MyA3OTUuODU5IDMxOC4wNTUgNzkxLjM2NiAzMTYuNjQ3Qzc5Mi4yOTMgMzEyLjczMSA3OTIuOTQ2IDMwOS45NTMgNzk0LjMxMiAzMDYuMTlaIi8+PHBhdGggZmlsbD0iIzAzMTkzRSIgZD0iTTcwMC44NzQgNDIyLjgyN0w3MDIuMTc0IDQyMi45MDNDNzA0LjA4NiA0MjQuODgzIDcxMS4xNzggNDQzLjg2MiA3MTIuODY3IDQ0Ny45NjVDNzEwLjM3MSA0NDkuMjI1IDcwNi45MTQgNDUwLjYyNyA3MDQuMjg5IDQ1MS43N0M3MDIuNjA5IDQ1Mi4xNzYgNzAyLjQ5MSA0NTIuNTAzIDcwMS4wNzMgNDUxLjk1NkM2OTguNzcgNDQ3LjI1OSA2OTQuMzYgNDMyLjg3NyA2OTIuMTA1IDQyNi43MDNMNzAwLjg3NCA0MjIuODI3WiIvPjxwYXRoIGZpbGw9IiMwMzE5M0UiIGQ9Ik03NDMuMzM3IDM5NS43M0M3NDcuMTM1IDM5OC4wNTQgNzU4LjQwMiA0MTIuNTc4IDc2MS45MjUgNDE2LjkzNkM3NTkuOTU0IDQxOS4xOTMgNzU2LjA5NCA0MjIuMzE0IDc1My42OTQgNDI0LjM2Nkw3NTIuNzgyIDQyNC41NDdDNzUwLjcxNyA0MjMuMjA3IDczNy44MzQgNDA1LjE1MiA3MzUuNzM2IDQwMi4wOTNDNzM4LjIyNyAzOTkuOTIxIDc0MC43NjEgMzk3LjggNzQzLjMzNyAzOTUuNzNaIi8+PC9zdmc+';
+$('#logoImg').src=LOGO_SRC;
+function showSupportModal(){
+  openModal(`<h3>🛟 Assistenza EXTRA TIME</h3><p style="color:var(--text-dim);font-size:13.5px;">Scrivici e ti risponderemo il prima possibile.</p>
+    <div class="field"><label>Oggetto</label><input id="hp_subj" placeholder="Descrivi il problema o la segnalazione"></div>
+    <div class="field"><label>Messaggio</label><textarea id="hp_body" rows="4" placeholder="Dettagli..."></textarea></div>
+    <button class="btn btn-primary btn-sm" id="hp_send">📧 Invia a extratime.italia@gmail.com</button>
+    <button class="btn btn-sm" id="hp_close" style="margin-left:8px;">Chiudi</button>`);
+  $('#hp_close').addEventListener('click',closeModal);
+  $('#hp_send').addEventListener('click',()=>{
+    const subj=encodeURIComponent($('#hp_subj').value||'Segnalazione EXTRA TIME');
+    const body=encodeURIComponent($('#hp_body').value||'');
+    window.location.href=`mailto:extratime.italia@gmail.com?subject=${subj}&body=${body}`;
+  });
+}
+
+/* ---------- DATA (demo, persisted per-browser) ---------- */
+let DB = JSON.parse(localStorage.getItem('extratime_db')||'null') || {
+  regions:{
+    'Lazio':{ 'Eccellenza':{ 'Girone A':demoGirone(['Lodigiani','Vis Artena','Vicovaro','Palocco','Fondi','Boreale']),
+                              'Girone B':demoGirone(['Anzio','Nettuno','Aprilia','Anagni','Ostiantica','Tivoli']) },
+              'Promozione':{ 'Girone A':demoGirone(['Ardea','Pomezia','Genzano','Velletri']) },
+              'Juniores Regionale':{ 'Girone Unico':demoGirone(['Lazio Giovani','Roma Youth','Ciampino','Marino']) } },
+    'Lombardia':{ 'Eccellenza':{ 'Girone A':demoGirone(['Brianza','Sesto','Varese','Como']) } },
+    'Campania':{ 'Promozione':{ 'Girone A':demoGirone(['Vesuvio','Agro','Sannio','Irpinia']) } }
+  },
+  news:[
+    {id:1,title:'Al via la nuova stagione dilettanti',date:'2026-09-20',excerpt:'Presentati i gironi di Eccellenza e Promozione per la stagione in corso.',body:'Il comitato regionale ha ufficializzato i calendari.'},
+    {id:2,title:'Juniores: talenti emergenti da tenere d\'occhio',date:'2026-09-18',excerpt:'La nostra redazione segnala i giovani più interessanti del weekend.',body:'Dettagli e schede tecniche in arrivo.'}
+  ],
+  live:[ {id:1,title:'Eccellenza Girone A - Diretta',status:'Live ora'}, {id:2,title:'Finale Juniores Regionale',status:'Sabato 15:00'} ],
+  clubs:[ {id:1,name:'Lodigiani'}, {id:2,name:'Vis Artena'} ],
+  players:[ {id:1,name:'M. Rossi',clubId:1,role:'Attaccante'}, {id:2,name:'L. Bianchi',clubId:2,role:'Centrocampista'} ],
+  staff:[ {id:1,name:'Admin Principale',email:'extratime.italia@gmail.com',role:'Amministratore'} ]
+};
+function saveDB(){ localStorage.setItem('extratime_db', JSON.stringify(DB)); }
+function demoGirone(teams){
+  const standings = teams.map((t,i)=>({team:t,pg:5,v:5-i%4,n:i%2,p:i%3,gf:12-i,gs:4+i,pts:(5-i%4)*3+(i%2)}));
+  standings.sort((a,b)=>b.pts-a.pts);
+  const matches=[]; for(let i=0;i<teams.length-1;i+=2){ matches.push({home:teams[i],away:teams[i+1],hs:Math.floor(Math.random()*4),as:Math.floor(Math.random()*4),date:'21/09'}); }
+  return { standings, matches };
+}
+
+/* ---------- NAV ---------- */
+const NAVS=[
+  {id:'results',label:'Risultati Match'},
+  {id:'scout',label:'Scout Platform'},
+  {id:'news',label:'News'},
+  {id:'live',label:'Live'}
+];
+function renderNav(){
+  $('#mainnav').innerHTML = NAVS.map(n=>`<button class="navbtn ${page===n.id?'active':''}" data-nav="${n.id}">${n.label}</button>`).join('');
+  $('#mainnav').querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>{page=b.dataset.nav;render();}));
+}
+
+/* ---------- RESULTS PAGE ---------- */
+let selRegion=null, selComp=null, selGir=null;
+function renderResults(){
+  const regions=Object.keys(DB.regions);
+  if(!selRegion) selRegion=regions[0];
+  const comps=Object.keys(DB.regions[selRegion]||{});
+  if(!selComp||!comps.includes(selComp)) selComp=comps[0];
+  const gironi=Object.keys((DB.regions[selRegion]||{})[selComp]||{});
+  if(!selGir||!gironi.includes(selGir)) selGir=gironi[0];
+  const data=(((DB.regions[selRegion]||{})[selComp]||{})[selGir])||{standings:[],matches:[]};
+  return `
+  <div class="hero"><h1>⚽ Risultati Match</h1><p>Tutto il calcio dilettantistico e giovanile italiano: regioni, campionati, gironi, risultati e classifiche sempre aggiornati.</p>
+    <div class="tag-row"><span class="chip">${regions.length} Regioni</span><span class="chip">${comps.length} Campionati</span><span class="chip">Aggiornato in tempo reale</span></div></div>
+  <div class="selrow">
+    <select id="selRegion">${regions.map(r=>`<option ${r===selRegion?'selected':''}>${r}</option>`).join('')}</select>
+    <select id="selComp">${comps.map(c=>`<option ${c===selComp?'selected':''}>${c}</option>`).join('')}</select>
+    <select id="selGir">${gironi.map(g=>`<option ${g===selGir?'selected':''}>${g}</option>`).join('')}</select>
+  </div>
+  <div class="matchgrid">
+    <div class="card">${data.matches.map(m=>`<div class="matchrow"><span>${m.home}</span><span class="score">${m.hs} - ${m.as}</span><span>${m.away}</span></div>`).join('')||'<div style="padding:16px;color:var(--text-dim);">Nessuna partita disponibile.</div>'}</div>
+    <div class="card" style="padding:14px;">
+      <table><tr><td>Squadra</td><th>Pt</th><th>PG</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th></tr>
+      ${data.standings.map((s,i)=>`<tr><td>${i+1}. ${s.team}</td><td>${s.pts}</td><td>${s.pg}</td><td>${s.v}</td><td>${s.n}</td><td>${s.p}</td><td>${s.gf}</td><td>${s.gs}</td></tr>`).join('')}
+      </table>
+    </div>
+  </div>`;
+}
+function bindResults(){
+  $('#selRegion')?.addEventListener('change',e=>{selRegion=e.target.value;selComp=null;selGir=null;render();});
+  $('#selComp')?.addEventListener('change',e=>{selComp=e.target.value;selGir=null;render();});
+  $('#selGir')?.addEventListener('change',e=>{selGir=e.target.value;render();});
+}
+
+/* ---------- SCOUT PLATFORM ---------- */
+function renderScout(){
+  return `<div class="hero"><h1>🔎 EXTRA TIME - SCOUT PLATFORM</h1><p>La piattaforma di segnalazione talenti (ex TuttoCampo Lazio Scout), rinnovata sotto il marchio EXTRA TIME.</p></div>
+  <div class="card scoutbox"><div class="icon">🔎</div>
+    <h3 style="font-size:22px;">Modulo Scout Platform</h3>
+    <p style="color:var(--text-dim);font-size:14px;">Qui verrà integrata la piattaforma scout completa (login clienti, piani abbonamento, richieste di osservazione, designazioni scout) che mi hai fornito nel file index. È un modulo a sé con il proprio backend: dimmi se vuoi che lo colleghi qui come pagina dedicata/iframe oppure che lo ricostruisca dentro questo stesso sito.</p>
+    <button class="btn btn-primary" id="scoutCta">Accedi alla Scout Platform</button>
+  </div>`;
+}
+
+/* ---------- NEWS ---------- */
+function renderNews(){
+  return `<div class="hero"><h1>📰 News</h1><p>Tutte le notizie pubblicate dalla redazione di EXTRA TIME.</p></div>
+  <div class="grid3">${DB.news.map(n=>`<div class="card newscard"><span class="date">${n.date}</span><h3>${n.title}</h3><p>${n.excerpt}</p></div>`).join('')||'<p>Nessuna notizia pubblicata.</p>'}</div>`;
+}
+
+/* ---------- LIVE ---------- */
+function renderLive(){
+  return `<div class="hero"><h1>🔴 Live</h1><p>Guarda le dirette delle partite in stile piattaforma video.</p></div>
+  <div class="grid3">${DB.live.map(l=>`<div class="card livecard"><div class="thumb">▶</div><div class="info"><h3 style="font-size:16px;">${l.title}</h3><span class="tag">${l.status}</span></div></div>`).join('')}</div>`;
+}
+
+/* ---------- ADMIN ---------- */
+let adminTab='news';
+function renderAdmin(){
+  const tabs=[['news','News'],['support','Assistenza'],['staff','Staff'],['championships','Campionati & Risultati'],['clubs','Società'],['players','Calciatori'],['users','Profili']];
+  return `<div class="pagehead"><h1>Pannello Amministratore</h1><p>Gestione completa del sito EXTRA TIME.</p></div>
+  <div class="admin-layout">
+    <div class="adminnav card" style="padding:10px;">${tabs.map(t=>`<button data-tab="${t[0]}" class="${adminTab===t[0]?'active':''}">${t[1]}</button>`).join('')}</div>
+    <div class="card" style="padding:18px;" id="adminBody">${renderAdminTab()}</div>
+  </div>`;
+}
+function renderAdminTab(){
+  if(adminTab==='news') return `
+    <h3>Crea notizia</h3>
+    <div class="field"><label>Titolo</label><input id="an_title"></div>
+    <div class="field"><label>Estratto</label><textarea id="an_excerpt" rows="2"></textarea></div>
+    <button class="btn btn-primary btn-sm" id="an_add">Pubblica</button>
+    <hr style="border-color:var(--border);margin:18px 0;">
+    <div class="tablewrap"><table>${DB.news.map(n=>`<tr><td>${n.title}</td><td>${n.date}</td><td><button class="btn btn-danger btn-sm" data-delnews="${n.id}">Elimina</button></td></tr>`).join('')}</table></div>`;
+  if(adminTab==='support') return `
+    <h3>Assistenza</h3><p style="color:var(--text-dim);font-size:13.5px;">Invia una segnalazione al team EXTRA TIME.</p>
+    <div class="field"><label>Oggetto</label><input id="sup_subj" placeholder="Descrivi il problema"></div>
+    <div class="field"><label>Messaggio</label><textarea id="sup_body" rows="4"></textarea></div>
+    <button class="btn btn-primary btn-sm" id="sup_send">Apri email a extratime.italia@gmail.com</button>`;
+  if(adminTab==='staff') return `
+    <h3>Credenziali Staff</h3>
+    <div class="field"><label>Nome</label><input id="st_name"></div>
+    <div class="field"><label>Email</label><input id="st_email"></div>
+    <div class="field"><label>Ruolo</label><select id="st_role"><option>Amministratore</option><option>Redattore News</option><option>Moderatore Risultati</option></select></div>
+    <button class="btn btn-primary btn-sm" id="st_add">Crea credenziale</button>
+    <hr style="border-color:var(--border);margin:18px 0;">
+    <div class="tablewrap"><table>${DB.staff.map(s=>`<tr><td>${s.name}</td><td>${s.email}</td><td>${s.role}</td></tr>`).join('')}</table></div>`;
+  if(adminTab==='championships') return `
+    <h3>Nuovo campionato</h3>
+    <div class="field"><label>Regione (esistente o nuova)</label><input id="ch_region" placeholder="Es. Lazio" list="dl_regions"><datalist id="dl_regions">${Object.keys(DB.regions).map(r=>`<option>${r}</option>`).join('')}</datalist></div>
+    <div class="field"><label>Campionato</label><input id="ch_comp" placeholder="Es. Eccellenza"></div>
+    <div class="field"><label>Girone</label><input id="ch_gir" placeholder="Es. Girone A"></div>
+    <div class="field"><label>Squadre (separate da virgola)</label><input id="ch_teams" placeholder="Squadra1, Squadra2, ..."></div>
+    <button class="btn btn-primary btn-sm" id="ch_add">Crea girone</button>
+    <hr style="border-color:var(--border);margin:18px 0;">
+    <h3>Inserisci risultato</h3>
+    <div class="field"><label>Regione</label><select id="rs_region">${Object.keys(DB.regions).map(r=>`<option>${r}</option>`).join('')}</select></div>
+    <div class="field"><label>Campionato</label><select id="rs_comp"></select></div>
+    <div class="field"><label>Girone</label><select id="rs_gir"></select></div>
+    <div class="field" style="display:flex;gap:8px;"><input id="rs_home" placeholder="Squadra casa"><input id="rs_hs" type="number" style="max-width:70px" placeholder="0"><input id="rs_as" type="number" style="max-width:70px" placeholder="0"><input id="rs_away" placeholder="Squadra ospite"></div>
+    <button class="btn btn-primary btn-sm" id="rs_add">Aggiungi risultato</button>`;
+  if(adminTab==='clubs') return `
+    <h3>Nuova società</h3>
+    <div class="field"><label>Nome società</label><input id="cl_name"></div>
+    <button class="btn btn-primary btn-sm" id="cl_add">Aggiungi società</button>
+    <hr style="border-color:var(--border);margin:18px 0;">
+    <div class="tablewrap"><table>${DB.clubs.map(c=>`<tr><td>${c.name}</td><td><button class="btn btn-danger btn-sm" data-delclub="${c.id}">Elimina</button></td></tr>`).join('')}</table></div>`;
+  if(adminTab==='players') return `
+    <h3>Nuovo calciatore</h3>
+    <div class="field"><label>Nome</label><input id="pl_name"></div>
+    <div class="field"><label>Ruolo</label><input id="pl_role"></div>
+    <div class="field"><label>Società</label><select id="pl_club">${DB.clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+    <button class="btn btn-primary btn-sm" id="pl_add">Aggiungi calciatore</button>
+    <hr style="border-color:var(--border);margin:18px 0;">
+    <div class="tablewrap"><table>${DB.players.map(p=>`<tr><td>${p.name}</td><td>${p.role}</td><td>${(DB.clubs.find(c=>c.id===p.clubId)||{}).name||'-'}</td></tr>`).join('')}</table></div>`;
+  if(adminTab==='users') return `<p style="color:var(--text-dim);">Gestione profili utente collegata al sistema di autenticazione (da agganciare a un backend, es. Supabase, come nel modulo Scout Platform).</p>`;
+  return '';
+}
+function bindAdmin(){
+  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{adminTab=b.dataset.tab;render();}));
+  $('#an_add')?.addEventListener('click',()=>{
+    const t=$('#an_title').value.trim(); if(!t)return;
+    DB.news.unshift({id:Date.now(),title:t,date:new Date().toISOString().slice(0,10),excerpt:$('#an_excerpt').value.trim()});
+    saveDB();render();
+  });
+  document.querySelectorAll('[data-delnews]').forEach(b=>b.addEventListener('click',()=>{DB.news=DB.news.filter(n=>n.id!=b.dataset.delnews);saveDB();render();}));
+  $('#sup_send')?.addEventListener('click',()=>{
+    const subj=encodeURIComponent($('#sup_subj').value||'Segnalazione EXTRA TIME');
+    const body=encodeURIComponent($('#sup_body').value||'');
+    window.location.href=`mailto:extratime.italia@gmail.com?subject=${subj}&body=${body}`;
+  });
+  $('#st_add')?.addEventListener('click',()=>{
+    const n=$('#st_name').value.trim(),e=$('#st_email').value.trim(); if(!n||!e)return;
+    DB.staff.push({id:Date.now(),name:n,email:e,role:$('#st_role').value}); saveDB();render();
+  });
+  $('#cl_add')?.addEventListener('click',()=>{
+    const n=$('#cl_name').value.trim(); if(!n)return;
+    DB.clubs.push({id:Date.now(),name:n}); saveDB();render();
+  });
+  document.querySelectorAll('[data-delclub]').forEach(b=>b.addEventListener('click',()=>{DB.clubs=DB.clubs.filter(c=>c.id!=b.dataset.delclub);saveDB();render();}));
+  $('#pl_add')?.addEventListener('click',()=>{
+    const n=$('#pl_name').value.trim(); if(!n)return;
+    DB.players.push({id:Date.now(),name:n,role:$('#pl_role').value,clubId:Number($('#pl_club').value)}); saveDB();render();
+  });
+  if($('#ch_add')){
+    $('#ch_add').addEventListener('click',()=>{
+      const reg=$('#ch_region').value.trim(),comp=$('#ch_comp').value.trim(),gir=$('#ch_gir').value.trim();
+      const teams=$('#ch_teams').value.split(',').map(t=>t.trim()).filter(Boolean);
+      if(!reg||!comp||!gir||teams.length<2)return alert('Compila tutti i campi (almeno 2 squadre).');
+      DB.regions[reg]=DB.regions[reg]||{}; DB.regions[reg][comp]=DB.regions[reg][comp]||{};
+      DB.regions[reg][comp][gir]=demoGirone(teams); saveDB(); render();
+    });
+    const fillComp=()=>{ const r=$('#rs_region').value; $('#rs_comp').innerHTML=Object.keys(DB.regions[r]||{}).map(c=>`<option>${c}</option>`).join(''); fillGir(); };
+    const fillGir=()=>{ const r=$('#rs_region').value,c=$('#rs_comp').value; $('#rs_gir').innerHTML=Object.keys((DB.regions[r]||{})[c]||{}).map(g=>`<option>${g}</option>`).join(''); };
+    $('#rs_region').addEventListener('change',fillComp); $('#rs_comp').addEventListener('change',fillGir);
+    fillComp();
+    $('#rs_add').addEventListener('click',()=>{
+      const r=$('#rs_region').value,c=$('#rs_comp').value,g=$('#rs_gir').value;
+      const home=$('#rs_home').value.trim(),away=$('#rs_away').value.trim();
+      if(!home||!away)return alert('Inserisci entrambe le squadre.');
+      const girone=DB.regions[r][c][g];
+      girone.matches.unshift({home,away,hs:Number($('#rs_hs').value||0),as:Number($('#rs_as').value||0),date:new Date().toLocaleDateString('it-IT')});
+      saveDB(); render();
+    });
+  }
+}
+
+/* ---------- MODAL / LOGIN ---------- */
+function openModal(html){ $('#modalRoot').innerHTML = `<div class="modalbg" id="mbg"><div class="modal">${html}</div></div>`; $('#mbg').addEventListener('click',e=>{if(e.target.id==='mbg')closeModal();}); }
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+function showProfileMenu(){
+  openModal(`<h3>Profilo</h3><p style="color:var(--text-dim);font-size:13.5px;">Stato: <b>${session.isAdmin?'Amministratore':'Utente'}</b></p>
+    <div class="field"><label>Accedi come</label><select id="pf_role"><option value="user">Utente</option><option value="admin">Amministratore</option></select></div>
+    <button class="btn btn-primary btn-sm" id="pf_login">Accedi</button>
+    <button class="btn btn-sm" id="pf_close" style="margin-left:8px;">Chiudi</button>`);
+  $('#pf_close').addEventListener('click',closeModal);
+  $('#pf_login').addEventListener('click',()=>{ session.isAdmin=$('#pf_role').value==='admin'; closeModal(); page= session.isAdmin?'admin':'results'; render(); });
+}
+function showSettingsMenu(){
+  openModal(`<h3>Impostazioni</h3>
+    <div class="field"><label>Tema</label><select id="st_theme"><option value="">Automatico</option><option value="light">Chiaro</option><option value="dark">Scuro</option></select></div>
+    <button class="btn btn-primary btn-sm" id="st_save">Salva</button>`);
+  $('#st_theme').value = localStorage.getItem('extraTimeTheme')||'';
+  $('#st_save').addEventListener('click',()=>{ const v=$('#st_theme').value; localStorage.setItem('extraTimeTheme',v); document.documentElement.setAttribute('data-theme',v); closeModal(); });
+}
+$('#btnProfile').addEventListener('click',showProfileMenu);
+$('#btnSettings').addEventListener('click',showSettingsMenu);
+$('#btnHelpTop').addEventListener('click',showSupportModal);
+$('#fabSupport').addEventListener('click',showSupportModal);
+
+/* ---------- RENDER ---------- */
+function render(){
+  renderNav();
+  if(session.isAdmin && !NAVS.find(n=>n.id==='admin')) NAVS.push({id:'admin',label:'⚙ Admin'});
+  renderNav();
+  let html='';
+  if(page==='results') html=renderResults();
+  else if(page==='scout') html=renderScout();
+  else if(page==='news') html=renderNews();
+  else if(page==='live') html=renderLive();
+  else if(page==='admin') html=session.isAdmin?renderAdmin():'<p>Accesso riservato agli amministratori.</p>';
+  $('#app').innerHTML=html;
+  if(page==='results') bindResults();
+  if(page==='admin') bindAdmin();
+  if(page==='scout') $('#scoutCta')?.addEventListener('click',()=>alert('Qui si aprirà il login della Scout Platform (modulo da collegare).'));
+}
+document.documentElement.setAttribute('data-theme', localStorage.getItem('extraTimeTheme')||'');
+render();
+</script>
+</body>
+</html>
