@@ -1,0 +1,18 @@
+# Postgres locale per lo sviluppo di EXTRA TIME.
+# Uso: docker compose -f infrastructure/docker/docker-compose.yml up -d
+# Poi applica lo schema: psql "$DATABASE_URL" -f db/schema.sql
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: extra-time-postgres
+    environment:
+      POSTGRES_USER: extra_time
+      POSTGRES_PASSWORD: extra_time
+      POSTGRES_DB: extra_time
+    ports:
+      - "5432:5432"
+    volumes:
+      - extra_time_pgdata:/var/lib/postgresql/data
+
+volumes:
+  extra_time_pgdata:
