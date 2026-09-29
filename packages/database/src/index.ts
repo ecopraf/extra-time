@@ -32,6 +32,12 @@ export function getPool(): Pool {
   return pool;
 }
 
+function firstOrThrow<T>(rows: T[], message: string): T {
+  const row = rows[0];
+  if (!row) throw new Error(message);
+  return row;
+}
+
 // --- Territorio ------------------------------------------------------------
 
 export interface Region {
@@ -351,6 +357,223 @@ export async function listGroupsByProvinceCategory(
   );
   return rows;
 }
+
+// --- Scritture (backoffice) ------------------------------------------------
+
+export interface NewGroup {
+  competitionId: string;
+  seasonId: string;
+  provinceId: string | null;
+  code: string | null;
+  name: string;
+}
+
+export async function createGroup(input: NewGroup): Promise<string> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `insert into competition_groups (competition_id, season_id, province_id, code, name)
+     values ($1, $2, $3, $4, $5)
+     returning id`,
+    [
+      input.competitionId,
+      input.seasonId,
+      input.provinceId,
+      input.code,
+      input.name,
+    ],
+  );
+  return firstOrThrow(rows, "Creazione girone non riuscita.").id;
+}
+
+export interface NewClub {
+  canonicalName: string;
+  provinceId: string | null;
+  city: string | null;
+}
+
+export async function createClub(input: NewClub): Promise<string> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `insert into clubs (canonical_name, province_id, city)
+     values ($1, $2, $3) returning id`,
+    [input.canonicalName, input.provinceId, input.city],
+  );
+  return firstOrThrow(rows, "Creazione club non riuscita.").id;
+}
+
+export interface NewTeam {
+  clubId: string;
+  name: string;
+  category: string;
+}
+
+export async function createTeam(input: NewTeam): Promise<string> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `insert into teams (club_id, name, category) values ($1, $2, $3) returning id`,
+    [input.clubId, input.name, input.category],
+  );
+  return firstOrThrow(rows, "Creazione squadra non riuscita.").id;
+}
+
+export async function enrollTeam(groupId: string, teamId: string): Promise<void> {
+  await getPool().query(
+    `insert into group_teams (group_id, team_id) values ($1, $2)
+     on conflict do nothing`,
+    [groupId, teamId],
+  );
+}
+
+export interface NewMatch {
+  groupId: string;
+  seasonId: string | null;
+  matchday: number | null;
+  homeTeamId: string;
+  awayTeamId: string;
+  kickoffAt: string | null;
+  venue: string | null;
+}
+
+export async function createMatch(input: NewMatch): Promise<string> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `insert into matches
+       (group_id, season_id, matchday, home_team_id, away_team_id, kickoff_at, venue, status)
+     values ($1, $2, $3, $4, $5, $6, $7, 'scheduled')
+     returning id`,
+    [
+      input.groupId,
+      input.seasonId,
+      input.matchday,
+      input.homeTeamId,
+      input.awayTeamId,
+      input.kickoffAt,
+      input.venue,
+    ],
+  );
+  return firstOrThrow(rows, "Creazione partita non riuscita.").id;
+}
+
+/** Registra il risultato finale di una partita e la marca come `finished`. */
+export async function recordResult(
+  matchId: string,
+  homeScore: number,
+  awayScore: number,
+): Promise<void> {
+  await getPool().query(
+    `update matches
+        set home_score = $2, away_score = $3, status = 'finished', updated_at = now()
+      where id = $1`,
+    [matchId, homeScore, awayScore],
+  );
+}
+
+export interface CompetitionOption {
+  id: string;
+  name: string;
+  category: string;
+}
+
+export async function listCompetitions(): Promise<CompetitionOption[]> {
+  const { rows } = await getPool().query<CompetitionOption>(
+    `select id, name, category from competitions order by category, name`,
+  );
+  return rows;
+}
+
+export interface TeamOption {
+  id: string;
+  name: string;
+}
+
+export async function listTeams(): Promise<TeamOption[]> {
+  const { rows } = await getPool().query<TeamOption>(
+    `select t.id, t.name from teams t order by t.name`,
+  );
+  return rows;
+}
+
+export async function getCurrentSeasonId(): Promise<string | null> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `select id from seasons where is_current order by start_date desc limit 1`,
+  );
+  return rows[0]?.id ?? null;
+}
+
+export interface AdminGroupRow {
+  id: string;
+  name: string;
+  code: string | null;
+  competitionName: string;
+  category: string;
+  provinceName: string | null;
+}
+
+/** Tutti i gironi della stagione corrente, per le select del backoffice. */
+export async function listAllGroupsCurrentSeason(): Promise<AdminGroupRow[]> {
+  const { rows } = await getPool().query<AdminGroupRow>(
+    `select g.id, g.name, g.code,
+            c.name as "competitionName", c.category,
+            p.name as "provinceName"
+       from competition_groups g
+       join competitions c on c.id = g.competition_id
+       join seasons s on s.id = g.season_id and s.is_current
+       left join provinces p on p.id = g.province_id
+      order by c.category, p.name nulls last, g.name`,
+  );
+  return rows;
+}
+
+export async function listAllProvinces(): Promise<
+  Array<Province & { regionName: string }>
+> {
+  const { rows } = await getPool().query<Province & { regionName: string }>(
+    `select p.id, p.code, p.name, r.name as "regionName"
+       from provinces p join regions r on r.id = p.region_id
+      order by r.name, p.name`,
+  );
+  return rows;
+}
+
+export interface AdminMatchRow {
+  id: string;
+  matchday: number | null;
+  kickoffAt: string | null;
+  status: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  homeName: string;
+  awayName: string;
+  groupName: string;
+}
+
+/** Partite non concluse della stagione corrente, da programmare o refertare. */
+export async function listOpenMatchesCurrentSeason(): Promise<AdminMatchRow[]> {
+  const { rows } = await getPool().query<
+    Omit<AdminMatchRow, "kickoffAt" | "homeScore" | "awayScore"> & {
+      kickoffAt: Date | null;
+      homeScore: number | null;
+      awayScore: number | null;
+    }
+  >(
+    `select m.id, m.matchday,
+            m.kickoff_at as "kickoffAt", m.status,
+            m.home_score as "homeScore", m.away_score as "awayScore",
+            ch.canonical_name as "homeName",
+            ca.canonical_name as "awayName",
+            g.name as "groupName"
+       from matches m
+       join competition_groups g on g.id = m.group_id
+       join seasons s on s.id = g.season_id and s.is_current
+       join teams th on th.id = m.home_team_id
+       join clubs ch on ch.id = th.club_id
+       join teams ta on ta.id = m.away_team_id
+       join clubs ca on ca.id = ta.club_id
+      where m.status <> 'finished'
+      order by m.matchday nulls last, m.kickoff_at nulls last`,
+  );
+  return rows.map((row) => ({
+    ...row,
+    kickoffAt: row.kickoffAt ? row.kickoffAt.toISOString() : null,
+  }));
+}
+
 
 export async function closePool(): Promise<void> {
   await pool?.end();

@@ -172,3 +172,74 @@ th {
   color: var(--muted);
   margin-top: 24px;
 }
+
+/* Backoffice */
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid #1f2a3f;
+  border-radius: 10px;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.admin-form input,
+.admin-form select {
+  background: #0b1220;
+  color: var(--fg);
+  border: 1px solid #2a3854;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  min-width: 160px;
+}
+
+.admin-form input.score {
+  min-width: 64px;
+  width: 64px;
+  text-align: center;
+}
+
+.admin-form button {
+  background: var(--accent);
+  color: #06270f;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.match-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ok {
+  color: var(--accent);
+  width: 100%;
+  margin: 0;
+}
+
+.error {
+  color: #ff6b6b;
+  width: 100%;
+  margin: 0;
+}

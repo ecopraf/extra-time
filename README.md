@@ -24,7 +24,7 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 - [`docs/product-vision.md`](docs/product-vision.md) — vision, target, perimetro, roadmap, KPI
 - [`docs/master-plan.md`](docs/master-plan.md) — master plan Fase 0→10: deliverable, dipendenze, KPI
 - [`docs/football-data-core.md`](docs/football-data-core.md) — modello dati e ID condivisi YFM↔EXTRA TIME
-- [`docs/data-model.md`](docs/data-model.md) — design del modello dati ([`db/schema.sql`](db/schema.sql))
+- [`docs/data-model.md`](docs/data-model.md) — design del modello dati ([`db/migrations/`](db/migrations))
 - [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack
 - [`docs/open-questions.md`](docs/open-questions.md) — domande aperte da chiarire prima dello sviluppo
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
@@ -47,8 +47,21 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 
 ## Stato
 
-**Fase 0** — definizione del modello. Documentazione, schema dati e scaffold del monorepo
-pronti; nessuna funzionalità di prodotto ancora implementata.
+**Fase 1** (in corso) — MVP informativo del Football Data Core. Database versionato a
+migrazioni con dataset pilota Lazio, pagine pubbliche navigabili per territorio e un
+backoffice minimo per inserire dati.
+
+Già disponibile:
+
+- Rotta pubblica gerarchica: `/{regione}/{provincia}/{categoria}/{girone}`
+  (es. `/laz/rm/u15/a`) con classifica calcolata dal dominio, risultati, prossime partite
+  e capocannonieri. Rigenerazione ISR.
+- Backoffice minimo su `/admin?token=…` (token condiviso `ADMIN_TOKEN`): crea club,
+  squadre (con iscrizione al girone), gironi e partite, registra i risultati.
+- CI GitHub Actions con Postgres di servizio: migrazioni + seed + typecheck + test + build.
+
+**Fase 0** — definizione del modello, completata: documentazione, schema dati e scaffold
+del monorepo.
 
 Modello dei tre prodotti:
 
@@ -96,6 +109,13 @@ pnpm db:migrate:status            # stato delle migrazioni
 ```
 
 Con `DATABASE_URL` impostato, in alternativa gli script usano `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`.
+
+Backoffice locale:
+
+```bash
+ADMIN_TOKEN=cambiami pnpm --filter @extra-time/web dev
+# poi apri http://localhost:3000/admin?token=cambiami
+```
 
 ## Licenza
 
