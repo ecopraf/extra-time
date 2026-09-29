@@ -4,27 +4,100 @@
 > **come rendiamo i contenuti consultabili nel tempo** (news, risultati, classifiche,
 > rose, media). I prezzi sono quelli pubblicati dai fornitori, verificati a settembre 2026.
 
-## 0. Il vincolo di partenza
+## 0. Contesto
 
-Due decisioni già prese condizionano tutto:
+Tre fatti che condizionano le scelte:
 
-1. **EXTRA TIME ha database e ambiente separati da YFM**, per non consumare il piano di YFM.
-2. **EXTRA TIME è commerciale** (pubblicità, abbonamenti, sponsor previsti in `product-vision.md` §12).
+1. **YFM è su Vercel Pro** (progetto di Vittorio). Funziona, è a pagamento, e **resta
+   separato**.
+2. **EXTRA TIME è un progetto distinto**, nasce adesso e coinvolge altre persone. Non
+   condivide risorse con YFM: database separato, progetto Vercel separato, piani separati.
+3. **Si parte con tutto gratuito**, per validare l'idea. Si passa ai piani a pagamento
+   quando il progetto è maturo.
 
-Da qui un punto che va chiarito subito, perché contraddice un'ipotesi informale:
+L'integrazione tra i due è **possibile e prevista**, ma è una cosa futura (Fase 8) e
+avviene a livello di dati, non di infrastruttura (vedi §1, ultimo paragrafo).
 
-> **Il piano gratuito di Vercel (Hobby) vieta l'uso commerciale.** Vercel lo applica
-> attivamente: progetti Hobby usati per attività che generano ricavi vengono sospesi.
-> Quindi EXTRA TIME **non può stare su Hobby**, nemmeno in un ambiente separato.
+## 1. Fase di validazione: tutto gratuito
 
-L'ambiente separato serve comunque, ma su **Vercel Pro** ($20/sviluppatore/mese) o su un
-fornitore diverso. Non esiste la via "gratis e separato" restando su Vercel.
+Scelta: **validare senza costi** e passare ai piani a pagamento solo quando il progetto è
+maturo. Questo è possibile, ma **una** risorsa gratuita non è utilizzabile per EXTRA TIME:
 
-Da verificare con Vittorio: **su quale piano è oggi YFM?** Se è su Hobby, il problema non
-riguarda solo EXTRA TIME — vale anche per YFM, che è un prodotto B2B commerciale. Va
-chiarito prima di dimensionare i costi.
+> **Cloudflare Workers Free non regge Next.js SSR.** Il piano gratuito concede **10 ms di
+> CPU per richiesta**; un render di pagina Next.js ne consuma 20–60 ms. La funzione viene
+> interrotta. Cloudflare gratis va bene per siti statici, non per il nostro portale.
 
-## 1. Comparativa piattaforme
+Quindi "tutto gratuito" significa, in pratica: **Vercel Hobby + Neon Free + R2 Free**.
+
+### Stack gratuito consigliato
+
+| Servizio | Scelta gratuita | Limite da conoscere |
+|---|---|---|
+| **Frontend** | **Vercel Hobby** | 100 GB banda, 1M richieste, 4 CPU-ore/mese |
+| **Database** | **Neon Free** | 0,5 GB, 100 ore-compute/mese, **si sospende da solo** (nessuna pausa forzata) |
+| **Media** | **Cloudflare R2** | 10 GB archiviazione, **uscita gratis**, 1M scritture + 10M letture |
+| **Email** | **Resend** | 3.000 email/mese, **100/giorno** |
+| **Ricerca** | Postgres full-text | incluso, nessun servizio in più |
+| **Auth** | rinviata | Supabase Auth quando serve l'area scout |
+
+**Perché Neon Free e non Supabase Free:** il piano gratuito di Supabase **mette in pausa i
+progetti dopo 7 giorni di inattività** e va riattivato a mano. Neon invece si sospende da
+solo e si risveglia alla prima query: nessun intervento manuale. Se un giorno la
+sospensione automatica di Neon desse fastidio, si cambia fornitore — **il codice resta
+Postgres puro**, quindi la migrazione è un dump e un restore.
+
+### L'unico punto di attenzione: la regola "non commerciale" di Vercel Hobby
+
+Vercel Hobby è consentito per progetti **personali e non commerciali**. Nella fase di
+validazione EXTRA TIME non genera ricavi: non c'è pubblicità, non ci sono abbonamenti, non
+ci sono clienti paganti. **Rientra quindi nel consentito.**
+
+Ma va tenuto presente, perché la regola si basa sul **carattere** del progetto, non solo sui
+consumi:
+
+- Oggi: sito di risultati e news, **gratuito per tutti**, nessuna entrata → **Hobby è ok**.
+- Al primo ricavo (pubblicità, sponsor, abbonamento, contenuti premium) → **serve Pro**.
+
+Non è una scadenza tecnica, è una scadenza di prodotto: va messo in conto *prima* di
+attivare la monetizzazione, perché a quel punto Vercel può sospendere il progetto.
+
+### La leva per restare gratuiti più a lungo
+
+Vercel Hobby dà 4 CPU-ore al mese: sono poche. Ma le pagine di un portale di risultati
+(regione, girone, classifica, squadra) sono **quasi tutte statiche** e si rigenerano una
+volta al giorno, dopo la giornata di campionato. Se la maggior parte delle richieste è
+servita da cache invece che da render, il consumo di CPU resta basso.
+
+Quindi la strategia gratuita non è solo "scegliere i piani free": è **prerenderizzare
+aggressivamente** (ISR con revalidate giornaliero) e tenere dinamiche solo le parti che
+cambiano davvero (risultati in diretta, ricerca, backoffice). Questo allunga la vita del
+piano gratuito e, per inciso, rende il sito più veloce.
+
+### Quando passare ai piani a pagamento
+
+| Segnale | Azione |
+|---|---|
+| Primo ricavo (pubblicità, sponsor, abbonamento) | **Vercel Pro obbligatorio** ($20/seat) |
+| Database oltre 400 MB o query lente | Neon Launch (~$5–20) o Supabase Pro ($25) |
+| Immagini oltre 10 GB o molte visualizzazioni | R2 a consumo (centesimi) |
+| Serve l'area scout con login | Supabase Pro ($25, include Auth) |
+
+### Sull'integrazione futura con YFM
+
+YFM è su Vercel Pro e resta **un'entità separata**: database separato, progetto Vercel
+separato, piani separati. Non condividono risorse.
+
+L'integrazione, quando arriverà (Fase 8), **non** richiede di unire i due progetti: si fa a
+livello di **dati**, con gli ID condivisi già progettati (vedi `docs/yfm-mapping.md`).
+YFM resta il sistema di riferimento per le anagrafiche (club, squadra, giocatore); EXTRA
+TIME per competizioni e partite. Lo scambio avviene tramite gli ID, non tramite
+l'infrastruttura.
+
+Questa separazione è un vantaggio, non un limite: se domani EXTRA TIME passa a Cloudflare e
+YFM resta su Vercel, l'integrazione continua a funzionare esattamente come prima, perché
+parla solo di dati.
+
+## 2. Comparativa piattaforme
 
 | | **Vercel Pro** | **Cloudflare Workers** | **Hetzner + Coolify** |
 |---|---|---|---|
@@ -57,17 +130,18 @@ chiarito prima di dimensionare i costi.
 - **Hetzner + Coolify** è il costo più basso in assoluto e dà controllo totale, ma il
   server lo gestiamo noi: aggiornamenti, backup, sicurezza. È lavoro, non solo risparmio.
 
-**Raccomandazione Fase 1:** partire su **Vercel Pro** (1 seat) per arrivare subito al link
-stabile che serve a Vittorio, tenendo il codice privo di dipendenze Vercel-specifiche
-(niente Vercel KV, Blob, Postgres) così che il passaggio a Cloudflare resti possibile senza
-riscritture. Rivalutare Cloudflare quando banda e media iniziano a pesare.
+**Raccomandazione per la validazione:** **Vercel Hobby** (gratuito, uso non commerciale
+consentito finché non ci sono ricavi) con **Neon Free** e **R2 Free**. Il codice va tenuto
+privo di dipendenze Vercel-specifiche (niente Vercel KV, Blob, Postgres): così, quando si
+passa a Cloudflare per ragioni di costo, non c'è nulla da riscrivere. Il passaggio a
+Vercel Pro è automatico al primo ricavo, non prima.
 
-## 2. I servizi e dove metterli
+## 3. I servizi e dove metterli
 
 | Servizio | Scelta consigliata | Perché |
 |---|---|---|
-| **Frontend / SSR** | Vercel Pro (poi Cloudflare) | Next.js, preview, ISR |
-| **Database** | **Supabase, progetto separato** (Pro $25) o Neon | Postgres gestito; separato da YFM come deciso |
+| **Frontend / SSR** | **Vercel Hobby** ora → Pro al primo ricavo | Next.js nativo, preview, ISR |
+| **Database** | **Neon Free** ora → Neon Launch o Supabase Pro dopo | Postgres gestito; separato da YFM come deciso |
 | **Media (immagini)** | **Cloudflare R2** + Cloudflare Images | $0,015/GB/mese, **uscita gratis**, $5/100k immagini |
 | **Media (video)** | Cloudflare Stream (Fase 7) | ~$5/1000 minuti archiviati, $1/1000 minuti serviti |
 | **Ricerca** | **Postgres full-text** all'inizio | regge centinaia di query/s e fino a ~100k record; Typesense solo quando serve tolleranza ai typo e facet |
@@ -92,7 +166,7 @@ l'infrastruttura che già abbiamo.
 già esistente bastano. Payload si aggiunge dopo, senza migrare i contenuti, perché il
 database è lo stesso.
 
-## 3. Archivio: rendere i contenuti consultabili nel tempo
+## 4. Archivio: rendere i contenuti consultabili nel tempo
 
 Questa è la parte che conta davvero. "Consultabile nel tempo" significa quattro cose
 distinte, che vanno progettate adesso perché cambiarle dopo è costoso.
@@ -154,23 +228,27 @@ Il piano gratuito di Supabase **non ha backup automatici** e mette in pausa i pr
 - **In più**: dump logico settimanale (`pg_dump`) su R2. Costo quasi nullo
   ($0,015/GB/mese), e ci mette al riparo anche da un errore del fornitore.
 
-## 4. Costi per fase (riepilogo)
+## 5. Costi per fase (riepilogo)
 
-| Fase | Stack | Costo mensile stimato |
+| Fase | Stack | Costo mensile |
 |---|---|---|
-| 1 | Vercel Pro (1 seat) + Supabase Pro | ~$45 |
-| 1 (economica) | Cloudflare Workers + Neon Launch | ~$10–15 |
-| 3 | Vercel Pro + Supabase Pro + R2/Images | ~$60–70 |
-| 3 (Cloudflare) | Workers + R2 + Neon | ~$25 |
-| 7 | + Cloudflare Stream (video) | +$50–500 secondo il video |
+| **Validazione** | **Vercel Hobby + Neon Free + R2 Free + Resend** | **$0** |
+| Primo ricavo | Vercel Pro (obbligatorio) + Neon Launch | ~$25–45 |
+| News e media (Fase 3) | + R2 a consumo | ~$45–70 |
+| Live e video (Fase 7) | + Cloudflare Stream | +$50–500 secondo il video |
 
-## 5. Decisioni da prendere
+## 6. Decisioni
 
-1. **Vercel Pro o Cloudflare Workers?** Vercel = più rapido e comodo, $20/seat.
-   Cloudflare = $5 per account e banda gratis, con un po' più di lavoro. La mia
-   raccomandazione: Vercel Pro in Fase 1, rivalutare Cloudflare alla Fase 3.
-2. **Supabase Pro ($25) o Neon (a consumo, ~$5–20)?** Supabase dà anche Auth, Storage e
-   Realtime in un pacchetto; Neon è solo Postgres ma costa meno. Se l'area scout e i profili
-   utente arrivano presto, Supabase conviene.
-3. **Confermare R2 per i media** (zero costi di uscita) invece dello Storage di Supabase.
-4. **Confermare Payload CMS in Fase 3** invece di un CMS SaaS esterno.
+**Prese:**
+- Database e ambiente **separati da YFM** (entità distinte; YFM resta di Vittorio).
+- **Tutto gratuito** per la validazione: Vercel Hobby + Neon Free + R2 Free + Resend.
+- Media su **Cloudflare R2** (uscita gratuita), non nel database.
+- CMS: **tabelle Postgres** ora, **Payload** (stesso Postgres) in Fase 3.
+- Integrazione YFM a livello **dati**, non di infrastruttura.
+
+**Da confermare:**
+1. **Neon Free** come database gratuito (alternativa: Supabase Free, ma mette in pausa dopo
+   7 giorni di inattività). Serve un fornitore di Postgres gestito gratuito in ogni caso.
+2. **Resend** per le email transazionali (3.000/mese, 100/giorno).
+3. **Prerenderizzazione aggressiva** come strategia per restare nel piano gratuito: richiede
+   che le pagine pubbliche siano ISR con revalidate giornaliero.
