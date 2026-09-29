@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
+    "@types/react": "^19",
+    "react": "^19",
     "typescript": "^5.7.2"
   }
 }

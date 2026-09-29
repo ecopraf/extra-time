@@ -76,6 +76,18 @@ docs: documentazione
   Aggiungere le regole ESLint qui quando servono, non usare `next lint` (deprecato in Next 16).
 - Non è ancora configurato un formatter: introdurre Prettier/Biome è un lavoro a sé.
 
+## Design system (`packages/ui`)
+
+- `src/tokens.ts` è la **fonte di verità** di palette e tipografia: Navy + Electric Blue
+  dominanti, Orange come colore caratteristico (LIVE / tempo aggiuntivo). Il colore è
+  semantico (blu=info, arancio=live, verde=positivo, rosso=alert), non decorativo.
+- `src/Logo.tsx` espone `Mark` (simbolo X + punto live), `Wordmark`, `Logo` e `TimeLine`.
+- I valori CSS in `apps/web/src/app/globals.css` rispecchiano i token: se cambi la palette
+  in `tokens.ts`, aggiorna anche lì.
+- Nessun pallone realistico/scudetto/silhouette nell'identità: il simbolo deve restare
+  riconoscibile anche a 32×32.
+- Anteprima condivisibile: `/presentazione` (pagina di presentazione, non prodotto finale).
+
 ## Backoffice
 
 - Pannello minimo su `/admin`, protetto da token condiviso `ADMIN_TOKEN` via query string.

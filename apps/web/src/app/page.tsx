@@ -27,6 +27,10 @@ export default async function Home() {
           ))}
         </ul>
       )}
+
+      <p className="pres-back">
+        <Link href="/presentazione">Identità visiva e percorso →</Link>
+      </p>
     </main>
   );
 }

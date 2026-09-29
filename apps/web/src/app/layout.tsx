@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Mark, Wordmark } from "@extra-time/ui";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <header className="site-header">
           <div className="site-header-inner">
-            <Link href="/" className="brand">
-              EXTRA TIME
+            <Link href="/" className="brand" aria-label="EXTRA TIME — home">
+              <Mark size={30} />
+              <Wordmark size={20} />
             </Link>
             <span className="brand-tag">
               calcio dilettantistico e giovanile

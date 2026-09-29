@@ -25,9 +25,17 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 - [`docs/master-plan.md`](docs/master-plan.md) — master plan Fase 0→10: deliverable, dipendenze, KPI
 - [`docs/football-data-core.md`](docs/football-data-core.md) — modello dati e ID condivisi YFM↔EXTRA TIME
 - [`docs/data-model.md`](docs/data-model.md) — design del modello dati ([`db/migrations/`](db/migrations))
-- [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack
+- [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack (stato attuale + obiettivo)
 - [`docs/open-questions.md`](docs/open-questions.md) — domande aperte da chiarire prima dello sviluppo
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
+
+## Identità visiva
+
+- [`packages/ui`](packages/ui) — design system: palette, grammatica di colore, logo
+  (simbolo X + punto live) e wordmark. Fonte di verità dei token; `apps/web/src/app/globals.css`
+  ne rispecchia i valori.
+- Anteprima navigabile su **`/presentazione`** (pagina da condividere, non prodotto finale):
+  simbolo, palette, colore come grammatica, percorso a fasi e domande aperte.
 
 ## Roadmap (verticali a valore autonomo)
 
