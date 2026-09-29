@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="40" viewBox="0 0 320 40" role="img" aria-label="90 minuti piu recupero">
+  <rect width="320" height="40" fill="#0B132B" />
+  <line x1="16" y1="20" x2="300" y2="20" stroke="#22304F" stroke-width="2" />
+  <line x1="16" y1="20" x2="214" y2="20" stroke="#2563EB" stroke-width="2" />
+  <circle cx="214" cy="20" r="5" fill="#FF6B2C" />
+  <text x="234" y="26" font-family="Inter, Manrope, Arial, sans-serif" font-weight="700" font-size="18" fill="#FF6B2C">+4&#8242;</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64" role="img" aria-label="EXTRA TIME">
+  <rect width="64" height="64" rx="14" fill="#0B132B" />
+  <path d="M19 19 L45 45" stroke="#2563EB" stroke-width="7" stroke-linecap="round" />
+  <g stroke="#FF6B2C" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M44 20 L22 42" />
+    <path d="M22 42 L21 30" />
+    <path d="M22 42 L34 43" />
+  </g>
+  <circle cx="32" cy="32" r="5" fill="#FF6B2C" />
+</svg>
