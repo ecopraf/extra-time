@@ -1,0 +1,12 @@
+{
+  "seen": [
+    "Regionali/SGS/16",
+    "Regionali/SGS/17",
+    "Regionali/SGS/23",
+    "Regionali/SGS/26",
+    "Regionali/SGS/31",
+    "Regionali/SGS/32"
+  ],
+  "note": "Comunicati SGS gia' importati (calendari 2026/27 + CU16/23/26/31/32). Il watcher segnala i nuovi non presenti qui.",
+  "updatedAt": "2026-09-30T00:00:00.000Z"
+}
