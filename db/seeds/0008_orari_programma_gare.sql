@@ -37,6 +37,7 @@ update matches set kickoff_at = '2026-09-06 11:00:00+02', venue = 'LE MURACCIOLE
 update matches set kickoff_at = '2026-09-06 11:30:00+02', venue = 'TOBIA MARIO' where id = 'b3c9c835-8d19-4be0-8b99-3abae288b275';
 update matches set kickoff_at = '2026-09-06 15:00:00+02', venue = 'TAMAGNINI VITTORIO (SINTEX)' where id = 'bd1da808-c7cf-4398-8dcb-faa6a3596f1d';
 update matches set kickoff_at = '2026-09-06 11:00:00+02', venue = 'MONTESPACCATO' where id = '89082c5c-80e1-4e15-801a-508c094ded3b';
+update matches set kickoff_at = '2026-09-06 11:00:00+02', venue = 'CECCONI FAUSTO SINTEX' where id = '99e7fd99-80f6-41ad-8347-21394ad15373';
 update matches set kickoff_at = '2026-09-06 11:00:00+02', venue = 'COMUNALE' where id = '1638eb13-92cb-4528-8503-9eca7078a47d';
 update matches set kickoff_at = '2026-09-06 11:15:00+02', venue = 'RIPOLI' where id = '6a9368c3-765e-4c02-8bda-d209bccf8f3f';
 update matches set kickoff_at = '2026-09-06 11:00:00+02', venue = 'W3 STADIUM EX E.DARRA' where id = '399eb8de-92aa-4258-8835-847192b4ec98';
@@ -481,6 +482,7 @@ update matches set kickoff_at = '2026-09-13 15:30:00+02', venue = 'CENTRO ITALIA
 update matches set kickoff_at = '2026-09-13 15:00:00+02', venue = 'GALLI ENRICO "A"' where id = '58b355b7-2112-4870-8b27-f5671fc3eb88';
 update matches set kickoff_at = '2026-09-13 11:00:00+02', venue = 'CENTRO LOGISTICO GDF' where id = 'fa34c87f-aa37-47aa-827f-ab925ac4e7e0';
 update matches set kickoff_at = '2026-09-13 11:00:00+02', venue = 'REAL FETTUCCINA A (SINTEX)' where id = '3da93919-ec63-4bd5-845f-4e9e49326be5';
+update matches set kickoff_at = '2026-09-13 11:15:00+02', venue = 'ARIOLA LUIGI' where id = '93231cc2-70e3-48c4-825c-ec4ffee4b15c';
 update matches set kickoff_at = '2026-09-13 11:15:00+02', venue = 'DI MARCO IVO' where id = '18e0a6ec-3e71-4670-8602-fee6f829e1db';
 update matches set kickoff_at = '2026-09-13 11:00:00+02', venue = 'DE SANTIS LINO' where id = '55f90497-8f41-4457-8f77-6763925142e4';
 update matches set kickoff_at = '2026-09-13 15:30:00+02', venue = 'SALVETI GINO' where id = '74fc5f35-2247-4e98-8cb6-5505e2e28e56';
@@ -615,6 +617,7 @@ update matches set kickoff_at = '2026-09-20 11:30:00+02', venue = 'LE MURACCIOLE
 update matches set kickoff_at = '2026-09-20 11:30:00+02', venue = 'TOBIA MARIO' where id = '350968e2-b957-4d30-8d22-d9a49d48bbda';
 update matches set kickoff_at = '2026-09-20 15:00:00+02', venue = 'TAMAGNINI VITTORIO (SINTEX)' where id = 'd7565263-5b59-4997-8513-b28be3b6e8f8';
 update matches set kickoff_at = '2026-09-20 15:30:00+02', venue = 'CASLINI ANDREA' where id = 'cbd86dd5-63a0-4757-89eb-1e7335668019';
+update matches set kickoff_at = '2026-09-20 11:00:00+02', venue = 'MONTESPACCATO' where id = 'e0723b5e-aa40-4408-8c74-bc718c4a93e7';
 update matches set kickoff_at = '2026-09-20 11:00:00+02', venue = 'CECCONI FAUSTO SINTEX' where id = '77b958a3-e8d1-410e-8b97-3ae8bb9e7738';
 update matches set kickoff_at = '2026-09-20 11:00:00+02', venue = 'COMUNALE' where id = '9bc61435-f234-415e-8edc-cab548209ed0';
 update matches set kickoff_at = '2026-09-20 11:15:00+02', venue = 'RIPOLI' where id = '40750894-b2a0-4f7f-8764-ceb43e085718';
@@ -703,6 +706,7 @@ update matches set kickoff_at = '2026-09-27 15:30:00+02', venue = 'CENTRO ITALIA
 update matches set kickoff_at = '2026-09-27 11:00:00+02', venue = 'PAGLIALUNGA ARISTIDE' where id = '3ca60c2b-c0da-4fe2-8eba-268fa39f8cb5';
 update matches set kickoff_at = '2026-09-27 11:00:00+02', venue = 'ELIS' where id = 'c1395294-313c-46a7-8876-644612c13e26';
 update matches set kickoff_at = '2026-09-27 11:00:00+02', venue = 'REAL FETTUCCINA A (SINTEX)' where id = '87b1e090-34ab-4419-8851-e8e4beec06d1';
+update matches set kickoff_at = '2026-09-27 11:15:00+02', venue = 'ARIOLA LUIGI' where id = '1ca92c3c-7776-4c7c-8974-c2880dac6d9c';
 update matches set kickoff_at = '2026-09-27 11:15:00+02', venue = 'DI MARCO IVO' where id = '2d7ea2dd-c0b3-4bac-8816-62a10a94c199';
 update matches set kickoff_at = '2026-09-27 11:00:00+02', venue = 'DE SANTIS LINO' where id = '337a57bf-d2c9-4b66-8e25-5bc1663a6c3c';
 update matches set kickoff_at = '2026-09-27 15:30:00+02', venue = 'SALVETI GINO' where id = '20ee9e98-72cd-4843-86a2-33edb98dc177';
@@ -782,6 +786,7 @@ update matches set kickoff_at = '2026-09-26 14:30:00+02', venue = 'SAN TARCISIO'
 update matches set kickoff_at = '2026-09-27 11:00:00+02', venue = 'CECCACCI MARIO' where id = 'b254649d-af6a-492a-89c0-eb1d463800e7';
 update matches set kickoff_at = '2026-09-26 15:00:00+02', venue = 'DE FONSECA' where id = '534a6919-2fc7-4403-832a-e4c55191f985';
 update matches set kickoff_at = '2026-10-04 11:00:00+02', venue = 'LE MURACCIOLE "A"' where id = 'f001d1d1-9407-4056-828e-0bb82add72bc';
+update matches set kickoff_at = '2026-10-04 11:30:00+02', venue = 'TOBIA MARIO' where id = 'db5543b5-fa02-468e-8161-48051567cd2a';
 update matches set kickoff_at = '2026-10-04 15:00:00+02', venue = 'TAMAGNINI VITTORIO (SINTEX)' where id = 'bde74435-55a8-446d-8066-654eb8b7345f';
 update matches set kickoff_at = '2026-10-04 15:30:00+02', venue = 'CASLINI ANDREA' where id = '78bd292c-b13c-4fd1-8376-b58e3c51f9cd';
 update matches set kickoff_at = '2026-10-04 11:00:00+02', venue = 'MONTESPACCATO' where id = '9443470d-3708-428c-87f6-671c9f4c580c';
@@ -1043,6 +1048,7 @@ update matches set kickoff_at = '2026-10-11 15:30:00+02', venue = 'CENTRO ITALIA
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'PAGLIALUNGA ARISTIDE' where id = 'da6a96c8-3712-41dd-824f-98c6286bc5c7';
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'ELIS' where id = '011f9df7-5e0c-40a7-8a0c-62165dea62e1';
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'REAL FETTUCCINA A (SINTEX)' where id = 'd0a5cb75-c2c9-4d65-8586-8510ca972811';
+update matches set kickoff_at = '2026-10-11 11:15:00+02', venue = 'ARIOLA LUIGI' where id = 'c6bf3772-8b62-488a-8d37-d63195305243';
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'CECCONI FAUSTO SINTEX' where id = 'f82f9b29-ed80-4a02-8787-8350cd8d5be2';
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'DE SANTIS LINO' where id = '063eb0e9-5199-4109-8185-5890691f0046';
 update matches set kickoff_at = '2026-10-11 15:30:00+02', venue = 'SALVETI GINO' where id = 'b3ecee2a-4961-4502-885b-f3ca1272ce93';

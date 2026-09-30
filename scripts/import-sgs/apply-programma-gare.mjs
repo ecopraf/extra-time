@@ -38,10 +38,24 @@ function tokens(s) {
     .map((w) => ABBR[w] ?? w)
     .filter((w) => w && !stop.has(w) && !/^\d{4}$/.test(w));
 }
+// Alias espliciti: coppie di nomi (normalizzati) che sono la STESSA squadra ma
+// senza token in comune, quindi non catturabili dall'euristica. Verificati a
+// mano confrontando programma gare e rosa del girone nel Core.
+const ALIAS_PAIRS = [
+  ["monti prenestini 1919", "m p cavese"],       // M.P. = Monti Prenestini (Cavese)
+  ["monti prenestini 1919", "mp cavese"],
+];
+const ALIAS_SET = new Set(ALIAS_PAIRS.map(([x, y]) => `${norm(x)}|${norm(y)}`));
+function isAlias(a, b) {
+  const na = norm(a), nb = norm(b);
+  return ALIAS_SET.has(`${na}|${nb}`) || ALIAS_SET.has(`${nb}|${na}`);
+}
+
 /** true se due nomi si riferiscono plausibilmente alla stessa squadra */
 function sameTeam(a, b) {
   const na = norm(a), nb = norm(b);
   if (na === nb) return true;
+  if (isAlias(a, b)) return true;
   if (na.length >= 5 && (na.includes(nb) || nb.includes(na))) return true;
   const ta = tokens(a), tb = tokens(b);
   if (ta.length === 0 || tb.length === 0) return false;
