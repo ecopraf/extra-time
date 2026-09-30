@@ -46,3 +46,7 @@ venv/
 
 # Seed generati dal sync comunicati (da revisionare prima di applicare)
 db/seeds/_pending/
+
+# Credenziali temporanee (import loghi) — mai committare
+.yfm-source
+.r2-credentials
