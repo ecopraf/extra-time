@@ -43,3 +43,6 @@ __pycache__/
 .venv/
 venv/
 .env*
+
+# Seed generati dal sync comunicati (da revisionare prima di applicare)
+db/seeds/_pending/

@@ -1,0 +1,60 @@
+name: Watch Comunicati LND
+
+# Monitoraggio automatico dei Comunicati Ufficiali LND Lazio.
+# Rileva i nuovi comunicati rilevanti (calendari/variazioni) e apre una issue
+# di notifica. NON applica nulla al database: l'import resta un passo di revisione.
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # ogni giorno alle 07:00 UTC
+  workflow_dispatch: {} # esecuzione manuale dal tab Actions
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Rileva nuovi comunicati (dry run)
+        id: detect
+        run: |
+          OUT=$(node scripts/import-sgs/watch-comunicati.mjs --dry 2>&1 || true)
+          echo "$OUT"
+          # salva l'output per lo step successivo
+          {
+            echo 'report<<EOF'
+            echo "$OUT"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          # conta i nuovi
+          NEW=$(echo "$OUT" | grep -c '^\[' || true)
+          echo "new_count=$NEW" >> "$GITHUB_OUTPUT"
+
+      - name: Apri issue se ci sono nuovi comunicati
+        if: steps.detect.outputs.new_count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = `${{ steps.detect.outputs.report }}`;
+            const today = new Date().toISOString().slice(0, 10);
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Nuovi comunicati LND da importare — ${today}`,
+              body: [
+                "Il watcher ha rilevato nuovi comunicati LND Lazio rilevanti per i calendari.",
+                "",
+                "```",
+                report,
+                "```",
+                "",
+                "Passi: eseguire `node scripts/import-sgs/sync-comunicati.mjs`, revisionare i file in `db/seeds/_pending/`, spostarli in `db/seeds/` e applicare con `pnpm db:seed`. Poi aggiornare `scripts/import-sgs/state.json`.",
+              ].join("\n"),
+              labels: ["calendari", "lnd"],
+            });
