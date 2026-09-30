@@ -18,6 +18,22 @@ export interface ExplorerGroup {
   groupName: string;
 }
 
+/** Ordina i campionati: eta' decrescente (U19->U14), poi livello federale
+ *  (Nazionale > Elite > Regionale > Provinciale). */
+function levelRank(cat: string): number {
+  const c = cat.toLowerCase();
+  if (c.includes("nazional")) return 0;
+  if (c.includes("elite")) return 1;
+  if (c.includes("regional")) return 2;
+  if (c.includes("provincial")) return 3;
+  return 4;
+}
+function categoryRank(cat: string): number {
+  const m = cat.match(/U(\d{2})/);
+  const age = m && m[1] ? parseInt(m[1], 10) : 0;
+  return (99 - age) * 10 + levelRank(cat);
+}
+
 export function CampionatiExplorer({
   groups,
   currentRegion,
@@ -51,11 +67,11 @@ export function CampionatiExplorer({
     (g) => g.regionCode.toLowerCase() === currentRegion,
   );
 
-  // Campionati della regione corrente.
+  // Campionati della regione corrente, ordinati U19 -> U14 (poi per livello).
   const competitions = uniq(
-    inRegion.map((g) => ({ slug: slugify(g.category), name: g.competitionName })),
+    inRegion.map((g) => ({ slug: slugify(g.category), name: g.competitionName, category: g.category })),
     (c) => c.slug,
-  );
+  ).sort((a, b) => categoryRank(a.category) - categoryRank(b.category));
 
   // Gironi del campionato corrente.
   const gironi = uniq(
