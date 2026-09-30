@@ -1,13 +1,12 @@
 import Link from "next/link";
 import type { PortalMatchRow } from "@extra-time/database";
-import { formatKickoff } from "@/lib/format";
+import { formatKickoff, slugify } from "@/lib/format";
 
 /** Percorso pubblico del girone a cui appartiene una partita. */
 function groupHref(match: PortalMatchRow): string | null {
   const { regionCode, provinceCode, category, groupCode } = match;
   if (!regionCode || !provinceCode || !category) return null;
-  const segments = [regionCode, provinceCode, category, groupCode ?? "a"];
-  return `/${segments.map((s) => s.toLowerCase()).join("/")}`;
+  return `/${regionCode.toLowerCase()}/${provinceCode.toLowerCase()}/${slugify(category)}/${(groupCode ?? "a").toLowerCase()}`;
 }
 
 /**
@@ -46,9 +45,10 @@ export function MatchRow({
     <div className="portal-match-wrap">
       {href ? <Link href={href}>{row}</Link> : row}
       <p className="portal-match-meta">
-        {match.groupName}
+        {match.category}
+        {` · ${match.groupName}`}
         {match.provinceCode ? ` · ${match.provinceCode}` : ""}
-        {isPlayed ? ` · ${formatKickoff(match.kickoffAt)}` : ""}
+        {` · ${formatKickoff(match.kickoffAt)}`}
       </p>
     </div>
   );

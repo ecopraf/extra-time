@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Inter, Barlow_Condensed } from "next/font/google";
+import { HeaderActions } from "@/components/HeaderActions";
 import "./globals.css";
 
 // Font self-hosted da next/font: nessuna richiesta a Google a runtime, nessun
-// layout shift. Inter per l'interfaccia, Barlow Condensed per numeri e titoli
-// (punteggi, classifiche): vedi packages/ui/src/tokens.ts.
+// layout shift. Inter per l'interfaccia, Barlow Condensed per numeri e titoli.
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -42,17 +42,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <img src="/logo-extra-time.svg" alt="EXTRA TIME" className="brand-logo" />
             </Link>
             <nav className="portal-nav" aria-label="Navigazione principale">
-              <Link href="/calcio">Calcio</Link>
-              <Link href="/risultati">Risultati</Link>
-              <Link href="/classifiche">Classifiche</Link>
+              <Link href="/campionati">Campionati</Link>
+              <Link href="/news">News</Link>
+              <Link href="/scout">Scout</Link>
               <Link href="/live" className="is-live">
                 <span className="live-dot" aria-hidden />
                 Live
               </Link>
             </nav>
-            <span className="brand-tag">
-              calcio dilettantistico e giovanile
-            </span>
+            <HeaderActions />
           </div>
         </header>
         {children}

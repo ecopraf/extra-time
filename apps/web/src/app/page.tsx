@@ -6,7 +6,8 @@ import {
   listRegions,
   listUpcomingMatches,
 } from "@extra-time/database";
-import { formatKickoff } from "@/lib/format";
+import { MatchRow } from "@/components/MatchRow";
+import { UpcomingCarousel } from "@/components/UpcomingCarousel";
 
 export const revalidate = 300;
 
@@ -16,7 +17,7 @@ export default async function Home() {
     listRegions(),
     listLiveMatches(),
     listRecentResults(6),
-    listUpcomingMatches(6),
+    listUpcomingMatches(60),
   ]);
 
   return (
@@ -24,8 +25,8 @@ export default async function Home() {
       <section className="portal-hero">
         <h1>Calcio dilettantistico e giovanile</h1>
         <p className="lead">
-          Calendari, risultati, classifiche e live di tutto il calcio italiano. Scegli una
-          regione per esplorare campionati e gironi.
+          Calendari, risultati, classifiche e live di tutto il calcio italiano.
+          Scegli un campionato per esplorare gironi e squadre.
         </p>
         <div className="portal-chips">
           <span className="portal-chip">{counts.regions} Regioni</span>
@@ -50,13 +51,7 @@ export default async function Home() {
           <div className="portal-grid">
             <div className="portal-card">
               {live.map((match) => (
-                <div key={match.id} className="portal-match is-live">
-                  <span className="home">{match.homeName}</span>
-                  <span className="score">
-                    {match.homeScore ?? 0} - {match.awayScore ?? 0}
-                  </span>
-                  <span className="away">{match.awayName}</span>
-                </div>
+                <MatchRow key={match.id} match={match} showMeta />
               ))}
             </div>
           </div>
@@ -71,13 +66,7 @@ export default async function Home() {
           <div className="portal-grid">
             <div className="portal-card">
               {results.map((match) => (
-                <div key={match.id} className="portal-match">
-                  <span className="home">{match.homeName}</span>
-                  <span className="score">
-                    {match.homeScore} - {match.awayScore}
-                  </span>
-                  <span className="away">{match.awayName}</span>
-                </div>
+                <MatchRow key={match.id} match={match} showMeta />
               ))}
             </div>
           </div>
@@ -86,21 +75,7 @@ export default async function Home() {
 
       <section className="portal-section">
         <h2>Prossime partite</h2>
-        {upcoming.length === 0 ? (
-          <p className="empty">Nessuna partita in programma.</p>
-        ) : (
-          <div className="portal-grid">
-            <div className="portal-card">
-              {upcoming.map((match) => (
-                <div key={match.id} className="portal-match">
-                  <span className="home">{match.homeName}</span>
-                  <span className="score">{formatKickoff(match.kickoffAt)}</span>
-                  <span className="away">{match.awayName}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <UpcomingCarousel matches={upcoming} />
       </section>
 
       <section className="portal-section">
@@ -122,12 +97,6 @@ export default async function Home() {
           </ul>
         )}
       </section>
-
-      <p className="pres-back">
-        <Link href="/presentazione">Identità visiva e percorso →</Link>
-        <br />
-        <Link href="/prototipo">Prototipo navigabile (proposta collaboratori) →</Link>
-      </p>
     </main>
   );
 }

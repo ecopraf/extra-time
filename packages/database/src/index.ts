@@ -330,7 +330,7 @@ export async function resolveGroup(params: {
        join provinces p on p.id = g.province_id
        join regions r on r.id = p.region_id
       where r.code = $1 and p.code = $2
-        and lower(replace(c.category, ' ', '-')) = lower($3)
+        and trim(both '-' from regexp_replace(lower(c.category), '[^a-z0-9]+', '-', 'g')) = lower($3)
         and lower(coalesce(g.code, '')) = lower($4)
       order by g.name
       limit 1`,
@@ -351,7 +351,8 @@ export async function listGroupsByProvinceCategory(
        from competition_groups g
        join competitions c on c.id = g.competition_id
        join seasons s on s.id = g.season_id and s.is_current
-      where g.province_id = $1 and lower(c.category) = lower($2)
+      where g.province_id = $1
+        and trim(both '-' from regexp_replace(lower(c.category), '[^a-z0-9]+', '-', 'g')) = lower($2)
       order by g.code nulls last, g.name`,
     [provinceId, category],
   );
@@ -680,7 +681,18 @@ export async function listUpcomingMatches(limit = 12): Promise<PortalMatchRow[]>
   >(
     `${PORTAL_MATCH_SELECT}
       where m.status = 'scheduled'
-      order by m.kickoff_at asc nulls last, m.matchday asc nulls last
+        and (m.kickoff_at is null or m.kickoff_at >= now())
+      order by m.kickoff_at asc nulls last,
+               coalesce(nullif(regexp_replace(c.category, '\\D', '', 'g'), '')::int, 0) desc,
+               case
+                 when c.category ilike '%nazional%' then 0
+                 when c.category ilike '%elite%' then 1
+                 when c.category ilike '%regional%' then 2
+                 when c.category ilike '%provincial%' then 3
+                 else 4
+               end asc,
+               g.code asc nulls last,
+               m.matchday asc nulls last
       limit $1`,
     [limit],
   );
