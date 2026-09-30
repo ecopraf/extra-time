@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
+
 /**
- * Azioni in testata (stile template): Assistenza, impostazioni, profilo.
+ * Azioni in testata (stile template): Assistenza e Impostazioni.
  * Assistenza apre una mail verso l'indirizzo del progetto (mailto): soluzione
  * immediata e senza dipendenze. In futuro (Fase hosting) si sostituirà con un
  * form collegato a Resend — vedi docs/hosting-guida-operativa.md §5.
+ * Impostazioni porta all'hub protetto (login se non autenticato).
  */
 
 const SUPPORT_EMAIL = "extratime.italia@gmail.com";
@@ -27,24 +30,14 @@ export function HeaderActions() {
       >
         Assistenza
       </button>
-      <button
-        type="button"
+      <Link
+        href="/impostazioni"
         className="header-icon"
-        title="Impostazioni (in arrivo)"
+        title="Impostazioni"
         aria-label="Impostazioni"
-        disabled
       >
         &#9881;
-      </button>
-      <button
-        type="button"
-        className="header-icon"
-        title="Profilo (in arrivo)"
-        aria-label="Profilo"
-        disabled
-      >
-        &#128100;
-      </button>
+      </Link>
     </div>
   );
 }

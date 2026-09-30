@@ -4,10 +4,7 @@ import { useActionState } from "react";
 import type { ReactNode } from "react";
 import type { ActionResult } from "./actions";
 
-/**
- * Form del backoffice con feedback sull'esito dell'azione.
- * Usa `useActionState` per mostrare messaggi di successo/errore.
- */
+/** Form del backoffice con feedback sull'esito (successo/errore). */
 export function ActionForm({
   action,
   submitLabel,
