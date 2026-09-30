@@ -94,7 +94,21 @@ function normalizeTeamName(name) {
     return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();
   }).join(" ");
   for(const [p,a] of Object.entries(ACCENT_MAP)) clean=clean.replace(new RegExp(`\\b${p}\\b`,"g"),a);
-  return clean.replace(/\s+/g," ").trim();
+  clean = clean.replace(/\s+/g, " ").trim();
+  return canonicalizeClub(clean);
+}
+
+// Alias canonici: varianti OCR/denominazione della STESSA società che, se non
+// unificate, creano club duplicati (es. il girone U19 con 17 squadre). La chiave
+// è il nome normalizzato ridotto; il valore è il nome canonico usato altrove.
+const CLUB_CANONICAL = {
+  "mprenestinicavese1919": "Monti Prenestini 1919",
+  "prenestinicavese1919": "Monti Prenestini 1919",
+  "montiprenestini1919": "Monti Prenestini 1919",
+};
+function canonicalizeClub(name) {
+  const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return CLUB_CANONICAL[key] ?? name;
 }
 
 function toIso(dmy) {

@@ -1,5 +1,5 @@
 -- EXTRA TIME — Seed U19 Elite 2026/2027 (Juniores Under 19 Regionale A, 2 gironi)
--- Fonte: programma gare LND (6 giornate d'andata disponibili). Idempotente.
+-- Fonte: programma gare LND. Idempotente. Nomi club canonicalizzati (no duplicati OCR).
 
 begin;
 
@@ -21,7 +21,7 @@ insert into competition_groups (id, competition_id, season_id, province_id, code
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', '88a0ed0d-f435-49c1-8feb-a5f2f3790d08', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', (select id from provinces where code = 'RM'), 'B', 'Girone B')
 on conflict (id) do nothing;
 
--- Club (33 società distinte)
+-- Club (32 società distinte)
 insert into clubs (id, canonical_name, province_id, city) values
   ('56ff8ca9-d0c7-4438-8d99-146982d86843', 'Atletico 2000', (select id from provinces where code = 'RM'), null),
   ('4f413e37-91a5-4d4a-89b9-2959da47308d', 'Atletico Torrenova 1986', (select id from provinces where code = 'RM'), null),
@@ -37,7 +37,6 @@ insert into clubs (id, canonical_name, province_id, city) values
   ('8fb12c02-6ec0-411e-872a-ab8022b1b0ed', 'L.V.P.A. Frascati', (select id from provinces where code = 'RM'), null),
   ('b768304d-506c-4636-8335-d6702566c482', 'Lodigiani Calcio 1972', (select id from provinces where code = 'RM'), null),
   ('84bc76e3-0651-4252-8d88-365dd2c9a3f8', 'Longarina Tss 1944', (select id from provinces where code = 'RM'), null),
-  ('f4c813ae-c107-437b-8b7e-f036aad3505d', 'M. Prenestini Cavese1919', (select id from provinces where code = 'RM'), null),
   ('ed664dd0-79ff-4699-8526-8ff1fa9f6325', 'Montello Calcio', (select id from provinces where code = 'RM'), null),
   ('feef20cc-8fe7-4760-8448-467a19f18282', 'Monti Prenestini 1919', (select id from provinces where code = 'RM'), null),
   ('87420cf1-f86e-4157-86e2-22cbf5417ed0', 'Nuova Tor Tre Teste', (select id from provinces where code = 'RM'), null),
@@ -83,7 +82,6 @@ insert into teams (id, club_id, name, category) values
   ('f76f1caa-4b44-411a-8a61-8e804834af03', '41dbef08-78eb-4d3a-8871-e0dc09e80a44', 'Grifone Gialloverde U19 Elite', 'U19'),
   ('7bd4f890-0465-4fd6-813d-4a5ee75eff31', '8fb12c02-6ec0-411e-872a-ab8022b1b0ed', 'L.V.P.A. Frascati U19 Elite', 'U19'),
   ('46689017-ab39-4a07-8300-27849ff9a2b3', 'b768304d-506c-4636-8335-d6702566c482', 'Lodigiani Calcio 1972 U19 Elite', 'U19'),
-  ('f036351e-cc48-4bbe-886b-1bf0d535199d', 'f4c813ae-c107-437b-8b7e-f036aad3505d', 'M. Prenestini Cavese1919 U19 Elite', 'U19'),
   ('b4ac5ea0-3c30-4f83-8dc6-ed48ba2918b6', 'ed664dd0-79ff-4699-8526-8ff1fa9f6325', 'Montello Calcio U19 Elite', 'U19'),
   ('9a5541ea-5c0e-4835-81d6-54d2f59d295a', 'feef20cc-8fe7-4760-8448-467a19f18282', 'Monti Prenestini 1919 U19 Elite', 'U19'),
   ('44f536b5-2fc4-4983-85e4-cfa87df53aec', '87420cf1-f86e-4157-86e2-22cbf5417ed0', 'Nuova Tor Tre Teste U19 Elite', 'U19'),
@@ -120,7 +118,6 @@ insert into group_teams (group_id, team_id) values
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'f76f1caa-4b44-411a-8a61-8e804834af03'),
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', '7bd4f890-0465-4fd6-813d-4a5ee75eff31'),
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', '46689017-ab39-4a07-8300-27849ff9a2b3'),
-  ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'f036351e-cc48-4bbe-886b-1bf0d535199d'),
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'b4ac5ea0-3c30-4f83-8dc6-ed48ba2918b6'),
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', '9a5541ea-5c0e-4835-81d6-54d2f59d295a'),
   ('8ce7f4de-e21a-46a8-8624-1159da20a4c7', '44f536b5-2fc4-4983-85e4-cfa87df53aec'),
@@ -221,10 +218,10 @@ insert into matches (id, group_id, season_id, matchday, home_team_id, away_team_
   ('a9aae9b4-1360-4a6e-8b4d-d78c557663ef', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 5, '46689017-ab39-4a07-8300-27849ff9a2b3', '9c351450-f24f-413a-8ad8-b03694da5583', '2026-10-03 14:30:00+02', 'scheduled', null, null),
   ('4f6dd637-5bb9-4066-84fa-642153db362b', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 5, 'b4ac5ea0-3c30-4f83-8dc6-ed48ba2918b6', 'f6e4a8fb-4f74-47e3-8f41-2e7739bb4fe4', '2026-10-03 15:00:00+02', 'scheduled', null, null),
   ('b71e8608-5dc9-4181-8b04-c30b58523c42', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 5, 'fd0c557b-bd57-4278-8ab1-65b73666792a', '7bd4f890-0465-4fd6-813d-4a5ee75eff31', '2026-10-03 14:30:00+02', 'scheduled', null, null),
-  ('1c6fc0c1-59c5-4efd-8008-24b5560f3aaa', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 5, 'b1c525ec-ab7f-4ee9-8f6c-cfe03e58c419', 'f036351e-cc48-4bbe-886b-1bf0d535199d', '2026-10-03 15:00:00+02', 'scheduled', null, null),
+  ('5363f1be-9d40-4b75-8d0b-6e7ea50a5b96', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 5, 'b1c525ec-ab7f-4ee9-8f6c-cfe03e58c419', '9a5541ea-5c0e-4835-81d6-54d2f59d295a', '2026-10-03 15:00:00+02', 'scheduled', null, null),
   ('dc3ee3fe-8389-4165-8f10-ee9b3d5075ca', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, 'f76f1caa-4b44-411a-8a61-8e804834af03', 'b1c525ec-ab7f-4ee9-8f6c-cfe03e58c419', '2026-10-10 18:00:00+02', 'scheduled', null, null),
   ('63cac30d-6811-481b-8e42-37f1ad3af3ba', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, '7bd4f890-0465-4fd6-813d-4a5ee75eff31', 'ed379b8d-5a9b-4a97-8042-405af2101eef', '2026-10-10 14:30:00+02', 'scheduled', null, null),
-  ('75eada74-e00b-49d8-85ac-b77082840f41', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, 'f036351e-cc48-4bbe-886b-1bf0d535199d', 'b4ac5ea0-3c30-4f83-8dc6-ed48ba2918b6', '2026-10-10 14:30:00+02', 'scheduled', null, null),
+  ('fe5f6f7f-1ae9-4ead-80ba-9f98200df2b1', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, '9a5541ea-5c0e-4835-81d6-54d2f59d295a', 'b4ac5ea0-3c30-4f83-8dc6-ed48ba2918b6', '2026-10-10 14:30:00+02', 'scheduled', null, null),
   ('e0c5e78f-7e24-44da-8ecf-f168ad062069', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, '44f536b5-2fc4-4983-85e4-cfa87df53aec', '8904374c-c51e-47ba-8338-c9f7c7d008a4', '2026-10-10 14:30:00+02', 'scheduled', null, null),
   ('d593a542-896c-4fd5-808a-6afdd0590464', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, 'e876ae31-6a83-4246-84a0-4eaa8ca5f317', 'fd0c557b-bd57-4278-8ab1-65b73666792a', '2026-10-10 14:30:00+02', 'scheduled', null, null),
   ('9af0191d-e9da-4376-8d5a-845692fc0e5b', '8ce7f4de-e21a-46a8-8624-1159da20a4c7', 'a45f5ed9-90be-498a-8f0b-479bc3d57dd5', 6, 'ee7ea945-55da-4c03-870c-a7089137d28f', '46689017-ab39-4a07-8300-27849ff9a2b3', '2026-10-10 14:30:00+02', 'scheduled', null, null),

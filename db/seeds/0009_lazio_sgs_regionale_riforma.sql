@@ -18,6 +18,21 @@ delete from group_teams where group_id in (
     join seasons s on s.id = g.season_id and s.is_current
    where co.category in ('U14 Regionale','U15 Regionale','U16 Regionale','U17 Regionale'));
 
+-- Consolidamento duplicato OCR: "M. Prenestini Cavese1919" è la stessa società
+-- di "Monti Prenestini 1919" (variante generata da comunicati pre-canonical).
+-- Rimuoviamo il club duplicato e le sue squadre/iscrizioni orfane, così i
+-- re-import dei seed pre-riforma (0004) non lo lasciano nel database.
+delete from group_teams where team_id in (
+  select id from teams where club_id in (
+    select id from clubs where canonical_name = 'M. Prenestini Cavese1919'));
+delete from matches where home_team_id in (
+    select id from teams where club_id in (select id from clubs where canonical_name = 'M. Prenestini Cavese1919'))
+   or away_team_id in (
+    select id from teams where club_id in (select id from clubs where canonical_name = 'M. Prenestini Cavese1919'));
+delete from teams where club_id in (
+  select id from clubs where canonical_name = 'M. Prenestini Cavese1919');
+delete from clubs where canonical_name = 'M. Prenestini Cavese1919';
+
 -- La stagione reale diventa quella corrente; le altre non lo sono più.
 update seasons set is_current = false where is_current = true;
 
