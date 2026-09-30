@@ -55,9 +55,24 @@ async function main() {
   }
 
   const report = JSON.parse(fs.readFileSync("/tmp/loghi_match.json", "utf8"));
-  // sicuri + dubbi (i dubbi sono quasi tutti corretti; l'unico da escludere lo
-  // togliamo qui per nome esatto).
-  const ESCLUDI = new Set(["S.paolo Ostiense"]); // match dubbio non affidabile
+  // sicuri + dubbi. I dubbi sono per lo più corretti (varianti del nome), ma
+  // alcuni accoppiano società diverse (città diverse, o match su un generico
+  // "Atletico"): li escludiamo per nome esatto. Meglio nessun logo che uno errato.
+  const ESCLUDI = new Set([
+    "S.paolo Ostiense",       // ≠ Ostiense Calcio
+    "Alb Rieti A.LAZIO",      // Albalonga Rieti, NON la Lazio
+    "Lazio S.p.a.",           // match generico su "Lazio"
+    "Atina",                  // ≠ Latina Calcio 1932 (città diverse)
+    "Cassino Calcio",         // ≠ Real Cassino (società diverse)
+    "Atletico Acilia",        // match generico su "Atletico"
+    "Atletico Ardea",         // match generico su "Atletico"
+    "Atletico Casalotti",     // match generico su "Atletico"
+    "POL. Atletico Diritti",  // match generico su "Atletico"
+    "Sporting Aniene",        // ≠ Aniene Calcio (incerto)
+    "N.OSTIENSE",             // Nuova Ostiense vs Ostiense Calcio (incerto)
+    "Bravetta",               // ≠ Forte Bravetta (incerto)
+    "Terracina",              // ≠ Anxur Terracina (incerto)
+  ]);
   let items = [...report.dettaglio.sicuri, ...report.dettaglio.dubbi].filter(
     (x) => x.logo_path && !ESCLUDI.has(x.club),
   );
