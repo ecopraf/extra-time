@@ -72,6 +72,7 @@ export default async function CampionatiPage({
           regionName: g.regionName ?? "",
           category: g.category,
           competitionName: g.competitionName,
+          level: g.level ?? "",
           groupCode: g.groupCode ?? "a",
           groupName: g.groupName,
         }))}

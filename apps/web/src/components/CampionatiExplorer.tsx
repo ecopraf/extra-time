@@ -14,8 +14,14 @@ export interface ExplorerGroup {
   regionName: string;
   category: string;
   competitionName: string;
+  level: string;
   groupCode: string;
   groupName: string;
+}
+
+/** Settore di appartenenza del campionato, per raggruppare il dropdown. */
+function sectorOf(level: string): "dilettanti" | "giovanili" {
+  return level.toLowerCase().includes("dilettant") ? "dilettanti" : "giovanili";
 }
 
 /** Ordina i campionati: eta' decrescente (U19->U14), poi livello federale
@@ -87,11 +93,20 @@ export function CampionatiExplorer({
     (g) => g.regionCode.toLowerCase() === currentRegion,
   );
 
-  // Campionati della regione corrente, ordinati U19 -> U14 (poi per livello).
+  // Campionati della regione corrente, ordinati U19 -> U14 (poi per livello),
+  // con il settore (giovanili/dilettanti) per raggrupparli nel dropdown.
   const competitions = uniq(
-    inRegion.map((g) => ({ slug: slugify(g.category), name: g.competitionName, category: g.category })),
+    inRegion.map((g) => ({
+      slug: slugify(g.category),
+      name: g.competitionName,
+      category: g.category,
+      sector: sectorOf(g.level),
+    })),
     (c) => c.slug,
   ).sort((a, b) => categoryRank(a.category) - categoryRank(b.category));
+
+  const giovanili = competitions.filter((c) => c.sector === "giovanili");
+  const dilettanti = competitions.filter((c) => c.sector === "dilettanti");
 
   // Gironi del campionato corrente.
   const gironi = uniq(
@@ -149,11 +164,24 @@ export function CampionatiExplorer({
           value={currentComp}
           onChange={(e) => goComp(e.target.value)}
         >
-          {competitions.map((c) => (
-            <option key={c.slug} value={c.slug}>
-              {c.name}
-            </option>
-          ))}
+          {giovanili.length > 0 && (
+            <optgroup label="Giovanili">
+              {giovanili.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {dilettanti.length > 0 && (
+            <optgroup label="Dilettanti">
+              {dilettanti.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
       </div>
       <div className="portal-select">

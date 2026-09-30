@@ -585,6 +585,7 @@ export interface PortalGroupRow {
   groupName: string;
   competitionName: string;
   category: string;
+  level: string | null;
   provinceCode: string | null;
   provinceName: string | null;
   regionCode: string | null;
@@ -595,7 +596,7 @@ export interface PortalGroupRow {
 export async function listGroupsForPortal(): Promise<PortalGroupRow[]> {
   const { rows } = await getPool().query<PortalGroupRow>(
     `select g.id as "groupId", g.code as "groupCode", g.name as "groupName",
-            c.name as "competitionName", c.category,
+            c.name as "competitionName", c.category, c.level,
             p.code as "provinceCode", p.name as "provinceName",
             r.code as "regionCode", r.name as "regionName"
        from competition_groups g
