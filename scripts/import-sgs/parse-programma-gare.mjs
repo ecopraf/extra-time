@@ -23,7 +23,19 @@ const YFM_BACKEND =
 const pdfParse = require(`${YFM_BACKEND}/node_modules/pdf-parse`);
 
 // ── Classificazione categoria dal titolo "CAMPIONATO ..." ────────────────────
-/** Ritorna la category EXTRA TIME (come nel DB) dal titolo del campionato. */
+/**
+ * Ritorna la category EXTRA TIME (come nel DB) dal titolo del campionato.
+ *
+ * NOTA sul settore/fonte: i comunicati LND sono divisi per AREA (SGS, Dilettanti,
+ * Provinciali, Calcio a 5). La regola pratica:
+ *   - SGS         → sempre giovanili (U14-U17, "Regionale" o "Eccellenza"=Elite)
+ *   - Dilettanti  → senior (Eccellenza/Promozione/Prima/Seconda) MA ANCHE i
+ *                   Juniores U19/U18 (giovanili) che LND pubblica sotto Dilettanti
+ *   - Provinciali → Terza Categoria (senior) e alcune categorie provinciali
+ *   - Calcio a 5  → IGNORATA (non importata)
+ * Per questo la classificazione NON è un mapping area→settore, ma avviene sul
+ * NOME del campionato. Attenzione: nel giovanile "Eccellenza" = livello Elite.
+ */
 function classifyCategoria(raw) {
   const c = raw.toUpperCase().replace(/\s+/g, " ").trim();
   // Dilettanti prime squadre

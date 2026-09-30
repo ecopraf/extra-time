@@ -1771,6 +1771,17 @@ table td.actions {
   cursor: not-allowed;
 }
 
+/* Pills Settore (Giovanili/Dilettanti) sopra i dropdown: compatte, non a
+   piena larghezza, con un po' di respiro dai selettori sottostanti. */
+.portal-sector-pills {
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.portal-sector-pills .portal-pill {
+  flex: 0 0 auto;
+  padding: 8px 18px;
+}
+
 .portal-round-nav {
   display: flex;
   align-items: center;

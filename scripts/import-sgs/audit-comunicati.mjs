@@ -72,6 +72,13 @@ async function main() {
       }
       // Prime righe = oggetto/titolo del comunicato.
       const head = text.slice(0, 600).replace(/\s+/g, " ").trim();
+      // Guardia: NON trattiamo il calcio a 5 (ha campionati e categorie proprie).
+      // I TARGETS sono già solo SGS/Dilettanti calcio a 11, ma un comunicato
+      // misto potrebbe citarlo: se l'intestazione è di calcio a 5, saltiamo.
+      if (/calcio a 5|calcio a cinque|futsal|serie c1|serie c2/i.test(head)) {
+        console.error(`  CU${n}: saltato (calcio a 5)`);
+        continue;
+      }
       const touchesCal = CAL_RE.test(text);
       if (!touchesCal) continue;
       // Categorie citate (uniche, prime 8).

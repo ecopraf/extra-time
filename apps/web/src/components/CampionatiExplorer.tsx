@@ -108,6 +108,23 @@ export function CampionatiExplorer({
   const giovanili = competitions.filter((c) => c.sector === "giovanili");
   const dilettanti = competitions.filter((c) => c.sector === "dilettanti");
 
+  // Settore attivo: quello del campionato correntemente selezionato.
+  const currentCompObj = competitions.find((c) => c.slug === currentComp);
+  const currentSector: "giovanili" | "dilettanti" =
+    currentCompObj?.sector ?? (giovanili.length > 0 ? "giovanili" : "dilettanti");
+
+  // Il dropdown Campionato mostra solo i campionati del settore attivo: le pills
+  // fanno da primo livello di scelta, così la lista resta corta.
+  const compsInSector = currentSector === "giovanili" ? giovanili : dilettanti;
+
+  // Settori realmente presenti (per non mostrare una pill vuota).
+  const sectors = (
+    [
+      { id: "giovanili", label: "Giovanili", count: giovanili.length },
+      { id: "dilettanti", label: "Dilettanti", count: dilettanti.length },
+    ] as const
+  ).filter((s) => s.count > 0);
+
   // Gironi del campionato corrente.
   const gironi = uniq(
     inRegion
@@ -141,62 +158,80 @@ export function CampionatiExplorer({
 
   const goGirone = (girone: string) => nav(currentRegion, currentComp, girone);
 
+  // Cambio settore: vai al primo campionato di quel settore (e suo primo girone).
+  const goSector = (sector: "giovanili" | "dilettanti") => {
+    if (sector === currentSector) return;
+    const list = sector === "giovanili" ? giovanili : dilettanti;
+    const comp = list[0]?.slug ?? currentComp;
+    const firstGirone =
+      inRegion
+        .filter((g) => slugify(g.category) === comp)
+        .map((g) => g.groupCode.toLowerCase())
+        .sort()[0] ?? "a";
+    nav(currentRegion, comp, firstGirone);
+  };
+
   return (
-    <div className="portal-selrow">
-      <div className="portal-select">
-        <label htmlFor="c-region">Regione</label>
-        <select
-          id="c-region"
-          value={currentRegion}
-          onChange={(e) => goRegion(e.target.value)}
-        >
-          {regions.map((r) => (
-            <option key={r.code} value={r.code}>
-              {r.name}
-            </option>
+    <div className="portal-explorer">
+      {sectors.length > 1 && (
+        <div className="portal-pill-row portal-sector-pills" role="tablist" aria-label="Settore">
+          {sectors.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              role="tab"
+              aria-selected={currentSector === s.id}
+              className={`portal-pill ${currentSector === s.id ? "active" : ""}`}
+              onClick={() => goSector(s.id)}
+            >
+              {s.label}
+            </button>
           ))}
-        </select>
-      </div>
-      <div className="portal-select">
-        <label htmlFor="c-comp">Campionato</label>
-        <select
-          id="c-comp"
-          value={currentComp}
-          onChange={(e) => goComp(e.target.value)}
-        >
-          {giovanili.length > 0 && (
-            <optgroup label="Giovanili">
-              {giovanili.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </optgroup>
-          )}
-          {dilettanti.length > 0 && (
-            <optgroup label="Dilettanti">
-              {dilettanti.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </optgroup>
-          )}
-        </select>
-      </div>
-      <div className="portal-select">
-        <label htmlFor="c-girone">Girone</label>
-        <select
-          id="c-girone"
-          value={currentGirone}
-          onChange={(e) => goGirone(e.target.value)}
-        >
-          {gironi.map((g) => (
-            <option key={g.code} value={g.code}>
-              {g.name}
-            </option>
-          ))}
-        </select>
+        </div>
+      )}
+      <div className="portal-selrow">
+        <div className="portal-select">
+          <label htmlFor="c-region">Regione</label>
+          <select
+            id="c-region"
+            value={currentRegion}
+            onChange={(e) => goRegion(e.target.value)}
+          >
+            {regions.map((r) => (
+              <option key={r.code} value={r.code}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="portal-select">
+          <label htmlFor="c-comp">Campionato</label>
+          <select
+            id="c-comp"
+            value={currentComp}
+            onChange={(e) => goComp(e.target.value)}
+          >
+            {compsInSector.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="portal-select">
+          <label htmlFor="c-girone">Girone</label>
+          <select
+            id="c-girone"
+            value={currentGirone}
+            onChange={(e) => goGirone(e.target.value)}
+          >
+            {gironi.map((g) => (
+              <option key={g.code} value={g.code}>
+                {g.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );
