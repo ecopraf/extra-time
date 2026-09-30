@@ -12,6 +12,7 @@
   "dependencies": {
     "@extra-time/database": "workspace:*",
     "@extra-time/football-domain": "workspace:*",
+    "@extra-time/ingest": "workspace:*",
     "@extra-time/types": "workspace:*",
     "@extra-time/ui": "workspace:*",
     "next": "^15.1.3",
