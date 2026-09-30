@@ -95,6 +95,7 @@ const OCR_FIX = {
   RMONTEROTONDO: "Real Monterotondo", // "R. MONTEROTONDO" abbreviato
   NDEROSSI: "Polisportiva De Rossi", // "N.DE ROSSI"
   POLISPDEROSSI: "Polisportiva De Rossi", // "POLISP. DE ROSSI"
+  POLDEROSSI: "Polisportiva De Rossi", // "POL.DE ROSSI" (trattino attaccato)
 };
 
 function applyOcrFix(name) {
@@ -173,7 +174,10 @@ function parseEccellenza(text, catFilter) {
       const t = line.trim();
       if (!t || /GIORNATA|CAMPIONATO|GIRONE|LAZIO|CALENDAR/i.test(t)) continue;
       if (/\d{2}\.\d{2}\.\d{2}/.test(t)) continue; // riga di date
-      const mm = t.match(/^(.+?)\s+-\s+(.+?)$/);
+      // Il separatore è " - ", ma l'OCR a volte attacca il trattino a un lato
+      // (es. "POL.DE ROSSI- PIANOSCARANO" o "X -Y"). Accettiamo il trattino con
+      // ALMENO uno spazio adiacente; i trattini interni ai nomi non hanno spazi.
+      const mm = t.match(/^(.+?)\s+-\s*(.+)$/) || t.match(/^(.+?)\s*-\s+(.+)$/);
       if (!mm) continue;
       const home = applyOcrFix(normalizeTeamName(mm[1]));
       const away = applyOcrFix(normalizeTeamName(mm[2]));
