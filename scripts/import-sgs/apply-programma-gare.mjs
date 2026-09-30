@@ -1,3 +1,9 @@
+// NOTA: la stessa logica esiste, portata in TypeScript, nel package
+// @extra-time/ingest (packages/ingest/src/apply-programma-gare.ts), usato dal
+// web per l'import di un singolo comunicato dall'Hub Impostazioni. Questo .mjs
+// resta la versione CLI/batch (GitHub Action). Se cambi il matching qui,
+// allinea anche il package (e viceversa): la parità è verificata su CU63.
+
 /**
  * Applica gli orari/date reali dei "programma gare" alle partite già presenti
  * nel Core (Neon). NON crea partite: aggiorna kickoff_at (data+ora) e venue

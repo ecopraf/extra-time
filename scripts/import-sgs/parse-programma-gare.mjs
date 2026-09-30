@@ -1,3 +1,9 @@
+// NOTA: la stessa logica esiste, portata in TypeScript, nel package
+// @extra-time/ingest (packages/ingest/src/parse-programma-gare.ts), usato dal
+// web per l'import di un singolo comunicato dall'Hub Impostazioni. Questo .mjs
+// resta la versione CLI/batch (GitHub Action). Se cambi il parsing qui,
+// allinea anche il package (e viceversa): la parità è verificata su CU63.
+
 /**
  * Parser dei comunicati "PROGRAMMA GARE" LND Lazio (SGS + Dilettanti).
  *
