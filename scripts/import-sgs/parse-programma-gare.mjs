@@ -31,20 +31,27 @@ function classifyCategoria(raw) {
   if (/\bPROMOZIONE\b/.test(c) && !/UNDER/.test(c)) return "Promozione";
   if (/PRIMA CATEGORIA/.test(c)) return "Prima Categoria";
   if (/SECONDA CATEGORIA/.test(c)) return "Seconda Categoria";
-  // Giovanili: mappiamo su "<Code> <Livello>" come nel seed SGS.
   const under = c.match(/UNDER\s*(\d{2})/);
   const isElite = /ELITE/.test(c);
   const isReg = /REGIONAL/.test(c);
+
+  // U19 è un caso speciale: LND lo divide in "Regionale A" (2 gironi, che noi
+  // chiamiamo U19 Elite) e "Regionale B" (6 gironi = U19 Regionale). Nei
+  // programma gare la sezione A appare come "JUNIORES UNDER 19" nuda.
+  if ((under && under[1] === "19") || /JUNIORES/.test(c)) {
+    if (/REGIONALE\s*B|UNDER\s*19\s*B|\b19\s*B\b/.test(c)) return "U19 Regionale";
+    if (/REGIONALE\s*A|UNDER\s*19\s*A|\b19\s*A\b/.test(c)) return "U19 Elite";
+    return "U19 Elite"; // "JUNIORES UNDER 19" nudo = girone A/Elite
+  }
+
+  // Altri giovanili: "<Code> <Livello>" come nel seed SGS.
   if (under) {
     const code = `U${under[1]}`;
     if (isElite) return `${code} Elite`;
     if (isReg) return `${code} Regionale`;
-    // Under 19/18 senza qualifica esplicita → Regionale/Elite dedotto
-    if (under[1] === "19") return "U19 Regionale";
     if (under[1] === "18") return "U18 Elite";
     return `${code} Regionale`;
   }
-  if (/JUNIORES.*UNDER\s*19/.test(c) || /UNDER\s*19/.test(c)) return "U19 Regionale";
   if (/ALLIEVI/.test(c)) return "U17 Regionale";
   if (/GIOVANISSIMI/.test(c)) return "U15 Regionale";
   return null;
@@ -75,9 +82,11 @@ function normalizeTeamName(name) {
 }
 
 function toIso(dmy) {
-  const m = dmy.match(/(\d{2})\/(\d{2})\/(\d{2})/);
+  const m = dmy.match(/(\d{1,2})\/(\d{1,2})\/(\d{2})/);
   if (!m) return null;
-  return `20${m[3]}-${m[2]}-${m[1]}`;
+  const dd = m[1].padStart(2, "0");
+  const mm = m[2].padStart(2, "0");
+  return `20${m[3]}-${mm}-${dd}`;
 }
 
 /** Estrae le partite da una sezione di programma gare. */
@@ -115,8 +124,8 @@ function parsePdfText(text) {
       continue;
     }
 
-    // Riga partita: " N)  CASA...OSPITE...  dd/mm/yy  hh:mm"
-    const mM = line.match(/^\s*\d+\)\s+(.+?)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d{1,2}:\d{2})\s*$/);
+    // Riga partita: " N)  CASA...OSPITE...  d/mm/yy  hh:mm" (giorno 1-2 cifre)
+    const mM = line.match(/^\s*\d+\)\s+(.+?)\s+(\d{1,2}\/\d{1,2}\/\d{2})\s+(\d{1,2}:\d{2})\s*$/);
     if (mM && categoria && girone && giornata) {
       const dataIso = toIso(mM[2]);
       const ora = mM[3].padStart(5, "0");
