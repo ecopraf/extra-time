@@ -208,7 +208,7 @@ update matches set kickoff_at = '2026-10-04 10:30:00+02', venue = 'FONTE PARK' w
 update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'FIORINI GUGLIELMO "A" (SINTEX)' where id = '4bfd84e7-9011-445a-827b-673680530f4c';
 update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'DON CALABRIA B' where id = '0e55899e-c9c9-40d0-893a-72672d809b61';
 update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'OSTIENSE "A"' where id = '9657b39f-80c6-4c18-8357-10b032ce8198';
-update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'DI MARCO IVO' where id = 'fa299436-3851-464f-8d94-9f6f099efc42';
+update matches set kickoff_at = '2026-10-04 16:30:00+02', venue = 'DI MARCO IVO' where id = 'fa299436-3851-464f-8d94-9f6f099efc42';
 update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'MELLI MAURIZIO "A"' where id = '48dbc840-b98f-41f1-8acc-2c141b653f64';
 update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'SAN TARCISIO' where id = 'd1a45e69-97dd-4b0d-814d-6f5b76d61824';
 update matches set kickoff_at = '2026-10-04 11:00:00+02', venue = 'CHIAPPITTO' where id = '5334eb16-747a-4b89-89e8-683137e5f95a';
@@ -350,7 +350,7 @@ update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'PIERANGELI OT
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'FD 18 GREEN PARK (SINTEX)' where id = '7a5fe1bd-1740-4685-85fb-4358d9dfb811';
 update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'CECCONI FAUSTO SINTEX' where id = '95e50f10-091b-4ed2-81b5-b23e13466c29';
 update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'RIANO ATHLETIC CENTER' where id = 'e52fb875-ce54-4084-8284-5ca5e4454050';
-update matches set kickoff_at = '2026-10-11 10:30:00+02', venue = 'CASTELLO GIOVANNI' where id = 'ded95291-0f6f-4d7a-8b6f-1329c7d07371';
+update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'CASTELLO GIOVANNI' where id = 'ded95291-0f6f-4d7a-8b6f-1329c7d07371';
 update matches set kickoff_at = '2026-10-11 09:15:00+02', venue = 'DABLIU'' "A"(EX MASSIMO) SINTEX' where id = '6c7cdaf3-0786-4a36-8b48-0d02e55e4e92';
 update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'STADIUM 1' where id = 'c8f092c4-b9ac-41b5-87e7-6c07a9dae4f6';
 update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'SAN PAOLO OSTIENSE (SINTEX)' where id = 'cd4d2789-b860-43b5-8def-d016f111770f';
@@ -544,7 +544,9 @@ update matches set kickoff_at = '2026-09-12 14:30:00+02', venue = 'NUOVA RUSTICA
 update matches set kickoff_at = '2026-09-12 15:00:00+02', venue = 'LE FONTANELLE' where id = 'f4a5632b-1047-4b1d-85c9-46caef2a3412';
 update matches set kickoff_at = '2026-10-10 15:00:00+02', venue = 'DI IANNE LUCA' where id = '759b91af-8964-4484-8dd2-143c94c43587';
 update matches set kickoff_at = '2026-10-10 16:30:00+02', venue = 'W3 STADIUM EX E.DARRA' where id = 'c002a177-9b1f-4f4e-8b7e-f306c2825609';
-update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'GELSOMINO "A"' where id = 'cea39fac-dc69-4bb6-8c99-6cb3c673feab';
+update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'DON CALABRIA B' where id = 'f3c74940-0534-4f99-87d7-315372e4e226';
+update matches set kickoff_at = '2026-10-04 09:00:00+02', venue = 'CECCACCI MARIO' where id = 'd3cbb5be-b79a-440d-86ad-b485f104b508';
+update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'TESTA VITTORIO E PAOLO SINTEX' where id = '05f873ba-3dfd-4ef2-807c-129f8e13f139';
 update matches set kickoff_at = '2026-10-11 11:00:00+02', venue = 'TAMAGNINI VITTORIO (SINTEX)' where id = '402f6c16-87e9-4fdf-8c4c-3050639e1a46';
 update matches set kickoff_at = '2026-10-11 11:15:00+02', venue = 'STADIUM 1' where id = '7c7aaf7c-54ed-4331-8a49-d1cc8ef15119';
 update matches set kickoff_at = '2026-10-11 09:00:00+02', venue = 'DA DEFINIRE' where id = '71ccce48-e10f-4db9-80b2-1a04601b1850';

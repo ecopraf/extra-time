@@ -77,6 +77,21 @@ async function main() {
     "U18 Regionale": ["U18 Elite"],
     "U19 Elite": ["U19 Regionale"],
   };
+
+  // Rietichettatura gironi: alcuni comunicati di riformulazione (CU31/32) usano
+  // per l'U15 Regionale lettere di girone diverse dal calendario base (CU17):
+  // il loro "girone A" = girone C del Core, "B" = F. Mappa verificata per
+  // intersezione squadre (12/14 comuni, univoca). Chiave: "categoria|src|gironePG".
+  const GIRONE_REMAP = {
+    "U15 Regionale|Regionali_SGS_31.pdf|A": "C",
+    "U15 Regionale|Regionali_SGS_31.pdf|B": "F",
+    "U15 Regionale|Regionali_SGS_32.pdf|A": "C",
+    "U15 Regionale|Regionali_SGS_32.pdf|B": "F",
+  };
+  const remapGirone = (gara) => {
+    const k = `${gara.categoria}|${gara._src}|${(gara.girone || "").toUpperCase()}`;
+    return GIRONE_REMAP[k] ?? gara.girone;
+  };
   const resolveGroup = (categoria, girone) => {
     const g = (girone || "").toUpperCase();
     const direct = groupIdByKey.get(`${categoria}|${g}`);
@@ -91,7 +106,7 @@ async function main() {
   // Precarico squadre e partite per girone (solo quelli citati).
   const neededGroupIds = new Set();
   for (const gara of gare) {
-    const gid = resolveGroup(gara.categoria, gara.girone);
+    const gid = resolveGroup(gara.categoria, remapGirone(gara));
     if (gid) neededGroupIds.add(gid);
   }
   const teamsByGroup = new Map();
@@ -118,7 +133,7 @@ async function main() {
   const esc = (s) => (s == null ? null : String(s).replace(/'/g, "''"));
 
   for (const gara of gare) {
-    const gid = resolveGroup(gara.categoria, gara.girone);
+    const gid = resolveGroup(gara.categoria, remapGirone(gara));
     if (!gid) { notFoundGroup++; continue; }
     const matches = matchesByGroup.get(gid) || [];
     // candidati: stessa giornata e squadre che combaciano (casa/ospite)
