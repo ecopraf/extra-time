@@ -11,10 +11,16 @@ export async function fetchPdfText(url: string): Promise<string> {
   });
   if (!res.ok) throw new Error(`Download PDF fallito: HTTP ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
-  // import dinamico: pdf-parse ha un side-effect su require.main che va evitato
-  // caricandolo solo quando serve.
-  const mod = await import("pdf-parse");
-  const pdfParse = (mod.default ?? mod) as (b: Buffer) => Promise<{ text: string }>;
+  // NB: importiamo la lib interna (pdf-parse/lib/pdf-parse.js) e NON l'index:
+  // l'index di pdf-parse@1.1.1 esegue un blocco "debug" quando !module.parent
+  // (vero sotto ESM/bundler) che prova a leggere un PDF di test dal disco
+  // ("./test/data/05-versions-space.pdf") e fa fallire l'import. La lib interna
+  // è il parser vero e proprio, senza quel side-effect.
+  type PdfParseFn = (b: Buffer) => Promise<{ text: string }>;
+  const mod = (await import("pdf-parse/lib/pdf-parse.js")) as unknown as {
+    default?: PdfParseFn;
+  } & PdfParseFn;
+  const pdfParse: PdfParseFn = mod.default ?? mod;
   const data = await pdfParse(buf);
   return data.text;
 }

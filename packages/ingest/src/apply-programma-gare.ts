@@ -8,7 +8,7 @@
  *
  * Porting da scripts/import-sgs/apply-programma-gare.mjs.
  */
-import type { Gara } from "./parse-programma-gare.js";
+import type { Gara } from "./parse-programma-gare";
 
 /** Minima interfaccia compatibile con pg Pool/Client. */
 export interface Queryable {
