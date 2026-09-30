@@ -578,6 +578,83 @@ export async function listOpenMatchesCurrentSeason(): Promise<AdminMatchRow[]> {
   }));
 }
 
+// --- Backoffice contestuale al girone -------------------------------------
+
+export interface GroupTeamOption {
+  id: string;
+  name: string;
+  clubName: string;
+}
+
+/** Squadre iscritte a un girone (per select casa/ospite del backoffice). */
+export async function listTeamsByGroup(groupId: string): Promise<GroupTeamOption[]> {
+  const { rows } = await getPool().query<GroupTeamOption>(
+    `select t.id, t.name, cl.canonical_name as "clubName"
+       from group_teams gt
+       join teams t on t.id = gt.team_id
+       join clubs cl on cl.id = t.club_id
+      where gt.group_id = $1
+      order by cl.canonical_name`,
+    [groupId],
+  );
+  return rows;
+}
+
+export interface AdminGroupMatchRow {
+  id: string;
+  matchday: number | null;
+  kickoffAt: string | null;
+  status: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  homeName: string;
+  awayName: string;
+  homeLogo: string | null;
+  awayLogo: string | null;
+}
+
+/** Tutte le partite di un girone (per gestione risultati per giornata), con loghi. */
+export async function listMatchesByGroupAdmin(groupId: string): Promise<AdminGroupMatchRow[]> {
+  const { rows } = await getPool().query<
+    Omit<AdminGroupMatchRow, "kickoffAt"> & { kickoffAt: Date | null }
+  >(
+    `select m.id, m.matchday, m.kickoff_at as "kickoffAt", m.status,
+            m.home_score as "homeScore", m.away_score as "awayScore",
+            ch.canonical_name as "homeName", ca.canonical_name as "awayName",
+            mh.url as "homeLogo", maw.url as "awayLogo"
+       from matches m
+       join teams th on th.id = m.home_team_id join clubs ch on ch.id = th.club_id
+       join teams ta on ta.id = m.away_team_id join clubs ca on ca.id = ta.club_id
+       left join media mh on mh.id = ch.logo_media_id
+       left join media maw on maw.id = ca.logo_media_id
+      where m.group_id = $1
+      order by m.matchday nulls last, m.kickoff_at nulls last`,
+    [groupId],
+  );
+  return rows.map((r) => ({ ...r, kickoffAt: r.kickoffAt ? r.kickoffAt.toISOString() : null }));
+}
+
+/** Elenco club (id + nome) per datalist/anagrafica. */
+export async function listClubsBasic(): Promise<TeamOption[]> {
+  const { rows } = await getPool().query<TeamOption>(
+    `select id, canonical_name as name from clubs order by canonical_name`,
+  );
+  return rows;
+}
+
+/** Ricerca club per nome (per iscrizione squadra / anagrafica). */
+export async function searchClubs(query: string, limit = 20): Promise<TeamOption[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const { rows } = await getPool().query<TeamOption>(
+    `select id, canonical_name as name from clubs
+      where canonical_name ilike $1
+      order by canonical_name limit $2`,
+    [`%${q}%`, limit],
+  );
+  return rows;
+}
+
 
 export interface PortalGroupRow {
   groupId: string;

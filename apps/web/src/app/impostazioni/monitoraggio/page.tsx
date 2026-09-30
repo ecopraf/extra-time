@@ -26,7 +26,7 @@ export default async function MonitoraggioPage() {
           <h1>Monitoraggio calendari</h1>
           <p className="lead">Comunicati ufficiali LND Lazio che toccano i calendari. Sola lettura.</p>
         </div>
-        <Link href="/impostazioni" className="settings-logout">← Impostazioni</Link>
+        <Link href="/impostazioni" className="settings-back">← Torna alle Impostazioni</Link>
       </section>
 
       {!mon.ok ? (
@@ -47,12 +47,21 @@ export default async function MonitoraggioPage() {
               <p className="empty">Nessun comunicato rilevante al momento.</p>
             ) : (
               <table className="portal-table monitor-table">
+                <colgroup>
+                  <col className="c-stato" />
+                  <col className="c-cu" />
+                  <col className="c-area" />
+                  <col />
+                  <col className="c-tipo" />
+                  <col className="c-data" />
+                  <col className="c-pdf" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>Stato</th>
                     <th>C.U.</th>
                     <th>Area / Tipo</th>
-                    <th className="team">Titolo</th>
+                    <th>Titolo</th>
                     <th>Aggiornamento</th>
                     <th>Data</th>
                     <th>PDF</th>
@@ -69,11 +78,11 @@ export default async function MonitoraggioPage() {
                         )}
                       </td>
                       <td className="pos">{c.numero}</td>
-                      <td>{c.area} / {c.tipo}</td>
-                      <td className="team">{c.titolo}</td>
+                      <td>{c.area}<br />{c.tipo}</td>
+                      <td className="monitor-title">{c.titolo}</td>
                       <td>{TIPO_LABEL[c.tipoAggiornamento] ?? c.tipoAggiornamento}</td>
                       <td>{c.data}</td>
-                      <td><a href={c.pdfUrl} target="_blank" rel="noopener noreferrer">apri</a></td>
+                      <td><a href={c.pdfUrl} target="_blank" rel="noopener" className="monitor-pdf">apri PDF ↗</a></td>
                     </tr>
                   ))}
                 </tbody>
