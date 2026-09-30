@@ -623,6 +623,8 @@ export interface PortalMatchRow {
   category: string;
   provinceCode: string | null;
   regionCode: string | null;
+  homeLogo: string | null;
+  awayLogo: string | null;
 }
 
 const PORTAL_MATCH_SELECT = `
@@ -630,7 +632,8 @@ const PORTAL_MATCH_SELECT = `
          m.home_score as "homeScore", m.away_score as "awayScore",
          ch.canonical_name as "homeName", ca.canonical_name as "awayName",
          g.code as "groupCode", g.name as "groupName",
-         c.category, p.code as "provinceCode", r.code as "regionCode"
+         c.category, p.code as "provinceCode", r.code as "regionCode",
+         mh.url as "homeLogo", maw.url as "awayLogo"
     from matches m
     join competition_groups g on g.id = m.group_id
     join competitions c on c.id = g.competition_id
@@ -640,7 +643,9 @@ const PORTAL_MATCH_SELECT = `
     join teams th on th.id = m.home_team_id
     join clubs ch on ch.id = th.club_id
     join teams ta on ta.id = m.away_team_id
-    join clubs ca on ca.id = ta.club_id`;
+    join clubs ca on ca.id = ta.club_id
+    left join media mh on mh.id = ch.logo_media_id
+    left join media maw on maw.id = ca.logo_media_id`;
 
 function toPortalMatches(
   rows: Array<Omit<PortalMatchRow, "kickoffAt"> & { kickoffAt: Date | null }>,
