@@ -116,9 +116,9 @@ export function GroupView({
             </div>
             {lastRound.map((m) => (
               <div key={m.id} className="portal-match">
-                <span className="home">{nameOf(m.homeTeamId)}</span>
+                <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
                 <span className="score">{m.homeScore} - {m.awayScore}</span>
-                <span className="away">{nameOf(m.awayTeamId)}</span>
+                <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
               </div>
             ))}
           </>
@@ -131,11 +131,11 @@ export function GroupView({
             </div>
             {nextRound.map((m) => (
               <div key={m.id} className="portal-match">
-                <span className="home">{nameOf(m.homeTeamId)}</span>
+                <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
                 <span className="score next">
                   {nextSameDay ? formatTimeOnly(m.kickoffAt) : formatKickoff(m.kickoffAt)}
                 </span>
-                <span className="away">{nameOf(m.awayTeamId)}</span>
+                <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
               </div>
             ))}
           </>
@@ -172,7 +172,7 @@ export function GroupView({
               </div>
               {round.map((m) => (
                 <div key={m.id} className="portal-match">
-                  <span className="home">{nameOf(m.homeTeamId)}</span>
+                  <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
                   <span className="score">
                     {m.status === "finished" && m.homeScore !== null
                       ? `${m.homeScore} - ${m.awayScore}`
@@ -180,7 +180,7 @@ export function GroupView({
                         ? formatTimeOnly(m.kickoffAt)
                         : formatKickoff(m.kickoffAt)}
                   </span>
-                  <span className="away">{nameOf(m.awayTeamId)}</span>
+                  <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
                 </div>
               ))}
             </div>
