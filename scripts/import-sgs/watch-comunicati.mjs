@@ -21,7 +21,9 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const STATE_PATH = path.join(HERE, "state.json");
 const DOWNLOAD_DIR = "/tmp/lnd";
-const LIST_URL = "https://lazio.lnd.it/comunicati/?q=calendari";
+// Nessun filtro q=: la pagina lista tutti i comunicati recenti (SGS, Dilettanti,
+// Provinciali/Terza Categoria). Il filtro di rilevanza lo applica isRelevant().
+const LIST_URL = "https://lazio.lnd.it/comunicati/";
 const UA = "Mozilla/5.0 (EXTRA TIME calendar watcher)";
 
 const args = process.argv.slice(2);
@@ -30,8 +32,9 @@ const DRY = args.includes("--dry");
 
 /** Categorie di comunicato che ci interessano (toccano i calendari). */
 function isRelevant(c) {
-  // Aree: consideriamo SGS (giovanili) e Dilettanti. Ignoriamo Calcio a 5.
-  if (!/^(SGS|Dilettanti)$/i.test(c.tipo)) return false;
+  // Aree: SGS (giovanili), Dilettanti (Ecc/Prom/Prima/Seconda) e Provinciali
+  // (Terza Categoria). Ignoriamo Calcio a 5.
+  if (!/^(SGS|Dilettanti|Provinciali)$/i.test(c.tipo)) return false;
   // Titoli che indicano un impatto sui calendari.
   return /calendar|riformulazione|variazion|programma gare|nuovo/i.test(c.titolo);
 }
