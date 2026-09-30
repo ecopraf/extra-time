@@ -200,15 +200,17 @@ export async function getTeamNames(
 export interface GroupTeams {
   teamIds: string[];
   names: Record<string, string>;
+  logos: Record<string, string>;
 }
 
 /** Squadre iscritte al girone con i nomi, nell'ordine alfabetico. */
 export async function getGroupTeams(groupId: string): Promise<GroupTeams> {
-  const { rows } = await getPool().query<{ id: string; name: string }>(
-    `select t.id, c.canonical_name as name
+  const { rows } = await getPool().query<{ id: string; name: string; logo: string | null }>(
+    `select t.id, c.canonical_name as name, m.url as logo
        from group_teams gt
        join teams t on t.id = gt.team_id
        join clubs c on c.id = t.club_id
+       left join media m on m.id = c.logo_media_id
       where gt.group_id = $1
       order by c.canonical_name`,
     [groupId],
@@ -216,6 +218,7 @@ export async function getGroupTeams(groupId: string): Promise<GroupTeams> {
   return {
     teamIds: rows.map((r) => r.id),
     names: Object.fromEntries(rows.map((r) => [r.id, r.name])),
+    logos: Object.fromEntries(rows.filter((r) => r.logo).map((r) => [r.id, r.logo as string])),
   };
 }
 

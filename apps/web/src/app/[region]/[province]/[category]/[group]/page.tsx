@@ -86,6 +86,7 @@ export default async function GroupPage({
         matches={matches}
         teamNames={teams.names}
         teamIds={teams.teamIds}
+        logos={teams.logos}
         standings={standings}
         scorers={scorers}
       />

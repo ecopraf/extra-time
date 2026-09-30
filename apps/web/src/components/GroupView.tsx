@@ -2,6 +2,7 @@ import type { Match } from "@extra-time/types";
 import type { StandingRow } from "@extra-time/football-domain";
 import { formatKickoff, formatDateOnly, formatTimeOnly, sameDay } from "@/lib/format";
 import { GroupTabs } from "@/components/GroupTabs";
+import { TeamBadge } from "@/components/TeamBadge";
 
 /**
  * Vista di un girone: Panoramica (ultima giornata + classifica affiancate) +
@@ -22,6 +23,7 @@ export function GroupView({
   matches,
   teamNames,
   teamIds,
+  logos,
   standings,
   scorers,
 }: {
@@ -29,10 +31,12 @@ export function GroupView({
   matches: Match[];
   teamNames: Record<string, string>;
   teamIds: string[];
+  logos?: Record<string, string>;
   standings: StandingRow[];
   scorers: Scorer[];
 }) {
   const nameOf = (id: string) => teamNames[id] ?? id;
+  const logoOf = (id: string) => logos?.[id] ?? null;
 
   const nowIso = new Date().toISOString();
   const played = matches
@@ -76,7 +80,7 @@ export function GroupView({
         {standings.map((row) => (
           <tr key={row.teamId}>
             <td className="pos">{row.position}</td>
-            <td className="team">{nameOf(row.teamId)}</td>
+            <td className="team"><TeamBadge name={nameOf(row.teamId)} logo={logoOf(row.teamId)} /></td>
             <td>{row.played}</td>
             <td>{row.won}</td>
             <td>{row.drawn}</td>
