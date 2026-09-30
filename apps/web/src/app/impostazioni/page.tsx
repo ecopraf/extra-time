@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   getCurrentSeasonId,
@@ -48,6 +49,13 @@ export default async function ImpostazioniPage() {
           </form>
         </div>
       </section>
+
+      <nav className="settings-nav">
+        <Link href="/impostazioni/monitoraggio" className="settings-nav-card">
+          <span className="settings-nav-title">📡 Monitoraggio calendari</span>
+          <span className="settings-nav-desc">Comunicati LND che toccano i calendari</span>
+        </Link>
+      </nav>
 
       <div className="settings-grid">
         <section className="portal-card">
