@@ -1734,3 +1734,57 @@ table td.actions {
 .portal-match .away .team-badge {
   justify-content: flex-start;
 }
+
+/* ── Card Panoramica: pill Ultimi risultati / Prossime + nav giornata ────── */
+.portal-overview-card {
+  padding: 14px 16px;
+}
+
+.portal-pill-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.portal-pill {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.portal-pill.active {
+  background: linear-gradient(135deg, var(--navy-900), var(--blue-700));
+  color: #fff;
+  border-color: transparent;
+}
+
+.portal-pill:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.portal-round-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+
+.portal-round-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}

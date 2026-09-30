@@ -3,6 +3,7 @@ import type { StandingRow } from "@extra-time/football-domain";
 import { formatKickoff, formatDateOnly, formatTimeOnly, sameDay } from "@/lib/format";
 import { GroupTabs } from "@/components/GroupTabs";
 import { TeamBadge } from "@/components/TeamBadge";
+import { OverviewMatches, type OverviewMatch } from "@/components/OverviewMatches";
 
 /**
  * Vista di un girone: Panoramica (ultima giornata + classifica affiancate) +
@@ -95,56 +96,32 @@ export function GroupView({
     </table>
   );
 
-  const lastMd = played.length ? Math.max(...played.map((m) => m.matchday ?? 0)) : null;
-  const lastRound = lastMd !== null ? played.filter((m) => (m.matchday ?? 0) === lastMd) : [];
-  const nextMd = upcoming.length ? Math.min(...upcoming.map((m) => m.matchday ?? 999)) : null;
-  const nextRound = nextMd !== null ? upcoming.filter((m) => (m.matchday ?? 0) === nextMd) : [];
+  // Prepara i dati per la card Panoramica (pill Risultati/Prossime + frecce).
+  const toOverview = (list: Match[]): OverviewMatch[] =>
+    list.map((m) => ({
+      id: m.id,
+      matchday: m.matchday,
+      homeName: nameOf(m.homeTeamId),
+      awayName: nameOf(m.awayTeamId),
+      homeLogo: logoOf(m.homeTeamId),
+      awayLogo: logoOf(m.awayTeamId),
+      homeScore: m.homeScore,
+      awayScore: m.awayScore,
+      timeLabel: formatTimeOnly(m.kickoffAt),
+      dateLabel: formatDateOnly(m.kickoffAt),
+      sameDay: false,
+    }));
 
-  const lastSameDay = sameDay(lastRound.map((m) => m.kickoffAt));
-  const lastDate = lastRound[0] ? formatDateOnly(lastRound[0].kickoffAt) : "";
-  const nextSameDay = sameDay(nextRound.map((m) => m.kickoffAt));
-  const nextDate = nextRound[0] ? formatDateOnly(nextRound[0].kickoffAt) : "";
+  // Per semplicita' usiamo lo stesso flag sameDay per riga (il componente
+  // raggruppa per giornata; il flag e' calcolato per l'intera lista qui,
+  // ma il label data viene comunque dalla giornata mostrata).
+  const playedOv: OverviewMatch[] = toOverview(played);
+  const upcomingOv: OverviewMatch[] = toOverview(upcoming);
 
   const overview = (
     <div className="portal-overview-grid">
-      <div className="portal-card">
-        {lastRound.length > 0 && (
-          <>
-            <div className="portal-round-head">
-              Giornata {lastMd} · ultimi risultati
-              {lastSameDay ? ` · ${lastDate}` : ""}
-            </div>
-            {lastRound.map((m) => (
-              <div key={m.id} className="portal-match">
-                <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
-                <span className="score">{m.homeScore} - {m.awayScore}</span>
-                <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
-              </div>
-            ))}
-          </>
-        )}
-        {nextRound.length > 0 && (
-          <>
-            <div className="portal-round-head">
-              Giornata {nextMd} · prossime partite
-              {nextSameDay ? ` · ${nextDate}` : ""}
-            </div>
-            {nextRound.map((m) => (
-              <div key={m.id} className="portal-match">
-                <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
-                <span className="score next">
-                  {nextSameDay ? formatTimeOnly(m.kickoffAt) : formatKickoff(m.kickoffAt)}
-                </span>
-                <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
-              </div>
-            ))}
-          </>
-        )}
-        {lastRound.length === 0 && nextRound.length === 0 && (
-          <p className="empty">Nessuna partita disponibile.</p>
-        )}
-      </div>
-      <div className="portal-card">
+      <OverviewMatches played={playedOv} upcoming={upcomingOv} />
+            <div className="portal-card">
         <h3>Classifica</h3>
         {standings.length === 0 ? (
           <p className="empty">Classifica non ancora disponibile.</p>
