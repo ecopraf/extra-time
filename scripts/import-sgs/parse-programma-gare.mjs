@@ -32,13 +32,17 @@ function classifyCategoria(raw) {
   if (/PRIMA CATEGORIA/.test(c)) return "Prima Categoria";
   if (/SECONDA CATEGORIA/.test(c)) return "Seconda Categoria";
   const under = c.match(/UNDER\s*(\d{2})/);
-  const isElite = /ELITE/.test(c);
-  const isReg = /REGIONAL/.test(c);
+  // ATTENZIONE: nel settore giovanile LND il livello alto si chiama "ECCELLENZA"
+  // (spesso scritto "REG. ECCELLENZA" = Regionale Eccellenza), che nel nostro
+  // modello è "Elite". Quindi ECCELLENZA (con UNDER) ⇒ Elite, NON Regionale.
+  const isElite = /ELITE/.test(c) || /ECCELLENZA/.test(c);
+  const isReg = /REGIONAL/.test(c) && !/ECCELLENZA/.test(c);
 
   // U19 è un caso speciale: LND lo divide in "Regionale A" (2 gironi, che noi
   // chiamiamo U19 Elite) e "Regionale B" (6 gironi = U19 Regionale). Nei
   // programma gare la sezione A appare come "JUNIORES UNDER 19" nuda.
   if ((under && under[1] === "19") || /JUNIORES/.test(c)) {
+    if (/ECCELLENZA/.test(c)) return "U19 Elite";
     if (/REGIONALE\s*B|UNDER\s*19\s*B|\b19\s*B\b/.test(c)) return "U19 Regionale";
     if (/REGIONALE\s*A|UNDER\s*19\s*A|\b19\s*A\b/.test(c)) return "U19 Elite";
     return "U19 Elite"; // "JUNIORES UNDER 19" nudo = girone A/Elite
