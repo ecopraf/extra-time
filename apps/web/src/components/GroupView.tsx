@@ -142,8 +142,8 @@ export function GroupView({
           const roundSameDay = sameDay(round.map((m) => m.kickoffAt));
           const roundDate = round[0] ? formatDateOnly(round[0].kickoffAt) : "";
           return (
-            <div key={md}>
-              <div className="portal-round-head">
+            <div key={`md-${md}`} className="portal-round">
+              <div key="head" className="portal-round-head">
                 Giornata {md || "?"}
                 {roundSameDay ? ` · ${roundDate}` : ""}
               </div>

@@ -28,7 +28,27 @@ function levelRank(cat: string): number {
   if (c.includes("provincial")) return 3;
   return 4;
 }
+
+// I campionati dilettanti (prime squadre) vanno DOPO i giovanili, in ordine
+// gerarchico: Eccellenza > Promozione > Prima > Seconda > Terza Categoria.
+const DILETTANTI_ORDER = [
+  "eccellenza",
+  "promozione",
+  "prima categoria",
+  "seconda categoria",
+  "terza categoria",
+];
+function dilettantiRank(cat: string): number {
+  const i = DILETTANTI_ORDER.indexOf(cat.toLowerCase());
+  return i >= 0 ? i : DILETTANTI_ORDER.length;
+}
+
 function categoryRank(cat: string): number {
+  // I dilettanti non hanno pattern "U\d{2}": li collochiamo in una banda a parte,
+  // dopo tutti i giovanili (che occupano rank < 1000).
+  if (dilettantiRank(cat) < DILETTANTI_ORDER.length) {
+    return 1000 + dilettantiRank(cat);
+  }
   const m = cat.match(/U(\d{2})/);
   const age = m && m[1] ? parseInt(m[1], 10) : 0;
   return (99 - age) * 10 + levelRank(cat);
