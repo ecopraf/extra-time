@@ -68,11 +68,11 @@ export function GroupView({
           <th>#</th>
           <th className="team">Squadra</th>
           <th>PG</th>
-          <th>V</th>
-          <th>N</th>
-          <th>P</th>
-          <th>GF</th>
-          <th>GS</th>
+          <th className="hide-xs">V</th>
+          <th className="hide-xs">N</th>
+          <th className="hide-xs">P</th>
+          <th className="hide-xs">GF</th>
+          <th className="hide-xs">GS</th>
           <th>DR</th>
           <th>Punti</th>
         </tr>
@@ -83,11 +83,11 @@ export function GroupView({
             <td className="pos">{row.position}</td>
             <td className="team"><TeamBadge name={nameOf(row.teamId)} logo={logoOf(row.teamId)} /></td>
             <td>{row.played}</td>
-            <td>{row.won}</td>
-            <td>{row.drawn}</td>
-            <td>{row.lost}</td>
-            <td>{row.goalsFor}</td>
-            <td>{row.goalsAgainst}</td>
+            <td className="hide-xs">{row.won}</td>
+            <td className="hide-xs">{row.drawn}</td>
+            <td className="hide-xs">{row.lost}</td>
+            <td className="hide-xs">{row.goalsFor}</td>
+            <td className="hide-xs">{row.goalsAgainst}</td>
             <td>{row.goalDiff > 0 ? `+${row.goalDiff}` : row.goalDiff}</td>
             <td className="pos">{row.points}</td>
           </tr>
@@ -178,7 +178,9 @@ export function GroupView({
             .sort((a, b) => a.name.localeCompare(b.name, "it"))
             .map(({ id, name }) => (
               <li key={id}>
-                <span className="portal-team-item">{name}</span>
+                <span className="portal-team-item">
+                  <TeamBadge name={name} logo={logoOf(id)} />
+                </span>
               </li>
             ))}
         </ul>

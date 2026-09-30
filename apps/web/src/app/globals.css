@@ -1788,3 +1788,82 @@ table td.actions {
   letter-spacing: 0.4px;
   color: var(--muted);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYOUT MOBILE — regole dedicate per schermi stretti
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 720px) {
+  main {
+    padding: 20px 12px 64px;
+  }
+
+  /* Hero più compatto */
+  .portal-hero {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+  .portal-hero h1 {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+
+  /* Panoramica: partite e classifica impilate (non affiancate) */
+  .portal-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Dropdown a cascata in colonna, a piena larghezza */
+  .portal-selrow {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .portal-select {
+    width: 100%;
+  }
+  .portal-select select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Tabelle: font e padding ridotti per far stare più colonne */
+  .portal-table {
+    font-size: 0.78rem;
+  }
+  .portal-table th,
+  .portal-table td {
+    padding: 7px 4px;
+  }
+  .portal-table td {
+    font-size: 0.85rem;
+  }
+  .portal-table th {
+    font-size: 0.62rem;
+  }
+  /* La colonna squadra non deve rubare troppo spazio su mobile */
+  .portal-table td.team {
+    max-width: 128px;
+    font-size: 0.8rem;
+  }
+  .team-badge {
+    gap: 5px;
+  }
+
+  /* Match row: badge e punteggio leggermente più piccoli */
+  .portal-match {
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+  .portal-match .score {
+    font-size: 1.05rem;
+    min-width: 54px;
+  }
+}
+
+/* Schermi molto stretti: nascondi le colonne secondarie della classifica,
+   tieni l'essenziale (Pos, Squadra, PG, DR, Punti). */
+@media (max-width: 460px) {
+  .portal-table th.hide-xs,
+  .portal-table td.hide-xs {
+    display: none;
+  }
+}
