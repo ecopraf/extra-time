@@ -42,13 +42,14 @@ function classify(titolo: string): string {
   if (/riformulazione|nuovo calendario/.test(t)) return "nuovo-calendario";
   if (/variazion/.test(t)) return "variazione";
   if (/programma gare/.test(t)) return "programma-gare";
+  if (/risultat/.test(t)) return "risultati";
   return "altro";
 }
 
-/** Rilevante = SGS/Dilettanti/Provinciali con titolo che tocca i calendari. */
+/** Rilevante = SGS/Dilettanti/Provinciali con titolo che tocca calendari o risultati. */
 function isRelevant(tipo: string, titolo: string): boolean {
   if (!/^(SGS|Dilettanti|Provinciali)$/i.test(tipo)) return false;
-  return /calendar|riformulazione|variazion|programma gare|nuovo/i.test(titolo);
+  return /calendar|riformulazione|variazion|programma gare|risultat|nuovo/i.test(titolo);
 }
 
 function parseList(html: string): Omit<Comunicato, "seen">[] {

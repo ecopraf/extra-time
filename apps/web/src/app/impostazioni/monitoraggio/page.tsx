@@ -4,6 +4,7 @@ import { hasRole } from "@extra-time/database/auth";
 import { currentUser } from "@/lib/session";
 import { getComunicatiMonitor } from "@/lib/lnd-monitor";
 import { ImportButton } from "./ImportButton";
+import { ImportResultsButton } from "./ImportResultsButton";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ const TIPO_LABEL: Record<string, string> = {
   "nuovo-calendario": "Nuovo calendario",
   variazione: "Variazione",
   "programma-gare": "Programma gare",
+  risultati: "Risultati",
   altro: "Altro",
 };
 
@@ -100,6 +102,16 @@ export default async function MonitoraggioPage() {
                               tipo={c.tipo}
                               titolo={c.titolo}
                             />
+                          ) : c.tipoAggiornamento === "risultati" ? (
+                            <ImportResultsButton
+                              pdfUrl={c.pdfUrl}
+                              source={`CU${c.numero}`}
+                              comunicatoId={c.id}
+                              numero={c.numero}
+                              area={c.area}
+                              tipo={c.tipo}
+                              titolo={c.titolo}
+                            />
                           ) : (
                             <span className="muted import-na">—</span>
                           )}
@@ -113,12 +125,13 @@ export default async function MonitoraggioPage() {
           </div>
 
           <p className="muted monitor-note">
-            Per i comunicati <em>Programma gare</em> puoi applicare gli orari
-            direttamente da qui con <strong>Applica</strong>: prima vedi
-            un&apos;anteprima (quante partite verrebbero aggiornate) e poi
-            confermi. Aggiorna date, orari e campi delle partite già presenti
-            &mdash; non ne crea di nuove. Il batch completo di tutti i comunicati
-            resta allo script di import.
+            Per i comunicati <em>Programma gare</em> usa <strong>Applica</strong>
+            per aggiornare orari, date e campi delle partite esistenti; per i
+            comunicati <em>Risultati</em> usa <strong>Importa risultati</strong>
+            per registrare i punteggi (porta le partite a &laquo;finita&raquo; e
+            aggiorna le classifiche). In entrambi i casi vedi prima
+            un&apos;anteprima e poi confermi; nessuna partita viene creata. Il
+            batch completo resta allo script di import.
           </p>
         </>
       )}

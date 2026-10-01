@@ -6,4 +6,8 @@ export { parseProgrammaGare, classifyCategoria, normalizeTeamName, canonicalizeC
 export type { Gara } from "./parse-programma-gare";
 export { applyProgrammaGare, sameTeam } from "./apply-programma-gare";
 export type { ApplyResult, Queryable } from "./apply-programma-gare";
+export { parseRisultati } from "./parse-risultati";
+export type { Risultato } from "./parse-risultati";
+export { applyRisultati } from "./apply-risultati";
+export type { ApplyRisultatiResult } from "./apply-risultati";
 export { fetchPdfText } from "./fetch-comunicato";
