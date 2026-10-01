@@ -2053,20 +2053,21 @@ table td.actions {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
-  /* righe metadato: etichetta piccola a sinistra, valore a destra, interlinea stretta. */
+  /* righe metadato: etichetta e valore allineati a SINISTRA, uno accanto all'altro. */
   .monitor-table td {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 8px;
     align-items: baseline;
     padding: 2px 0;
     border: none;
     font-size: 0.82rem;
     line-height: 1.3;
+    text-align: left;
   }
   .monitor-table td::before {
     content: attr(data-label);
-    flex: 0 0 38%;
+    flex: 0 0 34%;
     font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -2090,8 +2091,7 @@ table td.actions {
   }
   .monitor-table td[data-label="Titolo"]::before { display: none; }
 
-  /* AREA/TIPO: niente a capo, su una riga sola. */
-  .monitor-table td[data-label="Area / Tipo"] { text-align: right; }
+  /* AREA/TIPO: niente a capo, su una riga sola, allineata a sinistra. */
   .monitor-table td[data-label="Area / Tipo"] br { display: none; }
 
   /* AZIONI: bottone a piena larghezza, ben tappabile, senza etichetta. */
