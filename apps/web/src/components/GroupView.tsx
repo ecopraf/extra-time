@@ -146,7 +146,7 @@ export function GroupView({
           const roundMultiDay = roundDays.size > 1;
           return (
             <div key={`md-${md}`} className="portal-round">
-              <div key="head" className="portal-round-head">
+              <div className="portal-round-head">
                 Giornata {md || "?"}
                 {roundDate ? ` · ${roundDate}` : ""}
               </div>

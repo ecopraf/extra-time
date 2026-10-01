@@ -79,6 +79,8 @@ export async function POST(request: Request) {
     }
 
     const sezioni: SectionResult[] = [];
+    // Settore dal path dell'URL: .../Regionali/SGS/... → giovanili, altrimenti dilettanti.
+    const settore: "giovanili" | "dilettanti" = /\/SGS\//i.test(url) ? "giovanili" : "dilettanti";
 
     if (gare.length > 0) {
       const r = await applyProgrammaGare(getPool(), gare, { dry });
@@ -92,7 +94,7 @@ export async function POST(request: Request) {
       });
     }
     if (risultati.length > 0) {
-      const r = await applyRisultati(getPool(), risultati, { dry });
+      const r = await applyRisultati(getPool(), risultati, { dry, settore });
       sezioni.push({
         tipo: "risultati",
         parsed: risultati.length,

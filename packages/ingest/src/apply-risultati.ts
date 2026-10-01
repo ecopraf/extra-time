@@ -29,19 +29,35 @@ export interface ApplyRisultatiResult {
 /**
  * Applica i risultati al DB. Con `dry: true` calcola solo cosa cambierebbe.
  */
+/**
+ * Decide se una categoria è ammessa per il settore del comunicato.
+ * - "giovanili" (comunicati SGS): U14..U19 (Regionale/Elite)
+ * - "dilettanti" (comunicati Dilettanti): Eccellenza/Promozione/Prima/Seconda
+ * Serve a evitare che il matching per solo codice-girone scriva in una categoria
+ * del settore sbagliato quando le stesse squadre esistono in più campionati.
+ */
+function categoryAllowed(category: string, settore: "giovanili" | "dilettanti" | undefined): boolean {
+  if (!settore) return true;
+  const isYouth = /^U\d{2}\b/i.test(category) || /allievi|giovanissimi|juniores/i.test(category);
+  return settore === "giovanili" ? isYouth : !isYouth;
+}
+
 export async function applyRisultati(
   db: Queryable,
   risultati: Risultato[],
-  opts: { dry?: boolean } = {},
+  opts: { dry?: boolean; settore?: "giovanili" | "dilettanti" } = {},
 ): Promise<ApplyRisultatiResult> {
   const dry = opts.dry ?? false;
+  const settore = opts.settore;
 
-  const { rows: groups } = await db.query<{ group_id: string; girone: string | null; category: string }>(
+  const { rows: allGroups } = await db.query<{ group_id: string; girone: string | null; category: string }>(
     `select g.id as group_id, g.code as girone, c.category
        from competition_groups g
        join competitions c on c.id = g.competition_id
        join seasons s on s.id = g.season_id and s.is_current`,
   );
+  // Limita i gironi candidati alle categorie compatibili con il settore del comunicato.
+  const groups = allGroups.filter((g) => categoryAllowed(g.category, settore));
   const groupIdByKey = new Map<string, string>();
   for (const g of groups) groupIdByKey.set(`${g.category}|${(g.girone || "").toUpperCase()}`, g.group_id);
 

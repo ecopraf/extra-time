@@ -104,8 +104,10 @@ export async function POST(request: Request) {
       }, { status: 422 });
     }
 
-    // 4) Applica (o simula con dry).
-    const result = await applyRisultati(getPool(), risultati, { dry });
+    // 4) Applica (o simula con dry). Il settore (dal tipo del comunicato) limita
+    //    il matching alle categorie giuste: SGS → giovanili, altrimenti dilettanti.
+    const settore = /sgs/i.test(tipo ?? "") ? "giovanili" : "dilettanti";
+    const result = await applyRisultati(getPool(), risultati, { dry, settore });
 
     // 5) Dopo un'applicazione reale riuscita, marca il comunicato come visto.
     if (!dry && comunicatoId) {
