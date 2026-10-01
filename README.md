@@ -28,6 +28,7 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 - [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack (stato attuale + obiettivo)
 - [`docs/open-questions.md`](docs/open-questions.md) — domande aperte di prodotto/business
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
+- [`CHANGELOG.md`](CHANGELOG.md) — storico delle modifiche
 
 ## Identità visiva
 

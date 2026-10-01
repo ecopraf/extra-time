@@ -97,6 +97,17 @@ docs: documentazione
   direttamente su `main`. Con l'arrivo di collaboratori si torna alle PR.
 - Non committare artefatti di build: `node_modules/`, `dist/`, `.next/`, `.turbo/`.
 
+## Dati e sicurezza operativa
+
+- **Il DB Neon è condiviso tra locale e produzione**: ogni import/seed/migrazione eseguito
+  in locale tocca i dati reali. Usa sempre prima il **dry-run** per gli import comunicati
+  (orari, risultati) e applica solo dopo conferma.
+- Gli import sono **idempotenti** e vincolati per girone+squadre; `comunicati_seen` traccia
+  i comunicati applicati dall'UI.
+- **Push solo su conferma esplicita dell'utente** (commit sempre, push mai di iniziativa).
+- **zsh**: non usare una variabile di shell chiamata `path` negli script inline — sovrascrive
+  `$PATH` (zsh è case-insensitive su PATH/path) e rompe i comandi successivi.
+
 ## Tooling e lint
 
 - Lint: `pnpm lint` (ESLint, config in `apps/web/.eslintrc.cjs`). Non usare `next lint`

@@ -36,13 +36,22 @@ inclusion: always
 
 ## Import calendari (`packages/ingest`)
 
-- Logica condivisa (pura TS) per l'import dei comunicati "programma gare" LND:
-  `parseProgrammaGare`, `applyProgrammaGare(db, gare, {dry, source})`, `fetchPdfText`.
-- Usata sia dagli script CLI (`scripts/import-sgs/*`) sia dal web
-  (`/api/import-comunicato`). La parità con gli script `.mjs` è verificata.
+- Logica condivisa (pura TS) per l'import dei comunicati LND:
+  - **programma gare** (orari/date): `parseProgrammaGare`, `applyProgrammaGare(db, gare, {dry, source})`
+  - **risultati**: `parseRisultati`, `applyRisultati(db, risultati, {dry, settore})`.
+    `settore` ("giovanili"|"dilettanti") vincola il matching alle categorie del settore,
+    così lo stesso club in più campionati non causa falsi positivi.
+  - **fetch**: `fetchComunicatoText(url)` gestisce PDF **e** ZIP (con `.docx` dentro,
+    estratto via `fflate`). `fetchPdfText` resta come alias.
+- Usata sia dagli script CLI (`scripts/import-sgs/*`) sia dal web. Endpoint admin:
+  `/api/import-comunicato` (programma gare), `/api/import-risultati` (risultati),
+  `/api/import-url` (incolla un URL, auto-rileva e applica). Tutti con anteprima dry-run +
+  conferma e marcatura `comunicati_seen`. La parità con gli script `.mjs` è verificata.
+- `scripts/import-sgs/enumera-comunicati.mjs` + workflow `inventario-comunicati.yml`:
+  enumerano lo storage LND (la pagina è JS-rendered) e classificano i comunicati; batch in CI.
 - Dipende da `pdf-parse` (importato come `pdf-parse/lib/pdf-parse.js` per evitare il
-  side-effect dell'index). Gli import interni al package sono **senza estensione `.js`**
-  (moduleResolution Bundler + webpack).
+  side-effect dell'index) e `fflate`. Gli import interni al package sono **senza estensione
+  `.js`** (moduleResolution Bundler + webpack).
 
 ## Design system (`packages/ui`)
 
