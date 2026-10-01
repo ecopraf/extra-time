@@ -1,0 +1,55 @@
+name: Inventario Comunicati LND
+
+# Enumera lo storage dei Comunicati Ufficiali LND Lazio (gli URL sono
+# prevedibili) e produce un inventario JSON classificato (programma gare /
+# risultati / variazione). Serve perché la pagina /comunicati è renderizzata via
+# JS e in HTML espone solo i più recenti. NON applica nulla al database.
+#
+# Gira in CI (nessun limite serverless). L'inventario è pubblicato come artifact
+# scaricabile dalla run.
+
+on:
+  schedule:
+    - cron: "30 7 * * 1" # ogni lunedì alle 07:30 UTC (dopo il weekend di gare)
+  workflow_dispatch:
+    inputs:
+      max:
+        description: "Numero massimo di CU da provare per area/tipo"
+        required: false
+        default: "90"
+      gap:
+        description: "Buchi consecutivi dopo cui fermarsi per area/tipo"
+        required: false
+        default: "8"
+
+jobs:
+  inventario:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Installa le dipendenze
+        run: pnpm install --frozen-lockfile
+
+      - name: Enumera i comunicati
+        run: |
+          node scripts/import-sgs/enumera-comunicati.mjs \
+            --max "${{ github.event.inputs.max || '90' }}" \
+            --gap "${{ github.event.inputs.gap || '8' }}" \
+            --out inventario-comunicati.json
+          echo "---- riepilogo ----"
+          node -e "const i=require('./inventario-comunicati.json'); console.log('totale:', i.count); const by={}; for(const c of i.comunicati) for(const k of c.kinds) by[k]=(by[k]||0)+1; console.log(by);"
+
+      - name: Pubblica l'inventario come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventario-comunicati
+          path: inventario-comunicati.json
+          retention-days: 30

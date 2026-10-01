@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/session";
 import { getComunicatiMonitor } from "@/lib/lnd-monitor";
 import { ImportButton } from "./ImportButton";
 import { ImportResultsButton } from "./ImportResultsButton";
+import { ImportFromUrl } from "./ImportFromUrl";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,8 @@ export default async function MonitoraggioPage() {
             <span>Da rivedere: <strong className={mon.nuovi > 0 ? "monitor-new" : ""}>{mon.nuovi}</strong></span>
             <span className="muted">Aggiornato: {fetched}</span>
           </div>
+
+          {isAdmin && <ImportFromUrl />}
 
           <div className="portal-card">
             {mon.rilevanti.length === 0 ? (
