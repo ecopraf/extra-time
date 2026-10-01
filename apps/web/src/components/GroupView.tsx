@@ -150,17 +150,19 @@ export function GroupView({
                 Giornata {md || "?"}
                 {roundDate ? ` · ${roundDate}` : ""}
               </div>
-              {round.map((m) => (
-                <div key={m.id} className="portal-match">
-                  <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
-                  <span className="score">
-                    {m.status === "finished" && m.homeScore !== null
-                      ? `${m.homeScore} - ${m.awayScore}`
-                      : formatMatchCell(m.kickoffAt, roundMultiDay)}
-                  </span>
-                  <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
-                </div>
-              ))}
+              <div className="portal-round-matches">
+                {round.map((m) => (
+                  <div key={m.id} className="portal-match">
+                    <span className="home"><TeamBadge name={nameOf(m.homeTeamId)} logo={logoOf(m.homeTeamId)} nameFirst /></span>
+                    <span className="score">
+                      {m.status === "finished" && m.homeScore !== null
+                        ? `${m.homeScore} - ${m.awayScore}`
+                        : formatMatchCell(m.kickoffAt, roundMultiDay)}
+                    </span>
+                    <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })

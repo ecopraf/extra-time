@@ -2032,9 +2032,7 @@ table td.actions {
 
 /* ── Monitoraggio responsive: su mobile la tabella diventa card compatte ──── */
 @media (max-width: 760px) {
-  /* table-layout fixed + colgroup non servono più: impiliamo tutto. */
   .monitor-table,
-  .monitor-table thead,
   .monitor-table tbody,
   .monitor-table tr,
   .monitor-table td {
@@ -2042,46 +2040,65 @@ table td.actions {
     width: auto;
   }
   .monitor-table { table-layout: auto; }
-  /* intestazione tabella nascosta: ogni cella porta la propria etichetta. */
-  .monitor-table thead { display: none; }
+  .monitor-table thead,
   .monitor-table colgroup { display: none; }
 
+  /* la card: compatta, con un filo di ombra per staccarla dallo sfondo. */
   .monitor-table tr {
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 10px 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     background: var(--surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
+
+  /* righe metadato: etichetta piccola a sinistra, valore a destra, interlinea stretta. */
   .monitor-table td {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     align-items: baseline;
-    padding: 5px 0;
+    padding: 2px 0;
     border: none;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
+    line-height: 1.3;
   }
-  /* etichetta della cella (dal data-label) a sinistra, valore a destra. */
   .monitor-table td::before {
     content: attr(data-label);
-    flex: 0 0 42%;
-    font-size: 0.72rem;
+    flex: 0 0 38%;
+    font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     color: var(--muted);
   }
-  /* il titolo occupa tutta la larghezza, sopra le altre righe. */
-  .monitor-table td[data-label="Titolo"] { flex-direction: column; gap: 2px; }
-  .monitor-table td[data-label="Titolo"]::before { flex-basis: auto; }
-  .monitor-table td.monitor-title { font-weight: 600; }
-  /* azioni: bottone a piena larghezza, ben tappabile. */
-  .monitor-table td[data-label="Azioni"] { display: block; }
-  .monitor-table td[data-label="Azioni"]::before { display: block; margin-bottom: 6px; }
-  .monitor-table td[data-label="Azioni"] .monitor-apply-btn { width: 100%; padding: 10px; font-size: 0.9rem; }
-  /* nasconde il trattino segnaposto quando non c'è azione. */
-  .monitor-table td[data-label="Azioni"] .import-na { color: var(--muted); }
+
+  /* STATO + C.U. sulla stessa riga in testa, come header della card. */
+  .monitor-table td[data-label="Stato"] { padding-bottom: 6px; }
+
+  /* TITOLO: a tutta larghezza, in evidenza, senza etichetta ingombrante. */
+  .monitor-table td[data-label="Titolo"] {
+    display: block;
+    margin: 8px 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .monitor-table td[data-label="Titolo"]::before { display: none; }
+
+  /* AREA/TIPO: niente a capo, su una riga sola. */
+  .monitor-table td[data-label="Area / Tipo"] { text-align: right; }
+  .monitor-table td[data-label="Area / Tipo"] br { display: none; }
+
+  /* AZIONI: bottone a piena larghezza, ben tappabile, senza etichetta. */
+  .monitor-table td[data-label="Azioni"] { display: block; margin-top: 10px; }
+  .monitor-table td[data-label="Azioni"]::before { display: none; }
+  .monitor-table td[data-label="Azioni"] .monitor-apply-btn { width: 100%; padding: 11px; font-size: 0.9rem; }
+  .monitor-table td[data-label="Azioni"] .import-na { display: none; }
 }
 .import-na { color: var(--muted); }
 
