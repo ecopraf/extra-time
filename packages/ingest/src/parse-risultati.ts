@@ -150,11 +150,26 @@ export function parseRisultati(text: string): Risultato[] {
     const rM = t.match(/^(.+?)\s+(\d{1,2})\s*-\s*(\d{1,2})\s*$/);
     if (rM && categoria && girone && giornata) {
       const teamsPart = rM[1]!.trim();
-      // separa casa/ospite sul primo " - " (il separatore ha spazi attorno).
-      const sep = teamsPart.split(/\s+-\s+/);
-      if (sep.length < 2) continue;
-      const casa = normalizeTeamName(sep[0]!);
-      const ospite = normalizeTeamName(sep.slice(1).join(" - ")); // nomi con '-' interni restano
+      // Separa casa/ospite sul trattino separatore. Lo spazio attorno al "-" è
+      // incostante nei PDF LND. Preferiamo il separatore canonico " - " (spazi su
+      // entrambi i lati); se assente, ripieghiamo su spazio da UN solo lato
+      // ("CASA -OSPITE" / "CASA- OSPITE"). In entrambi i casi usiamo la PRIMA
+      // occorrenza, per non spezzare trattini interni ai nomi.
+      const sepRe = teamsPart.match(/\s+-\s+/) ? /\s+-\s+/ : /\s-\S|\S-\s/;
+      const sepMatch = teamsPart.match(sepRe);
+      if (!sepMatch || sepMatch.index === undefined) continue;
+      let casaStr, ospiteStr;
+      if (sepRe.source === "\\s+-\\s+") {
+        casaStr = teamsPart.slice(0, sepMatch.index);
+        ospiteStr = teamsPart.slice(sepMatch.index + sepMatch[0].length);
+      } else {
+        // match tipo " -X" o "X- ": il trattino è l'ancora, teniamo i nomi interi.
+        const dash = teamsPart.indexOf("-", sepMatch.index);
+        casaStr = teamsPart.slice(0, dash);
+        ospiteStr = teamsPart.slice(dash + 1);
+      }
+      const casa = normalizeTeamName(casaStr);
+      const ospite = normalizeTeamName(ospiteStr);
       if (casa.length < 2 || ospite.length < 2) continue;
       rows.push({
         categoria,

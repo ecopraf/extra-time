@@ -31,14 +31,18 @@ export interface ApplyRisultatiResult {
  */
 /**
  * Decide se una categoria è ammessa per il settore del comunicato.
- * - "giovanili" (comunicati SGS): U14..U19 (Regionale/Elite)
- * - "dilettanti" (comunicati Dilettanti): Eccellenza/Promozione/Prima/Seconda
+ * - "giovanili" (comunicati SGS): U14..U17 (Regionale/Elite), più U19.
+ * - "dilettanti" (comunicati Dilettanti): Eccellenza/Promozione/Prima/Seconda,
+ *   più la **Juniores U19** (Elite/Regionale), che la LND pubblica nei comunicati
+ *   Dilettanti. U19 è quindi ammessa in ENTRAMBI i settori.
  * Serve a evitare che il matching per solo codice-girone scriva in una categoria
  * del settore sbagliato quando le stesse squadre esistono in più campionati.
  */
 function categoryAllowed(category: string, settore: "giovanili" | "dilettanti" | undefined): boolean {
   if (!settore) return true;
-  const isYouth = /^U\d{2}\b/i.test(category) || /allievi|giovanissimi|juniores/i.test(category);
+  // U19/Juniores vive a cavallo: sempre ammessa.
+  if (/^U19\b/i.test(category) || /juniores/i.test(category)) return true;
+  const isYouth = /^U\d{2}\b/i.test(category) || /allievi|giovanissimi/i.test(category);
   return settore === "giovanili" ? isYouth : !isYouth;
 }
 
