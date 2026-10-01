@@ -182,9 +182,15 @@ function parseAllMatches(sectionText) {
         teams.add(home);
         teams.add(away);
         const a = parseDate(block.dataAndata, block.oraAndata);
-        matches.push({ matchday: block.giornata, date: a.date, time: a.time, home, away });
+        matches.push({ matchday: block.giornata, leg: "andata", date: a.date, time: a.time, home, away });
+        // Il matchday del RITORNO non è nel PDF: lo calcoliamo a girone completo
+        // come giornata_andata + (numero squadre - 1). L'offset dipende dal
+        // numero di squadre del girone (13 per i Regionali a 14 squadre, 15 per
+        // gli Elite a 16), NON è il +15 fisso di prima (che lasciava buche le
+        // giornate 14-15 nei gironi da 14). Qui conserviamo solo la giornata
+        // d'andata; l'offset viene applicato in main() quando conosciamo N.
         const r = parseDate(block.dataRitorno, block.oraRitorno);
-        matches.push({ matchday: block.giornata + 15, date: r.date, time: r.time, home: away, away: home });
+        matches.push({ matchday: null, leg: "ritorno", andataMatchday: block.giornata, date: r.date, time: r.time, home: away, away: home });
       }
     }
   }
@@ -249,11 +255,23 @@ async function main() {
       category: c.category,
       name: c.name,
       level: c.level,
-      groups: [...c.groups.values()].map((g) => ({
-        code: g.code,
-        teams: [...g.teams].sort(),
-        matches: g.matches.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)),
-      })),
+      groups: [...c.groups.values()].map((g) => {
+        // Offset ritorno = (squadre - 1): andata 1..(N-1), ritorno N..2(N-1).
+        const andataRounds = Math.max(0, g.teams.size - 1);
+        const matches = g.matches.map((m) => {
+          if (m.leg === "ritorno") {
+            const md = (m.andataMatchday ?? 0) + andataRounds;
+            const { andataMatchday: _drop, ...rest } = m;
+            return { ...rest, matchday: md };
+          }
+          return m;
+        });
+        return {
+          code: g.code,
+          teams: [...g.teams].sort(),
+          matches: matches.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)),
+        };
+      }),
     })),
   };
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
