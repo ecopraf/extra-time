@@ -104,6 +104,7 @@ export default async function MonitoraggioPage() {
                               area={c.area}
                               tipo={c.tipo}
                               titolo={c.titolo}
+                              seen={c.seen}
                             />
                           ) : c.tipoAggiornamento === "risultati" ? (
                             <ImportResultsButton
@@ -114,6 +115,7 @@ export default async function MonitoraggioPage() {
                               area={c.area}
                               tipo={c.tipo}
                               titolo={c.titolo}
+                              seen={c.seen}
                             />
                           ) : (
                             <span className="muted import-na">—</span>

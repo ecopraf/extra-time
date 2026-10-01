@@ -45,6 +45,7 @@ export function ImportResultsButton({
   area,
   tipo,
   titolo,
+  seen = false,
 }: {
   pdfUrl: string;
   source: string;
@@ -53,11 +54,14 @@ export function ImportResultsButton({
   area?: string;
   tipo?: string;
   titolo?: string;
+  seen?: boolean;
 }) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string>("");
   const [data, setData] = useState<ImportResponse | null>(null);
+  const [justApplied, setJustApplied] = useState(false);
+  const applied = seen || justApplied;
 
   async function call(dry: boolean): Promise<ImportResponse> {
     const res = await fetch("/api/import-risultati", {
@@ -77,7 +81,7 @@ export function ImportResultsButton({
   }
   async function onApply() {
     setPhase("applying"); setError("");
-    try { setData(await call(false)); setPhase("done"); router.refresh(); }
+    try { setData(await call(false)); setPhase("done"); setJustApplied(true); router.refresh(); }
     catch (e) { setError(e instanceof Error ? e.message : "Errore sconosciuto."); setPhase("error"); }
   }
   function onClose() { setPhase("idle"); setData(null); setError(""); }
@@ -86,11 +90,12 @@ export function ImportResultsButton({
     <>
       <button
         type="button"
-        className="monitor-apply-btn"
+        className={`monitor-apply-btn${applied ? " is-applied" : ""}`}
         onClick={onPreview}
         disabled={phase === "loading" || phase === "applying"}
+        title={applied ? "Già importato — puoi reimportare" : "Importa i risultati"}
       >
-        {phase === "loading" ? "Analisi…" : "Importa risultati"}
+        {phase === "loading" ? "Analisi…" : applied ? "✓ Reimporta" : "Importa risultati"}
       </button>
 
       {(phase === "preview" || phase === "applying" || phase === "done" || phase === "error") && (

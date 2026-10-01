@@ -48,6 +48,7 @@ export function ImportButton({
   area,
   tipo,
   titolo,
+  seen = false,
 }: {
   pdfUrl: string;
   source: string;
@@ -56,11 +57,16 @@ export function ImportButton({
   area?: string;
   tipo?: string;
   titolo?: string;
+  seen?: boolean;
 }) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string>("");
   const [data, setData] = useState<ImportResponse | null>(null);
+  // Mostra lo stato "applicato" se il comunicato è già stato importato
+  // (dal DB, c.seen) oppure appena applicato in questa sessione.
+  const [justApplied, setJustApplied] = useState(false);
+  const applied = seen || justApplied;
 
   async function call(dry: boolean): Promise<ImportResponse> {
     const res = await fetch("/api/import-comunicato", {
@@ -93,6 +99,7 @@ export function ImportButton({
     try {
       setData(await call(false));
       setPhase("done");
+      setJustApplied(true);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Errore sconosciuto.");
@@ -110,11 +117,12 @@ export function ImportButton({
     <>
       <button
         type="button"
-        className="monitor-apply-btn"
+        className={`monitor-apply-btn${applied ? " is-applied" : ""}`}
         onClick={onPreview}
         disabled={phase === "loading" || phase === "applying"}
+        title={applied ? "Già applicato — puoi riapplicare" : "Applica orari/date"}
       >
-        {phase === "loading" ? "Analisi…" : "Applica"}
+        {phase === "loading" ? "Analisi…" : applied ? "✓ Riapplica" : "Applica"}
       </button>
 
       {(phase === "preview" || phase === "applying" || phase === "done" || phase === "error") && (

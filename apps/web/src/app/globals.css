@@ -2040,6 +2040,9 @@ table td.actions {
 }
 .monitor-apply-btn:hover:not(:disabled) { background: var(--orange); color: #fff; }
 .monitor-apply-btn:disabled { opacity: 0.6; cursor: default; }
+/* Già applicato/importato: verde discreto, resta cliccabile per riapplicare. */
+.monitor-apply-btn.is-applied { color: var(--green, #16a34a); border-color: var(--green, #16a34a); }
+.monitor-apply-btn.is-applied:hover:not(:disabled) { background: var(--green, #16a34a); color: #fff; }
 
 /* Overlay + dialog anteprima/conferma */
 .import-overlay {

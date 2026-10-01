@@ -10,7 +10,7 @@
  * Auth: sessione + ruolo ADMIN.
  */
 import { NextResponse } from "next/server";
-import { getPool } from "@extra-time/database";
+import { getPool, markComunicatoSeen } from "@extra-time/database";
 import { hasRole } from "@extra-time/database/auth";
 import {
   fetchComunicatoText,
@@ -102,6 +102,27 @@ export async function POST(request: Request) {
         notFoundMatch: r.notFoundMatch,
         ambiguous: r.ambiguous,
       });
+    }
+
+    // Dopo un'applicazione reale, marca il comunicato come visto. L'id si
+    // ricava dall'URL storage: .../<AREA>/<TIPO>/<N>/COMUNICATO_UFFICIALE_<N>.<ext>
+    if (!dry) {
+      const m = url.match(/\/storage\/comunicati\/\d{4}\/\d{4}\/([^/]+)\/([^/]+)\/(\d+)\//i);
+      if (m) {
+        const area = decodeURIComponent(m[1]!);
+        const tipo = decodeURIComponent(m[2]!);
+        const numero = parseInt(m[3]!, 10);
+        try {
+          await markComunicatoSeen({
+            id: `${area}/${tipo}/${numero}`,
+            numero, area, tipo,
+            source: `CU${numero}`,
+            appliedBy: user.id,
+          });
+        } catch {
+          // best-effort
+        }
+      }
     }
 
     const parts = sezioni.map((s) =>
