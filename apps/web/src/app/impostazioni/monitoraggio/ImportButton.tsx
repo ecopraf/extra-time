@@ -40,7 +40,23 @@ interface ImportResponse {
 
 type Phase = "idle" | "loading" | "preview" | "applying" | "done" | "error";
 
-export function ImportButton({ pdfUrl, source }: { pdfUrl: string; source: string }) {
+export function ImportButton({
+  pdfUrl,
+  source,
+  comunicatoId,
+  numero,
+  area,
+  tipo,
+  titolo,
+}: {
+  pdfUrl: string;
+  source: string;
+  comunicatoId?: string;
+  numero?: number;
+  area?: string;
+  tipo?: string;
+  titolo?: string;
+}) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string>("");
@@ -50,7 +66,7 @@ export function ImportButton({ pdfUrl, source }: { pdfUrl: string; source: strin
     const res = await fetch("/api/import-comunicato", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ pdfUrl, source, dry }),
+      body: JSON.stringify({ pdfUrl, source, dry, comunicatoId, numero, area, tipo, titolo }),
     });
     const json = (await res.json()) as ImportResponse;
     if (!res.ok || !json.ok) {

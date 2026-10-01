@@ -807,6 +807,47 @@ export async function getPortalCounts(): Promise<PortalCounts> {
   return rows[0] ?? { regions: 0, groups: 0, teams: 0, matches: 0 };
 }
 
+// --- Comunicati LND visti/importati -----------------------------------------
+
+/** Id ("<area>/<tipo>/<numero>") dei comunicati marcati visti/importati via UI. */
+export async function listSeenComunicati(): Promise<string[]> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `select id from comunicati_seen`,
+  );
+  return rows.map((r) => r.id);
+}
+
+export interface MarkComunicatoInput {
+  id: string;
+  numero?: number | null;
+  area?: string | null;
+  tipo?: string | null;
+  titolo?: string | null;
+  source?: string | null;
+  appliedBy?: string | null;
+}
+
+/** Marca un comunicato come visto/importato. Idempotente per id. */
+export async function markComunicatoSeen(input: MarkComunicatoInput): Promise<void> {
+  await getPool().query(
+    `insert into comunicati_seen (id, numero, area, tipo, titolo, source, applied_by)
+     values ($1, $2, $3, $4, $5, $6, $7)
+     on conflict (id) do update
+       set titolo = coalesce(excluded.titolo, comunicati_seen.titolo),
+           source = coalesce(excluded.source, comunicati_seen.source),
+           applied_by = coalesce(excluded.applied_by, comunicati_seen.applied_by)`,
+    [
+      input.id,
+      input.numero ?? null,
+      input.area ?? null,
+      input.tipo ?? null,
+      input.titolo ?? null,
+      input.source ?? null,
+      input.appliedBy ?? null,
+    ],
+  );
+}
+
 export async function closePool(): Promise<void> {
   await pool?.end();
   pool = undefined;

@@ -15,7 +15,7 @@
  * Auth: sessione utente (cookie et_session) + ruolo ADMIN.
  */
 import { NextResponse } from "next/server";
-import { getPool } from "@extra-time/database";
+import { getPool, markComunicatoSeen } from "@extra-time/database";
 import { hasRole } from "@extra-time/database/auth";
 import {
   fetchPdfText,
@@ -34,6 +34,12 @@ interface ImportBody {
   pdfUrl?: unknown;
   source?: unknown;
   dry?: unknown;
+  // Metadati del comunicato: usati per marcarlo "visto" dopo l'applicazione.
+  comunicatoId?: unknown; // "<area>/<tipo>/<numero>"
+  numero?: unknown;
+  area?: unknown;
+  tipo?: unknown;
+  titolo?: unknown;
 }
 
 interface CategoriaBreakdown {
@@ -82,6 +88,11 @@ export async function POST(request: Request) {
   const pdfUrl = typeof body.pdfUrl === "string" ? body.pdfUrl.trim() : "";
   const source = typeof body.source === "string" && body.source.trim() ? body.source.trim() : "";
   const dry = body.dry !== false; // default: anteprima (sicuro)
+  const comunicatoId = typeof body.comunicatoId === "string" ? body.comunicatoId.trim() : "";
+  const numero = typeof body.numero === "number" ? body.numero : null;
+  const area = typeof body.area === "string" ? body.area.trim() : null;
+  const tipo = typeof body.tipo === "string" ? body.tipo.trim() : null;
+  const titolo = typeof body.titolo === "string" ? body.titolo.trim() : null;
 
   if (!/^https:\/\/[^\s]+\.pdf$/i.test(pdfUrl)) {
     return NextResponse.json({ ok: false, error: "URL del PDF non valido." }, { status: 400 });
@@ -103,6 +114,26 @@ export async function POST(request: Request) {
       dry,
       source: source || undefined,
     });
+
+    // 5) Dopo un'applicazione reale riuscita, marca il comunicato come "visto"
+    //    (sul DB, scrivibile anche in produzione) così il badge e lo stato
+    //    "Da rivedere" nel Monitoraggio si aggiornano. Non blocca la risposta
+    //    se la marcatura fallisce.
+    if (!dry && comunicatoId) {
+      try {
+        await markComunicatoSeen({
+          id: comunicatoId,
+          numero,
+          area,
+          tipo,
+          titolo,
+          source: source || null,
+          appliedBy: user.id,
+        });
+      } catch {
+        // best-effort: l'import è andato, la marcatura è secondaria
+      }
+    }
 
     const payload: ImportResponse = {
       ok: true,

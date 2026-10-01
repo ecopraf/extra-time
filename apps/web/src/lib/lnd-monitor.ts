@@ -9,6 +9,7 @@
 import "server-only";
 import fs from "node:fs";
 import path from "node:path";
+import { listSeenComunicati } from "@extra-time/database";
 
 const LIST_URL = "https://lazio.lnd.it/comunicati/";
 const UA = "Mozilla/5.0 (EXTRA TIME dashboard)";
@@ -76,13 +77,30 @@ function parseList(html: string): Omit<Comunicato, "seen">[] {
   return items;
 }
 
-function loadSeen(): Set<string> {
+/** state.json storico (comunicati importati prima della migrazione DB). */
+function loadSeenFromFile(): Set<string> {
   try {
     const raw = JSON.parse(fs.readFileSync(STATE_PATH, "utf8"));
     return new Set<string>(raw.seen ?? []);
   } catch {
     return new Set();
   }
+}
+
+/**
+ * Insieme dei comunicati "visti": unione di quelli marcati via UI (tabella
+ * comunicati_seen, scrivibile anche in produzione) e dello storico in
+ * state.json. Degrada in sicurezza se il DB non è raggiungibile.
+ */
+async function loadSeen(): Promise<Set<string>> {
+  const fromFile = loadSeenFromFile();
+  try {
+    const fromDb = await listSeenComunicati();
+    for (const id of fromDb) fromFile.add(id);
+  } catch {
+    // se il DB non risponde, usiamo solo lo storico su file
+  }
+  return fromFile;
 }
 
 /** Recupera e classifica i comunicati LND rilevanti per i calendari. */
@@ -97,7 +115,7 @@ export async function getComunicatiMonitor(): Promise<MonitorResult> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
     const all = parseList(html);
-    const seen = loadSeen();
+    const seen = await loadSeen();
     const rilevanti = all
       .filter((c) => isRelevant(c.tipo, c.titolo))
       .map((c) => ({ ...c, seen: seen.has(c.id) }));

@@ -91,7 +91,15 @@ export default async function MonitoraggioPage() {
                       {isAdmin && (
                         <td>
                           {c.tipoAggiornamento === "programma-gare" ? (
-                            <ImportButton pdfUrl={c.pdfUrl} source={`CU${c.numero}`} />
+                            <ImportButton
+                              pdfUrl={c.pdfUrl}
+                              source={`CU${c.numero}`}
+                              comunicatoId={c.id}
+                              numero={c.numero}
+                              area={c.area}
+                              tipo={c.tipo}
+                              titolo={c.titolo}
+                            />
                           ) : (
                             <span className="muted import-na">—</span>
                           )}
