@@ -63,21 +63,34 @@ export function parseRisultati(text: string): Risultato[] {
   let categoria: string | null = null;
   let girone: string | null = null;
   let giornata: number | null = null;
-  // Entriamo in "modalità risultati" solo dopo il primo "RISULTATI UFFICIALI",
-  // per non confondere la sezione con il programma gare / altre parti.
   let inResults = false;
+
+  // Alcuni comunicati (SGS a colonne) annunciano DUE categorie di fila, poi i
+  // gironi di entrambe in sequenza (es. U17+U16, poi GIR A/B di U17, GIR A/B di
+  // U16). Teniamo una coda delle categorie annunciate consecutivamente e
+  // avanziamo alla successiva quando il codice girone "riparte" (torna indietro).
+  let pendingCats: string[] = [];
+  let catIdx = 0;
+  let lastGironeRank = -1;
+  const gironeRank = (code: string) => {
+    const c = code.toUpperCase();
+    return /^\d+$/.test(c) ? parseInt(c, 10) : (c.charCodeAt(0) - 64); // A=1, B=2…
+  };
 
   for (const rawLine of lines) {
     const t = rawLine.trim();
     if (!t) continue;
 
     if (/RISULTATI UFFICIALI/i.test(t)) {
+      // Primo ingresso in modalità risultati: se una categoria è stata annunciata
+      // appena prima (fuori dalla sezione), è la prima della coppia → accodala.
+      if (!inResults && categoria && pendingCats.length === 0) {
+        pendingCats.push(categoria);
+      }
       inResults = true;
       continue;
     }
     if (!inResults) {
-      // Prima della sezione risultati: ci serve solo intercettare la categoria
-      // che spesso precede di una riga il "RISULTATI UFFICIALI".
       if (CAT_LINE.test(t)) {
         const cat = classifyCategoria(t);
         if (cat) categoria = cat;
@@ -89,23 +102,47 @@ export function parseRisultati(text: string): Risultato[] {
     if (/giustizia sportiva|provvedimenti disciplinari|errata corrige|variazioni/i.test(t)) {
       inResults = false;
       girone = null;
+      pendingCats = [];
+      catIdx = 0;
       continue;
     }
 
-    // Riga categoria (nuovo blocco campionato dentro la sezione risultati).
+    // Riga categoria. Se arriva PRIMA di qualsiasi girone del blocco corrente,
+    // è una categoria "accoppiata": accodala. Se invece arriva dopo dei gironi,
+    // inizia un nuovo blocco: resetta la coda.
     if (CAT_LINE.test(t)) {
       const cat = classifyCategoria(t);
-      if (cat) categoria = cat;
-      girone = null;
+      if (cat) {
+        if (girone === null) {
+          // ancora nessun girone visto per questo blocco: accoda
+          pendingCats.push(cat);
+        } else {
+          // nuovo blocco di categorie
+          pendingCats = [cat];
+          catIdx = 0;
+          girone = null;
+          lastGironeRank = -1;
+        }
+        categoria = pendingCats[catIdx] ?? cat;
+      }
       continue;
     }
 
-    // Header girone + giornata: "GIRONE A - 4 Giornata - A" (o "GIRONE A GIORNATA 4").
+    // Header girone + giornata: "GIRONE A - 2 Giornata - A".
     const gM = t.match(/^GIRONE\s+([A-Z0-9]+)\b.*?(\d{1,2})\s*Giornata/i)
       ?? t.match(/^GIRONE\s+([A-Z0-9]+)\s+GIORNATA\s+(\d{1,2})/i);
     if (gM) {
-      girone = gM[1]!.toUpperCase();
+      const code = gM[1]!.toUpperCase();
+      const rank = gironeRank(code);
+      // Se il codice girone "riparte" (<= dell'ultimo) e ci sono altre categorie
+      // in coda, passa alla categoria successiva della coppia.
+      if (girone !== null && rank <= lastGironeRank && catIdx + 1 < pendingCats.length) {
+        catIdx++;
+        categoria = pendingCats[catIdx]!;
+      }
+      girone = code;
       giornata = parseInt(gM[2]!, 10);
+      lastGironeRank = rank;
       continue;
     }
 
