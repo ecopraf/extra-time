@@ -12,13 +12,28 @@ import Link from "next/link";
 
 const SUPPORT_EMAIL = "extratime.italia@gmail.com";
 
-export function HeaderActions() {
+/**
+ * @param isAdmin            true se l'utente loggato è admin (mostra il badge)
+ * @param pendingComunicati  numero di comunicati LND "da rivedere" (0 = nessun badge)
+ */
+export function HeaderActions({
+  isAdmin = false,
+  pendingComunicati = 0,
+}: {
+  isAdmin?: boolean;
+  pendingComunicati?: number;
+}) {
   const openSupport = () => {
     const subject = encodeURIComponent("Assistenza EXTRA TIME");
     // Nuova finestra/scheda: non abbandona il portale. Fino all'integrazione
     // con Resend (che aprirà una modale in-app) usiamo un mailto in _blank.
     window.open(`mailto:${SUPPORT_EMAIL}?subject=${subject}`, "_blank");
   };
+
+  const showBadge = isAdmin && pendingComunicati > 0;
+  const settingsTitle = showBadge
+    ? `Impostazioni — ${pendingComunicati} ${pendingComunicati === 1 ? "comunicato da rivedere" : "comunicati da rivedere"}`
+    : "Impostazioni";
 
   return (
     <div className="header-actions">
@@ -31,12 +46,17 @@ export function HeaderActions() {
         Assistenza
       </button>
       <Link
-        href="/impostazioni"
+        href={showBadge ? "/impostazioni/monitoraggio" : "/impostazioni"}
         className="header-icon"
-        title="Impostazioni"
-        aria-label="Impostazioni"
+        title={settingsTitle}
+        aria-label={settingsTitle}
       >
         &#9881;
+        {showBadge && (
+          <span className="header-badge" aria-hidden>
+            {pendingComunicati > 9 ? "9+" : pendingComunicati}
+          </span>
+        )}
       </Link>
     </div>
   );

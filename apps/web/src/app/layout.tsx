@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Inter, Barlow_Condensed } from "next/font/google";
+import { hasRole } from "@extra-time/database/auth";
 import { HeaderActions } from "@/components/HeaderActions";
+import { currentUser } from "@/lib/session";
+import { getComunicatiMonitor } from "@/lib/lnd-monitor";
 import "./globals.css";
 
 // Font self-hosted da next/font: nessuna richiesta a Google a runtime, nessun
@@ -31,7 +34,18 @@ export const viewport = {
   themeColor: "#011c4e",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Solo per l'admin loggato calcoliamo i comunicati "da rivedere": la fetch a
+  // LND (cache 5 min) e la lettura della sessione restano a carico del solo
+  // admin, i visitatori anonimi non pagano né rete né query.
+  const user = await currentUser();
+  const isAdmin = hasRole(user, "ADMIN");
+  let pendingComunicati = 0;
+  if (isAdmin) {
+    const monitor = await getComunicatiMonitor();
+    if (monitor.ok) pendingComunicati = monitor.nuovi;
+  }
+
   return (
     <html lang="it" className={`${inter.variable} ${barlowCondensed.variable}`}>
       <body>
@@ -50,7 +64,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 Live
               </Link>
             </nav>
-            <HeaderActions />
+            <HeaderActions isAdmin={isAdmin} pendingComunicati={pendingComunicati} />
           </div>
         </header>
         {children}
