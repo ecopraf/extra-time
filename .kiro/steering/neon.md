@@ -24,14 +24,36 @@ via `neon.ts`. Riferimenti ufficiali: https://neon.com/docs/cli
 
 ## Progetto Neon di questo repo
 
-- Endpoint di produzione in uso (da `DATABASE_URL`): `ep-noisy-math-b19jbljg` (pooler,
-  regione `eu-central-1`, database `neondb`).
-- **Lo stesso DB è usato sia in locale (`.env.local`) sia da Vercel in produzione.** Non
-  c'è ancora un branch Neon separato per lo sviluppo: attenzione, le modifiche fatte in
-  locale toccano i dati di produzione. Un branch di dev dedicato è un miglioramento aperto.
-- Project ID storicamente annotato: `wispy-math-49040720` (branch `production`) — **da
-  riverificare**: non combacia con l'endpoint attuale `noisy-math`. Confermare con
-  `neon projects list` quando il CLI è disponibile.
+- Endpoint di **produzione** (branch principale, usato da Vercel): `ep-noisy-math-b19jbljg`
+  (pooler, regione `eu-central-1`, database `neondb`).
+- **Sviluppo locale su branch dedicato.** Per non toccare i dati di produzione in locale si
+  usa un **branch Neon "dev"**: `.env.local` punta al branch dev, Vercel resta sul main.
+- Project ID: ricavarlo con `neon projects list` (il valore storico `wispy-math-49040720`
+  è da riverificare — non combacia con l'endpoint `noisy-math`).
+
+## Branch di sviluppo (separazione dati dev ↔ prod)
+
+Prerequisiti (una volta, manuali — richiedono il browser):
+
+```
+npm i -g neonctl
+neon auth
+```
+
+Poi, dalla radice del repo:
+
+```
+pnpm db:dev-branch        # crea/riusa il branch "dev" e aggiorna .env.local
+```
+
+Lo script `scripts/neon-setup-dev-branch.mjs`:
+- individua il progetto (o `--project-id <id>` se ne hai più d'uno);
+- crea il branch `dev` (o lo riusa), ne ricava la connection string pooled;
+- riscrive `DATABASE_URL` in `.env.local` (backup in `.env.local.bak`, valore prod
+  conservato come commento `DATABASE_URL_PROD`).
+
+Dopo: `node --env-file=.env.local scripts/migrate.mjs --status` deve puntare al branch dev.
+Per tornare a produzione in locale: ripristina `.env.local.bak`. **Vercel non va toccato.**
 
 ## Regole operative
 

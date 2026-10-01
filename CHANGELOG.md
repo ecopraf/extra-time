@@ -61,6 +61,12 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
 - Stato "applicato" visibile sui bottoni import (verde "✓ Riapplica" / "✓ Reimporta").
 - Fix warning React "unique key" nel calendario del girone.
 
+### Infrastruttura
+- **Branch Neon di sviluppo**: script `pnpm db:dev-branch`
+  (`scripts/neon-setup-dev-branch.mjs`) per creare un branch "dev" isolato e farci puntare
+  `.env.local`, così i test in locale non toccano più i dati di produzione (Vercel resta
+  sul branch principale). Procedura in `.kiro/steering/neon.md`.
+
 ### Documentazione
 - Allineata tutta la documentazione allo stato reale: **Neon Postgres + auth custom**
   (non Supabase), Hub `/impostazioni` (non `/admin`), package `ingest`, migrazioni

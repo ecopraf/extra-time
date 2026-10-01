@@ -15,7 +15,8 @@
     "db:migrate": "node scripts/migrate.mjs",
     "db:migrate:status": "node scripts/migrate.mjs --status",
     "db:seed": "node scripts/seed.mjs",
-    "db:setup": "pnpm db:migrate && pnpm db:seed"
+    "db:setup": "pnpm db:migrate && pnpm db:seed",
+    "db:dev-branch": "node scripts/neon-setup-dev-branch.mjs"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1143.0",
