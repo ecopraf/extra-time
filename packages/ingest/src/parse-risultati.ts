@@ -19,9 +19,26 @@ export interface Risultato {
   giornata: number;
   casa: string;
   ospite: string;
-  golCasa: number;
-  golOspite: number;
+  /** Punteggio: null quando la gara non ha un risultato valido (sospesa/rinviata). */
+  golCasa: number | null;
+  golOspite: number | null;
+  /** Esito della gara: "finished" (con punteggio) oppure uno stato speciale. */
+  stato: "finished" | "suspended" | "postponed" | "cancelled";
 }
+
+/**
+ * Codici di stato gara che compaiono NEL CAMPO RISULTATO al posto del punteggio
+ * (abbreviazioni LND). Non sono parte del nome squadra.
+ *  - S.I.A. → gara sospesa (es. per infortunio arbitro), spesso da ripetere
+ *  - RINV.  → rinviata
+ *  - N.D.   → non disputata
+ */
+const STATO_CODE: Array<{ re: RegExp; stato: Risultato["stato"] }> = [
+  { re: /\bS\.?\s?I\.?\s?A\.?\s*$/i, stato: "suspended" },
+  { re: /\b(RINV|RINVIATA)\.?\s*$/i, stato: "postponed" },
+  { re: /\b(SOSP|SOSPESA)\.?\s*$/i, stato: "suspended" },
+  { re: /\b(N\.?D\.?|NON DISPUTATA)\s*$/i, stato: "postponed" },
+];
 
 // Righe che indicano la categoria del blocco risultati (denominazione piena LND).
 const CAT_LINE =
@@ -146,41 +163,49 @@ export function parseRisultati(text: string): Risultato[] {
       continue;
     }
 
-    // Riga risultato: "CASA - OSPITE  golCasa - golOspite" (punteggio in coda).
-    const rM = t.match(/^(.+?)\s+(\d{1,2})\s*-\s*(\d{1,2})\s*$/);
-    if (rM && categoria && girone && giornata) {
-      const teamsPart = rM[1]!.trim();
-      // Separa casa/ospite sul trattino separatore. Lo spazio attorno al "-" è
-      // incostante nei PDF LND. Preferiamo il separatore canonico " - " (spazi su
-      // entrambi i lati); se assente, ripieghiamo su spazio da UN solo lato
-      // ("CASA -OSPITE" / "CASA- OSPITE"). In entrambi i casi usiamo la PRIMA
-      // occorrenza, per non spezzare trattini interni ai nomi.
-      const sepRe = teamsPart.match(/\s+-\s+/) ? /\s+-\s+/ : /\s-\S|\S-\s/;
-      const sepMatch = teamsPart.match(sepRe);
-      if (!sepMatch || sepMatch.index === undefined) continue;
-      let casaStr, ospiteStr;
-      if (sepRe.source === "\\s+-\\s+") {
-        casaStr = teamsPart.slice(0, sepMatch.index);
-        ospiteStr = teamsPart.slice(sepMatch.index + sepMatch[0].length);
-      } else {
-        // match tipo " -X" o "X- ": il trattino è l'ancora, teniamo i nomi interi.
-        const dash = teamsPart.indexOf("-", sepMatch.index);
-        casaStr = teamsPart.slice(0, dash);
-        ospiteStr = teamsPart.slice(dash + 1);
-      }
-      const casa = normalizeTeamName(casaStr);
-      const ospite = normalizeTeamName(ospiteStr);
-      if (casa.length < 2 || ospite.length < 2) continue;
-      rows.push({
-        categoria,
-        girone,
-        giornata,
-        casa,
-        ospite,
-        golCasa: parseInt(rM[2]!, 10),
-        golOspite: parseInt(rM[3]!, 10),
-      });
+    if (!categoria || !girone || !giornata) continue;
+
+    // Due forme di riga gara:
+    //  (a) con punteggio:   "CASA - OSPITE  N - N"
+    //  (b) con codice stato: "CASA - OSPITE  S.I.A." (sospesa/rinviata, no punteggio)
+    const scoreM = t.match(/^(.+?)\s+(\d{1,2})\s*-\s*(\d{1,2})\s*$/);
+    let teamsPart: string | null = null;
+    let golCasa: number | null = null;
+    let golOspite: number | null = null;
+    let stato: Risultato["stato"] = "finished";
+
+    if (scoreM) {
+      teamsPart = scoreM[1]!.trim();
+      golCasa = parseInt(scoreM[2]!, 10);
+      golOspite = parseInt(scoreM[3]!, 10);
+    } else {
+      // nessun punteggio: è una gara con codice di stato in coda?
+      const stCode = STATO_CODE.find((s) => s.re.test(t));
+      if (!stCode) continue; // riga non di gara (nota, intestazione, ecc.)
+      teamsPart = t.replace(stCode.re, "").trim();
+      stato = stCode.stato;
     }
+
+    // Separa casa/ospite sul trattino separatore. Lo spazio attorno al "-" è
+    // incostante nei PDF LND: preferiamo " - " (spazi entrambi i lati), altrimenti
+    // ripieghiamo su spazio da UN solo lato ("CASA -OSPITE" / "CASA- OSPITE").
+    const sepRe = teamsPart.match(/\s+-\s+/) ? /\s+-\s+/ : /\s-\S|\S-\s/;
+    const sepMatch = teamsPart.match(sepRe);
+    if (!sepMatch || sepMatch.index === undefined) continue;
+    let casaStr, ospiteStr;
+    if (sepRe.source === "\\s+-\\s+") {
+      casaStr = teamsPart.slice(0, sepMatch.index);
+      ospiteStr = teamsPart.slice(sepMatch.index + sepMatch[0].length);
+    } else {
+      const dash = teamsPart.indexOf("-", sepMatch.index);
+      casaStr = teamsPart.slice(0, dash);
+      ospiteStr = teamsPart.slice(dash + 1);
+    }
+    const casa = normalizeTeamName(casaStr);
+    const ospite = normalizeTeamName(ospiteStr);
+    if (casa.length < 2 || ospite.length < 2) continue;
+
+    rows.push({ categoria, girone, giornata, casa, ospite, golCasa, golOspite, stato });
   }
   return rows;
 }

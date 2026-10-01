@@ -143,7 +143,22 @@ export async function applyRisultati(
     if (cand.length > 1) res.ambiguous++;
     const target = cand[0]!;
 
-    // Già refertata con lo stesso punteggio? niente da fare (idempotenza).
+    // Gara con codice di stato (sospesa/rinviata): niente punteggio, aggiorna
+    // solo lo status. Non tocca la data (resta l'originale finché non esce la
+    // ripetizione). Idempotente: se già in quello stato, nessun cambiamento.
+    if (r.stato !== "finished") {
+      if (target.status === r.stato) { res.unchanged++; continue; }
+      if (!dry) {
+        await db.query(
+          `update matches set status = $2, updated_at = now() where id = $1`,
+          [target.id, r.stato],
+        );
+      }
+      res.updated++;
+      continue;
+    }
+
+    // Gara con punteggio. Già refertata con lo stesso punteggio? idempotenza.
     if (target.status === "finished" && target.home_score === r.golCasa && target.away_score === r.golOspite) {
       res.unchanged++;
       continue;
