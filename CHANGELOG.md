@@ -47,6 +47,11 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   l'andata): 2958 partite a specchio con data "da definire", poi riempibili dai programma
   gare.
 - U19 Elite lasciato alle 6 giornate reali disponibili (nessun dato fabbricato).
+- **Fix risultati su gare future**: il fallback di `applyRisultati` (match per sole
+  squadre, usato quando la giornata del comunicato non combacia con il calendario DB) non
+  scrive più un punteggio `finished` su una partita con calcio d'inizio nel futuro — una
+  stessa coppia casa/ospite può ricorrere in giornate diverse (andata/ritorno). Corretti 3
+  record U15 Elite che risultavano "giocati" con data futura in home ("ultimi risultati").
 
 ### Portale pubblico — UI/UX
 - **Date delle giornate** sempre visibili in panoramica e calendario: data piena per le

@@ -30,6 +30,20 @@ export interface ApplyRisultatiResult {
  * Applica i risultati al DB. Con `dry: true` calcola solo cosa cambierebbe.
  */
 /**
+ * Una gara è "nel futuro" se il suo calcio d'inizio cade oltre un piccolo
+ * margine da adesso. Il margine (36h) evita falsi positivi per partite dello
+ * stesso turno il cui orario esatto è successivo al momento dell'import: un
+ * risultato ufficiale esce sempre a gara conclusa, mai con giorni di anticipo.
+ */
+function isFutureKickoff(kickoff: Date | string | null, now: Date = new Date()): boolean {
+  if (kickoff == null) return false;
+  const t = kickoff instanceof Date ? kickoff.getTime() : Date.parse(String(kickoff));
+  if (Number.isNaN(t)) return false;
+  const marginMs = 36 * 60 * 60 * 1000;
+  return t > now.getTime() + marginMs;
+}
+
+/**
  * Decide se una categoria è ammessa per il settore del comunicato.
  * - "giovanili" (comunicati SGS): U14..U17 (Regionale/Elite), più U19.
  * - "dilettanti" (comunicati Dilettanti): Eccellenza/Promozione/Prima/Seconda,
@@ -83,6 +97,7 @@ export async function applyRisultati(
   type MatchRow = {
     id: string; matchday: number | null; home_name: string; away_name: string;
     home_score: number | null; away_score: number | null; status: string;
+    kickoff_at: Date | string | null;
   };
   const groupsByCode = new Map<string, string[]>();
   for (const g of groups) {
@@ -100,7 +115,7 @@ export async function applyRisultati(
   const matchesByGroup = new Map<string, MatchRow[]>();
   for (const gid of neededGroupIds) {
     const { rows } = await db.query<MatchRow>(
-      `select m.id, m.matchday, m.status, m.home_score, m.away_score,
+      `select m.id, m.matchday, m.status, m.home_score, m.away_score, m.kickoff_at,
               ch.canonical_name as home_name, ca.canonical_name as away_name
          from matches m
          join teams th on th.id = m.home_team_id join clubs ch on ch.id = th.club_id
@@ -133,9 +148,16 @@ export async function applyRisultati(
       if (withDay.length > 0) { cand = withDay; break; }
     }
     if (cand.length === 0) {
+      // Fallback "solo squadre": utile quando il calendario DB ha una giornata
+      // leggermente diversa da quella del comunicato. MA una stessa coppia
+      // casa/ospite può ricorrere in giornate diverse (andata/ritorno, incroci):
+      // se scrivessimo su una gara con kickoff FUTURO marcheremmo "giocata" una
+      // partita non ancora disputata. Per un risultato `finished` scartiamo
+      // quindi i candidati con data nel futuro; se non resta nulla è un miss.
       for (const gid of tryGroups) {
         const matches = matchesByGroup.get(gid) || [];
-        const anyDay = matches.filter((m) => sameTeam(m.home_name, r.casa) && sameTeam(m.away_name, r.ospite));
+        let anyDay = matches.filter((m) => sameTeam(m.home_name, r.casa) && sameTeam(m.away_name, r.ospite));
+        if (r.stato === "finished") anyDay = anyDay.filter((m) => !isFutureKickoff(m.kickoff_at));
         if (anyDay.length > 0) { cand = anyDay; break; }
       }
     }
