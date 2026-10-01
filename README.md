@@ -26,7 +26,7 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 - [`docs/football-data-core.md`](docs/football-data-core.md) — modello dati e ID condivisi YFM↔EXTRA TIME
 - [`docs/data-model.md`](docs/data-model.md) — design del modello dati ([`db/migrations/`](db/migrations))
 - [`docs/architecture.md`](docs/architecture.md) — architettura tecnica e stack (stato attuale + obiettivo)
-- [`docs/open-questions.md`](docs/open-questions.md) — domande aperte da chiarire prima dello sviluppo
+- [`docs/open-questions.md`](docs/open-questions.md) — domande aperte di prodotto/business
 - [`AGENTS.md`](AGENTS.md) — contesto per gli agenti AI
 
 ## Identità visiva
@@ -55,18 +55,24 @@ per mancanza di opportunità non riescono a mettersi in mostra.
 
 ## Stato
 
-**Fase 1** (in corso) — MVP informativo del Football Data Core. Database versionato a
-migrazioni con dataset pilota Lazio, pagine pubbliche navigabili per territorio e un
-backoffice minimo per inserire dati.
+**Fine Fase 1 / inizio Fase 2.** Il pilota **Lazio** è online su Vercel
+(`extra-time-fawn.vercel.app`): Football Data Core su Neon Postgres (stagione 2026/2027,
+~66 gironi), portale pubblico per territorio e Hub Impostazioni con autenticazione.
 
 Già disponibile:
 
 - Rotta pubblica gerarchica: `/{regione}/{provincia}/{categoria}/{girone}`
   (es. `/laz/rm/u15/a`) con classifica calcolata dal dominio, risultati, prossime partite
   e capocannonieri. Rigenerazione ISR.
-- Backoffice minimo su `/admin?token=…` (token condiviso `ADMIN_TOKEN`): crea club,
-  squadre (con iscrizione al girone), gironi e partite, registra i risultati.
-- CI GitHub Actions con Postgres di servizio: migrazioni + seed + typecheck + test + build.
+- **Hub Impostazioni** (`/impostazioni`) con **login e auth custom** (scrypt + sessioni,
+  7 ruoli): backoffice gerarchico Settore → Campionato → Girone, editor risultati,
+  anagrafica, monitoraggio dei comunicati LND.
+- **Import calendari LND**: package `@extra-time/ingest` + `scripts/import-sgs/*` e
+  l'endpoint admin `/api/import-comunicato` per applicare un "programma gare" dall'UI
+  (anteprima + conferma). Un badge sull'icona Impostazioni segnala i comunicati da rivedere.
+- CI GitHub Actions (`ci.yml`) con Postgres di servizio: migrazioni + seed + typecheck +
+  lint + test + build. Un workflow `watch-comunicati.yml` apre una issue quando escono
+  nuovi comunicati LND.
 
 **Fase 0** — definizione del modello, completata: documentazione, schema dati e scaffold
 del monorepo.
@@ -88,17 +94,22 @@ extra-time/
 ├── packages/
 │   ├── types/                   tipi del Football Data Core
 │   ├── football-domain/         logica di dominio (classifiche) + test
-│   ├── database/                accesso al core (schema in db/)
+│   ├── database/                accesso al core (schema in db/) + ./auth (sessioni, RBAC)
+│   ├── ingest/                  import comunicati LND (parse/apply programma gare, pdf)
 │   └── ui/                      design system (palette, token, componenti)
 ├── db/
 │   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)
 │   ├── seeds/                   dati pilota (scripts/seed.mjs)
 │   └── smoke_test.sql           smoke test dello schema (rollback, non lascia dati)
-├── scripts/                     runner di migrazioni e seed
-└── infrastructure/docker/       Postgres locale
+├── scripts/
+│   ├── migrate.mjs, seed.mjs    runner di migrazioni e seed
+│   ├── create-admin.mjs         crea un utente admin per l'Hub
+│   └── import-sgs/              pipeline import calendari LND (extract/build-seed/watch)
+└── infrastructure/docker/       Postgres locale (opzione secondaria: in prod è Neon)
 ```
 
-Requisiti: Node 20+, pnpm 9, Docker (per il Postgres locale).
+Requisiti: Node 20+, pnpm 9. Il DB è **Neon Postgres** (lo stesso in locale e in
+produzione); Docker serve solo per un Postgres locale alternativo.
 
 ### Avvio su macOS (prima volta)
 
@@ -114,22 +125,23 @@ corepack prepare pnpm@9.15.0 --activate
 # 3. Dipendenze del workspace
 pnpm install
 
-# 4. Postgres locale in Docker (porta 5432)
-docker compose -f infrastructure/docker/docker-compose.yml up -d
-
-# 5. Variabili d'ambiente: copia l'esempio e lascia i valori di default
+# 4. Variabili d'ambiente: imposta DATABASE_URL (Neon) in .env.local
 cp .env.example .env.local
+#    e incolla la connection string Neon in DATABASE_URL.
+#    In alternativa, Postgres locale in Docker:
+#    docker compose -f infrastructure/docker/docker-compose.yml up -d
 
-# 6. Schema e dati pilota (idempotente: si puo' rilanciare)
+# 5. (solo per un DB nuovo) schema e dati pilota — idempotente
 pnpm db:setup
 
-# 7. Avvia il portale
+# 6. Avvia il portale
 pnpm --filter @extra-time/web dev
 # http://localhost:3000
 ```
 
-Nota: se hai gia' un Postgres sulla porta 5432, il compose non parte. Cambia la porta in
-`infrastructure/docker/docker-compose.yml` **e** il `DATABASE_URL` in `.env.local`.
+Attenzione: il DB Neon è **condiviso tra locale e produzione**. Se usi la connection string
+di produzione, le modifiche (seed, migrazioni, dati) toccano i dati reali. Per sviluppo
+isolato conviene un branch Neon dedicato o il Postgres locale in Docker.
 
 `pnpm db:setup` legge `.env.local`, quindi non serve esportare nulla a mano.
 
@@ -148,11 +160,13 @@ pnpm db:migrate:status                           # stato delle migrazioni
 
 Con `DATABASE_URL` impostato, in alternativa gli script usano `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`.
 
-Backoffice locale:
+Backoffice (Hub Impostazioni):
 
 ```bash
-ADMIN_TOKEN=cambiami pnpm --filter @extra-time/web dev
-# poi apri http://localhost:3000/admin?token=cambiami
+# crea un utente admin (una volta), poi accedi dall'interfaccia
+node scripts/create-admin.mjs
+pnpm --filter @extra-time/web dev
+# poi apri http://localhost:3000/impostazioni e fai login
 ```
 
 ## Licenza

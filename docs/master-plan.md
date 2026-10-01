@@ -3,6 +3,10 @@
 Documento da condividere con Vittorio. Descrive il percorso **Fase 0 → Fase 10** con
 deliverable, funzionalità, dipendenze, KPI e ciò che **non** va ancora sviluppato.
 
+> **Stato (ottobre 2026): fine Fase 1 / inizio Fase 2.** Fase 0 (modello/architettura) e
+> gran parte della Fase 1 (campionati/risultati, pilota Lazio) sono realizzate e online.
+> Le fasi successive restano come pianificate sotto.
+
 > Principio guida: ogni fase deve essere **utilizzabile senza aspettare quella successiva**.
 > Ordine di valore: **Audience → Utilità → Network → Monetizzazione**.
 

@@ -11,9 +11,16 @@ Tutta la documentazione e le comunicazioni con il committente sono in **italiano
 Piattaforma digitale per dare visibilità al **calcio dilettantistico e giovanile italiano**.
 Vedi `docs/product-vision.md` per vision, target, perimetro, roadmap e KPI.
 
+## Stato attuale
+
+**Fine Fase 1 / inizio Fase 2.** Il pilota Lazio è live su Vercel
+(`extra-time-fawn.vercel.app`): portale pubblico, backoffice (Hub Impostazioni) con auth,
+pipeline di import calendari dai comunicati LND. La Fase 0 (docs-first) è conclusa da tempo.
+
 ## Approccio: docs-first, fasi a valore autonomo
 
-- **La Fase 0 non produce codice.** Produce visione, modello dati e architettura.
+- La **Fase 0 non produce codice** (principio di metodo, ormai superato): produsse visione,
+  modello dati e architettura.
 - Non partire da homepage/index o dalla tecnologia: parti dal **modello editoriale/prodotto**
   e dalla **sequenza di valore**.
 - Ogni fase della roadmap deve essere **utilizzabile senza aspettare la successiva**.
@@ -25,11 +32,14 @@ Vedi `docs/product-vision.md` per vision, target, perimetro, roadmap e KPI.
 - Il **Football Data Core** è l'asset centrale: le aree (Match, Stats, News, Live, Scout) sono
   viste sullo stesso core, non moduli separati. Vedi `docs/football-data-core.md`.
 - **Modular monolith**, non microservizi (almeno all'inizio).
-- **ID univoci condivisi** di Club, Team, Player, Match tra YFM ed EXTRA TIME sono una
-  decisione da prendere prima di sviluppare.
+- **ID univoci condivisi** di Club, Team, Player, Match tra YFM ed EXTRA TIME: decisione
+  **chiusa** (vedi `docs/yfm-mapping.md`), implementata con il campo `yfm_id` (migrazione
+  `0002_yfm_id_links`), flusso unidirezionale YFM → ET.
 - **Data ingestion** centralizzata con validation + normalization; nessuna schermata legge
-  direttamente dalle fonti originali.
-- Stack di riferimento in `docs/architecture.md` (Next.js + TypeScript + Supabase + Vercel).
+  direttamente dalle fonti originali. L'import dei comunicati LND vive in
+  `packages/ingest` + `scripts/import-sgs/*`.
+- Stack: **Next.js (App Router) + TypeScript + Neon Postgres + Vercel**. Auth custom
+  (scrypt + sessioni), **non** Supabase. Dettagli in `docs/architecture.md`.
 
 ## Relazione con Youth Football Manager (YFM)
 
@@ -94,20 +104,26 @@ docs: documentazione
   riconoscibile anche a 32×32.
 - Anteprima condivisibile: `/presentazione` (pagina di presentazione, non prodotto finale).
 
-## Backoffice
+## Hub Impostazioni / backoffice (`/impostazioni`)
 
-- Pannello minimo su `/admin`, protetto da token condiviso `ADMIN_TOKEN` via query string.
-  Se la variabile non è impostata il pannello è disabilitato.
-- Le scritture passano da **Server Actions** in `apps/web/src/app/admin/actions.ts`, che
-  chiamano le funzioni di scrittura di `@extra-time/database`. Non creare API route separate
-  per ora.
-- L'autenticazione vera (Supabase Auth, ruoli) sostituirà il token in una fase successiva.
+- Hub riservato con **autenticazione custom** (hashing `scrypt` + sessioni server-side,
+  tabella `user_sessions`, cookie `et_session`, `middleware.ts`, 7 ruoli RBAC — migrazione
+  `0003_auth_users`). Login a `/impostazioni/login`; crea un admin con
+  `node scripts/create-admin.mjs`. **Non è Supabase/NextAuth.**
+- Navigazione gerarchica **Settore → Campionato → Girone**. Sotto-pagine: `monitoraggio`
+  (comunicati LND), `anagrafica` (creazioni), editor risultati per girone.
+- Le scritture di base passano da **Server Actions** (`apps/web/src/app/impostazioni/actions.ts`).
+- **API route** quando serve runtime Node o lavoro non banale: `/api/import-comunicato`
+  (admin) applica un singolo "programma gare" (fetch PDF → parse → apply, anteprima +
+  conferma) e marca il comunicato come visto (`comunicati_seen`, migrazione `0004`).
+- Il vecchio `/admin` con `ADMIN_TOKEN` è stato **rimosso**.
 
 ## Portale pubblico (`apps/web/src/app`)
 
 - Route territoriali annidate: `/[region]/[province]/[category]/[group]`. I codici sono
   brevi (`LAZ`, `RM`), non i nomi estesi: `/laz/rm/u15/a`.
-- Route indice: `/` (home), `/calcio`, `/risultati`, `/classifiche`, `/live`.
+- Route indice: `/` (home), `/campionati`, `/risultati`, `/classifiche`, `/live`, `/news`,
+  `/scout`. Hub riservato: `/impostazioni`.
 - Lo stile del portale usa classi `.portal-*` in `globals.css` (nav, hero, card, tabella,
   riga partita). Non riusare `.proto-*` (prototipo) né `.pres-*` (presentazione): sono
   prefissi separati per non interferire.
@@ -124,8 +140,12 @@ docs: documentazione
   `scripts/migrate.mjs` (tabella di controllo `schema_migrations`). Non modificare una
   migrazione già applicata: aggiungine una nuova.
 - Seed dati: `db/seeds/*.sql`, applicati da `scripts/seed.mjs` (idempotenti, `ON CONFLICT`).
+- Migrazioni attuali: `0001_initial_schema`, `0002_yfm_id_links`, `0003_auth_users`
+  (auth/sessioni/ruoli), `0004_comunicati_seen` (stato comunicati visti).
 - Comandi: `pnpm db:setup` (migrazioni + seed), `pnpm db:migrate`, `pnpm db:seed`,
   `pnpm db:migrate:status`.
+- **DB Neon condiviso tra locale e produzione** (nessun branch di dev dedicato ancora): le
+  modifiche in locale toccano i dati di produzione. Vedi `.kiro/steering/neon.md`.
 - Connessione: `DATABASE_URL`, oppure `PGHOST`/`PGPORT`/`PGUSER`/`PGDATABASE`/`PGPASSWORD`.
 - Gli script DB **leggono `.env.local`** (poi `.env`) da `scripts/load-env.mjs`: non serve
   esportare `DATABASE_URL` a mano per `pnpm db:setup`.

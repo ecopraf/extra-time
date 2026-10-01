@@ -32,6 +32,17 @@ inclusion: always
 - Solo query e mapping ai tipi, **nessuna business logic**.
 - Le query filtrano quasi ovunque sulla stagione corrente (`seasons.is_current`).
 - Le funzioni sono divise in letture (portale/territorio) e scritture (admin).
+- Espone anche `./auth` (hashing scrypt, sessioni, RBAC) usato dall'Hub Impostazioni.
+
+## Import calendari (`packages/ingest`)
+
+- Logica condivisa (pura TS) per l'import dei comunicati "programma gare" LND:
+  `parseProgrammaGare`, `applyProgrammaGare(db, gare, {dry, source})`, `fetchPdfText`.
+- Usata sia dagli script CLI (`scripts/import-sgs/*`) sia dal web
+  (`/api/import-comunicato`). La parità con gli script `.mjs` è verificata.
+- Dipende da `pdf-parse` (importato come `pdf-parse/lib/pdf-parse.js` per evitare il
+  side-effect dell'index). Gli import interni al package sono **senza estensione `.js`**
+  (moduleResolution Bundler + webpack).
 
 ## Design system (`packages/ui`)
 
@@ -50,7 +61,8 @@ inclusion: always
 
 - Route territoriali annidate: `/[region]/[province]/[category]/[group]`. Codici brevi
   (`LAZ`, `RM`), non nomi estesi: es. `/laz/rm/u15/a`.
-- Route indice: `/` (home), `/calcio`, `/risultati`, `/classifiche`, `/live`.
+- Route indice: `/` (home), `/campionati`, `/risultati`, `/classifiche`, `/live`,
+  `/news`, `/scout`. Hub riservato: `/impostazioni`.
 - Classifiche: **sempre** `computeStandings`, mai la tabella `standings` salvata.
 - `revalidate` (ISR): 300s per gli indici, 120s per risultati/gironi, 30s per `/live`.
 - La riga partita è il componente condiviso `apps/web/src/components/MatchRow.tsx`.
@@ -61,12 +73,19 @@ inclusion: always
 - `.proto-*` — prototipo navigabile (`/prototipo`, dati finti, vetrina).
 - `.pres-*` — pagina di presentazione (`/presentazione`, condivisibile, non prodotto finale).
 
-## Backoffice (`/admin`)
+## Hub Impostazioni / backoffice (`/impostazioni`)
 
-- Pannello minimo protetto da token condiviso `ADMIN_TOKEN` via query string. Se la
-  variabile non è impostata, il pannello è disabilitato.
-- Le scritture passano da **Server Actions** in `apps/web/src/app/admin/actions.ts`, che
-  chiamano le funzioni di scrittura di `@extra-time/database`. **Non creare API route
-  separate per ora.**
-- L'autenticazione vera (Supabase Auth / ruoli, tabelle RBAC già presenti ma non usate)
-  sostituirà il token in una fase successiva.
+- Hub riservato con **autenticazione custom** (niente Supabase/NextAuth): hashing
+  `scrypt` + sessioni server-side (tabella `user_sessions`, cookie `et_session`),
+  `middleware.ts` protegge le route, 7 ruoli RBAC (migrazione `0003_auth_users`).
+  Login a `/impostazioni/login`; `requireAdmin` nelle Server Actions.
+- Navigazione gerarchica **Settore → Campionato → Girone** (come il portale), non liste
+  piatte. Sotto-pagine: `monitoraggio` (comunicati LND), `anagrafica` (creazioni),
+  editor risultati per girone.
+- Le scritture di base passano da **Server Actions** in
+  `apps/web/src/app/impostazioni/actions.ts`.
+- **API route** quando serve runtime Node o lavoro non banale: es.
+  `/api/import-comunicato` (admin) applica un singolo "programma gare"
+  (fetch PDF → parse → apply, anteprima dry-run + conferma) e marca il comunicato come
+  visto (`comunicati_seen`, migrazione `0004`).
+- Il vecchio pannello `/admin` con `ADMIN_TOKEN` in query string è **rimosso**.

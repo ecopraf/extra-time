@@ -1,7 +1,9 @@
 # EXTRA TIME — Product Vision v0.1
 
-> Documento di lavoro. Fase 0 — Definizione del modello.
-> Questa fase **non produce codice**: produce visione, perimetro, sequenza di valore e KPI.
+> Documento di visione, nato in Fase 0 (definizione del modello: visione, perimetro,
+> sequenza di valore, KPI). **Aggiornamento**: la Fase 0 è conclusa — il prodotto è in
+> **fine Fase 1 / inizio Fase 2**, con il pilota Lazio online. Questo documento resta la
+> fonte della visione; per lo stato tecnico vedi `README.md` e `docs/architecture.md`.
 
 ## 1. Vision
 

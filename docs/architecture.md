@@ -1,7 +1,12 @@
 # EXTRA TIME — Architettura Tecnica
 
-> Scelta di partenza: **Next.js + TypeScript + PostgreSQL/Supabase + Vercel**, con
+> Stack in uso: **Next.js (App Router) + TypeScript + Neon Postgres + Vercel**, con
 > architettura modulare e un Football Data Core separato concettualmente dal frontend.
+>
+> **Nota sulle scelte di piattaforma**: in origine si valutava Supabase (DB/Auth/Storage/
+> Realtime). La scelta effettiva è **Neon** per il Postgres serverless e un'**autenticazione
+> custom** leggera (scrypt + sessioni server-side), senza Supabase/NextAuth. Dove sotto si
+> legge "Supabase" come piattaforma backend, va inteso come alternativa storica non adottata.
 
 ## 0. Stato attuale vs obiettivo
 
@@ -13,17 +18,20 @@ Le sezioni sono etichettate di conseguenza.
 frontend, in package dedicati:
 
 ```
-apps/web/                     Next.js — solo presentazione (app/, server components)
+apps/web/                     Next.js — presentazione + Hub Impostazioni (app/, RSC)
 packages/football-domain/     logica di dominio pura (classifiche, calendario) + test
-packages/database/            accesso PostgreSQL: query di lettura e scrittura (pg)
+packages/database/            accesso Neon Postgres (pg) + ./auth (scrypt, sessioni, RBAC)
+packages/ingest/              import comunicati LND (parse/apply programma gare, pdf)
 packages/types/               tipi condivisi del Football Data Core (ID condivisi con YFM)
 packages/ui/                  design system (palette, token, componenti)
 db/migrations/ + db/seeds/    schema versionato e dati pilota (idempotenti)
-scripts/                      runner di migrazioni e seed
+scripts/                      migrazioni, seed, create-admin, import-sgs (calendari LND)
 ```
 
 Principi già in vigore: la business logic non sta nel frontend né nel database; le pagine
-pubbliche leggono dal Core; il backoffice scrive tramite Server Actions.
+pubbliche leggono dal Core; il backoffice scrive tramite Server Actions e, quando serve
+runtime Node, via API route (es. `/api/import-comunicato`). Deploy su Vercel
+(`extra-time-fawn.vercel.app`), DB Neon condiviso tra locale e produzione.
 
 **Obiettivo.** La struttura a `modules/` descritta nella sezione 3 è la **destinazione**
 (modular monolith con moduli football/editorial/live/scouting/media), non lo stato attuale:
@@ -71,7 +79,7 @@ Server Components, SSR, Static Generation, ISR e Client Components.
               │               │                │
               └───────────────┼────────────────┘
                               │
-                       PostgreSQL / Supabase
+                        Neon PostgreSQL
                               │
           ┌───────────────────┼──────────────────┐
           │                   │                  │
@@ -122,18 +130,17 @@ src/
 Non partire con microservizi: per il livello iniziale sarebbe overhead. Quando qualcosa
 diventa realmente pesante, lo si estrae.
 
-## 4. Supabase: piattaforma, non business logic
+## 4. Piattaforma: Neon + servizi dedicati (non Supabase)
 
 ```
-Supabase
-│
-├── PostgreSQL
-├── Auth
-├── Storage
-└── Realtime
+Neon Postgres            ← database serverless (il Core)
+Auth custom (scrypt)     ← sessioni server-side in user_sessions, cookie et_session
+Storage: Cloudflare R2   ← media/loghi (vedi docs/hosting-e-archivio.md)
+Realtime: da definire     ← per il Live (Fase 4), non ancora adottato
 ```
 
-La **business logic importante resta nell'application layer**, non dentro Supabase.
+La **business logic importante resta nell'application layer** (package del Core), non nella
+piattaforma. Scelta storica scartata: Supabase come backend-all-in-one.
 
 ## 5. Rendering e caching delle pagine pubbliche
 
@@ -161,17 +168,18 @@ Match
  ├── substitution
  └── other event
        ↓
-Realtime (Supabase Realtime)
+Realtime (provider da definire)
        ↓
 Client (/live/match/123)
 ```
 
 Tutti gli utenti collegati vedono l'evento quasi immediatamente. Il live **alimenta
-automaticamente il Football Data Core**.
+automaticamente il Football Data Core**. Il meccanismo realtime (SSE, polling o un servizio
+dedicato) sarà scelto in Fase 4; non è ancora implementato.
 
-## 7. Video: fuori da Supabase
+## 7. Video: fuori dal database
 
-Se "LIVE" significa streaming video, **non** costruire `Camera → Supabase → Next.js`.
+Se "LIVE" significa streaming video, **non** passare il flusso video dal database.
 
 Usare in futuro un **provider video specializzato**, mentre EXTRA TIME mantiene nel proprio
 database `video_id`, `match_id`, `player_id`, `timestamp`, `metadata`.
@@ -186,56 +194,63 @@ Valutare un **headless CMS** per la parte editoriale:
 
 ```
 Next.js
- ├── Football Data → Supabase
- └── Editorial     → Headless CMS
+ ├── Football Data → Neon Postgres (il Core)
+ └── Editorial     → Headless CMS (da valutare in Fase 3)
 ```
 
 Così la redazione crea articoli, categorie, tag, autori, immagini, gallery, contenuti
 speciali senza entrare nell'area tecnica.
 
-## 9. Backoffice `/admin`
+## 9. Hub Impostazioni / backoffice (`/impostazioni`)
 
-Il backoffice è **fondamentale** fin dall'inizio. Sezioni:
+Il backoffice è **fondamentale** fin dall'inizio. Oggi vive in `/impostazioni` (non più
+`/admin`), con navigazione gerarchica Settore → Campionato → Girone. Aree:
 
-- **Data Management** — competizioni, squadre, giocatori, partite, risultati
-- **Editorial** — articoli, immagini, video, homepage
-- **Live** — gestione evento, cronaca, formazione
-- **Scout** — profili, report, segnalazioni
-- **Moderation** — contenuti, utenti, segnalazioni
-- **Data Quality** — segnalazioni sui dati incompleti/duplicati
+- **Data Management** — competizioni, squadre, giocatori, partite, risultati (editor
+  risultati per girone; anagrafica per le creazioni) — *implementato*
+- **Monitoraggio calendari** — comunicati LND, con "Applica" per i programma gare — *implementato*
+- **Editorial** — articoli, immagini, video, homepage — *Fase 3*
+- **Live** — gestione evento, cronaca, formazione — *Fase 4*
+- **Scout** — profili, report, segnalazioni — *Fase 6*
+- **Moderation / Data Quality** — contenuti, utenti, segnalazioni sui dati — *futuro*
 
 ## 10. Auth e ruoli (RBAC)
 
-Supabase Auth, ma progettare da subito RBAC:
+**Autenticazione custom** (implementata, migrazione `0003_auth_users`): hashing `scrypt`,
+sessioni server-side in `user_sessions` (cookie opaco `et_session`), `middleware.ts` a
+protezione delle route. **Non** Supabase Auth / NextAuth. Ruoli RBAC previsti:
 
 ```
 SUPER ADMIN → ADMIN → REDAZIONE → LIVE OPERATOR → SCOUT → CLUB → COACH → USER
 ```
 
-Non serve implementarli tutti subito, ma il modello deve supportarli.
+I 7 ruoli sono in tabella; oggi è attivo soprattutto ADMIN per l'Hub. Crea un admin con
+`node scripts/create-admin.mjs`.
 
 ## 11. Monorepo
+
+Oggi (una sola app, il backoffice è dentro `apps/web` come `/impostazioni`):
 
 ```
 extra-time/
 │
 ├── apps/
-│   ├── web/
-│   ├── admin/
-│   └── maybe-mobile/
+│   └── web/                  portale pubblico + Hub Impostazioni
 │
 ├── packages/
 │   ├── ui/
-│   ├── database/
+│   ├── database/             (+ ./auth)
+│   ├── ingest/               import comunicati LND
 │   ├── football-domain/
-│   ├── types/
-│   └── config/
+│   └── types/
 │
+├── db/ (migrations, seeds)
+├── scripts/ (migrate, seed, create-admin, import-sgs)
 └── infrastructure/
 ```
 
-Con **pnpm + Turborepo**, oppure una struttura Next.js più semplice all'inizio. Non servono
-tre applicazioni dal giorno 1, ma il concetto di monorepo permette di arrivarci.
+Con **pnpm + Turborepo**. Non servono app separate dal giorno 1: eventuali `admin/` o
+`maybe-mobile/` si aggiungeranno solo se e quando servono.
 
 ## 12. Mobile
 
@@ -244,26 +259,24 @@ utenti reali valutare React Native / Expo.
 
 ## 13. Stack concreto di partenza
 
-| Componente | Scelta |
-|------------|--------|
-| Frontend | Next.js |
-| Linguaggio | TypeScript |
-| UI | Tailwind CSS |
-| Componenti | shadcn/ui |
-| Database | PostgreSQL |
-| Backend platform | Supabase |
-| Auth | Supabase Auth |
-| Realtime | Supabase Realtime |
-| Storage | Supabase Storage (inizialmente) |
-| Hosting | Vercel |
-| CMS | Headless CMS |
-| Validation | Zod |
-| ORM/query | Drizzle o Supabase client |
-| Monorepo | pnpm / Turborepo |
-| Analytics | soluzione semplice |
-| Monitoring | Sentry |
-| Video | provider esterno |
-| Mobile | PWA → eventualmente Expo |
+| Componente | Scelta attuale | Note |
+|------------|----------------|------|
+| Frontend | Next.js (App Router) | React Server Components |
+| Linguaggio | TypeScript | |
+| UI | CSS scritto a mano (`globals.css`) | Tailwind/shadcn **non** adottati |
+| Database | **Neon** Postgres (via `pg`) | serverless; condiviso locale+prod |
+| Backend platform | nessuna all-in-one | **non** Supabase |
+| Auth | **custom** (scrypt + sessioni) | tabella `user_sessions`, cookie `et_session` |
+| Realtime | da definire (Fase 4) | non ancora adottato |
+| Storage | Cloudflare R2 | media/loghi |
+| Hosting | Vercel | `extra-time-fawn.vercel.app` |
+| CMS | Headless CMS (da valutare, Fase 3) | |
+| Validation | validazione manuale nel data layer | Zod non ancora introdotto |
+| ORM/query | query SQL dirette (`pg`) | nessun ORM |
+| Monorepo | pnpm / Turborepo | |
+| Monitoring | da definire (Sentry candidato) | |
+| Video | provider esterno (futuro) | |
+| Mobile | PWA → eventualmente Expo | |
 
 ## 14. Principio guida
 

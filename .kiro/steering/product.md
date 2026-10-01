@@ -36,6 +36,7 @@ Perimetro pilota: **Lazio**.
 ## Approccio: docs-first, fasi a valore autonomo
 
 - La **Fase 0 non produce codice**: produce visione, modello dati e architettura.
+  (Principio di metodo: la Fase 0 è conclusa da tempo — il codice e il pilota Lazio esistono.)
 - Non partire da homepage/tecnologia: partire dal **modello editoriale/prodotto** e dalla
   **sequenza di valore**.
 - Ogni fase della roadmap deve essere **utilizzabile senza aspettare la successiva**.

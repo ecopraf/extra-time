@@ -1,9 +1,10 @@
 # EXTRA TIME — Open Questions (per Vittorio)
 
-Domande da chiarire **prima** di scrivere codice. Non sono bloccanti tutte allo stesso
-livello: sono ordinate per priorità.
+Domande ordinate per priorità. **Aggiornamento (fine Fase 1):** diverse domande di
+Priorità 1–2 sono ormai **risolte** dalla costruzione del pilota Lazio; sono marcate con
+✅ qui sotto. Restano aperte soprattutto le domande di prodotto/business (Priorità 3–4).
 
-## Priorità 1 — Bloccanti per la Fase 0/1
+## Priorità 1 — (in gran parte risolte in Fase 1)
 
 1. **Cosa intendi esattamente per "LIVE"?**
    Testuale (gol/cambi), editoriale (cronaca+foto), video, o premium (video+telecronaca+dati)?
@@ -13,25 +14,24 @@ livello: sono ordinate per priorità.
    FIGC, LND, Comitato Regionale Lazio, società? PDF, CSV, API, inserimento manuale?
    Chi ce le fornisce e con quale accordo?
 
-3. **Chi inserisce e aggiorna i dati sui campi?**
-   Redazione interna, referenti per girone, dirigenti delle società, volontari?
-   Quante persone e quante ore/settimana?
+3. **Chi inserisce e aggiorna i dati sui campi?** *(ancora aperta — rilevante per i
+   risultati)* Redazione interna, referenti per girone, dirigenti delle società, volontari?
+   Oggi orari/date si aggiornano dai comunicati LND (import da UI); l'inserimento **risultati**
+   è il prossimo flusso da definire (manuale dall'Hub vs import). Vedi la proposta dedicata.
 
-4. **ID condivisi YFM ↔ EXTRA TIME: confermiamo la decisione?**
-   Progettare da subito un identificativo univoco di Club, Team, Player, Match condiviso tra i
-   due sistemi. È la decisione architetturale più importante.
+4. ✅ **ID condivisi YFM ↔ EXTRA TIME.** *Risolta* (`docs/yfm-mapping.md`): campo `yfm_id`
+   come stringa opaca, flusso unidirezionale YFM → ET (migrazione `0002_yfm_id_links`).
 
-5. **YFM entra in EXTRA TIME o resta un prodotto separato collegato?**
-   La nostra proposta: restano separati (EXTRA TIME = pubblico, YFM = B2B) ma integrati sullo
-   stesso Football Data Core. Confermi?
+5. ✅ **YFM separato o integrato.** *Risolta*: restano separati (ET pubblico, YFM B2B),
+   integrati sullo stesso Football Data Core, DB distinti.
 
-## Priorità 2 — Necessarie per definire il perimetro
+## Priorità 2 — (in parte risolte)
 
-6. **Categorie esatte della Fase 1?**
-   Proposta: U14–U18, Juniores, Prima Categoria, Promozione, Eccellenza. Serie D dopo. Ok?
+6. ✅ **Categorie della Fase 1.** *Risolta* per il pilota: giovanili U14–U19 (Regionale +
+   Elite) e dilettanti Eccellenza/Promozione/Prima/Seconda Categoria.
 
-7. **Perimetro geografico del pilota?**
-   Tutto il Lazio o si parte da una provincia (es. Roma)? Quanti gironi in totale?
+7. ✅ **Perimetro geografico del pilota.** *Risolta*: **Lazio**, stagione 2026/2027,
+   ~66 gironi.
 
 8. **"News"**: chi scrive? Con che cadenza? Vogliamo partire con contenuti generati dai dati
    (es. "risultati della giornata") o con redazione vera da subito?

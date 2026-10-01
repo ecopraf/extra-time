@@ -38,7 +38,7 @@ Quindi "tutto gratuito" significa, in pratica: **Vercel Hobby + Neon Free + R2 F
 | **Media** | **Cloudflare R2** | 10 GB archiviazione, **uscita gratis**, 1M scritture + 10M letture |
 | **Email** | **Resend** | 3.000 email/mese, **100/giorno** |
 | **Ricerca** | Postgres full-text | incluso, nessun servizio in più |
-| **Auth** | rinviata | Supabase Auth quando serve l'area scout |
+| **Auth** | **custom, già attiva** | scrypt + sessioni server-side su Neon; nessun costo né servizio esterno |
 
 **Perché Neon Free e non Supabase Free:** il piano gratuito di Supabase **mette in pausa i
 progetti dopo 7 giorni di inattività** e va riattivato a mano. Neon invece si sospende da
@@ -78,9 +78,9 @@ piano gratuito e, per inciso, rende il sito più veloce.
 | Segnale | Azione |
 |---|---|
 | Primo ricavo (pubblicità, sponsor, abbonamento) | **Vercel Pro obbligatorio** ($20/seat) |
-| Database oltre 400 MB o query lente | Neon Launch (~$5–20) o Supabase Pro ($25) |
+| Database oltre 400 MB o query lente | Neon Launch (~$5–20) |
 | Immagini oltre 10 GB o molte visualizzazioni | R2 a consumo (centesimi) |
-| Serve l'area scout con login | Supabase Pro ($25, include Auth) |
+| Serve l'area scout con login | nessun costo auth: è già custom su Neon |
 
 ### Sull'integrazione futura con YFM
 
@@ -141,13 +141,13 @@ Vercel Pro è automatico al primo ricavo, non prima.
 | Servizio | Scelta consigliata | Perché |
 |---|---|---|
 | **Frontend / SSR** | **Vercel Hobby** ora → Pro al primo ricavo | Next.js nativo, preview, ISR |
-| **Database** | **Neon Free** ora → Neon Launch o Supabase Pro dopo | Postgres gestito; separato da YFM come deciso |
+| **Database** | **Neon Free** ora → Neon Launch dopo | Postgres gestito; separato da YFM come deciso |
 | **Media (immagini)** | **Cloudflare R2** + Cloudflare Images | $0,015/GB/mese, **uscita gratis**, $5/100k immagini |
 | **Media (video)** | Cloudflare Stream (Fase 7) | ~$5/1000 minuti archiviati, $1/1000 minuti serviti |
 | **Ricerca** | **Postgres full-text** all'inizio | regge centinaia di query/s e fino a ~100k record; Typesense solo quando serve tolleranza ai typo e facet |
 | **CMS / news** | **tabelle Postgres** ora, **Payload CMS** quando la redazione cresce | Payload gira *dentro* Next.js e usa **lo stesso Postgres**: nessuna frammentazione |
 | **Email** | Resend o Brevo (free tier) | notifiche, contatti, credenziali staff |
-| **Auth** | Supabase Auth | profili, backoffice, area scout |
+| **Auth** | **custom** (scrypt + sessioni su Neon) | profili, backoffice, area scout — già implementata, non Supabase |
 
 ### Il punto importante sul CMS
 
@@ -295,12 +295,13 @@ risultati significa che si corregge da sola.
 
 ### 3.5 Backup
 
-Il piano gratuito di Supabase **non ha backup automatici** e mette in pausa i progetti dopo
-7 giorni di inattività. Per un archivio consultabile è inaccettabile.
+Per un archivio consultabile servono backup affidabili.
 
-- **Supabase Pro**: backup giornalieri, 7 giorni di ritenzione.
-- **In più**: dump logico settimanale (`pg_dump`) su R2. Costo quasi nullo
-  ($0,015/GB/mese), e ci mette al riparo anche da un errore del fornitore.
+- **Neon**: offre branching e point-in-time restore (la finestra di ritenzione dipende dal
+  piano; sul Free è limitata). Da verificare quando il dataset cresce.
+- **In più (già in uso)**: dump logico periodico (`pg_dump`) — vedi la cartella `backups/`
+  nel repo — idealmente su R2. Costo quasi nullo ($0,015/GB/mese) e ci mette al riparo anche
+  da un errore del fornitore.
 
 ## 6. Costi per fase (riepilogo)
 
@@ -320,9 +321,9 @@ Il piano gratuito di Supabase **non ha backup automatici** e mette in pausa i pr
 - CMS: **tabelle Postgres** ora, **Payload** (stesso Postgres) in Fase 3.
 - Integrazione YFM a livello **dati**, non di infrastruttura.
 
-**Da confermare:**
-1. **Neon Free** come database gratuito (alternativa: Supabase Free, ma mette in pausa dopo
-   7 giorni di inattività). Serve un fornitore di Postgres gestito gratuito in ogni caso.
+**Scelte confermate / da confermare:**
+1. **Neon Free** come database gratuito — **confermato e in uso** (Supabase Free era
+   l'alternativa, scartata: mette in pausa dopo 7 giorni di inattività).
 2. **Resend** per le email transazionali (3.000/mese, 100/giorno).
 3. **Prerenderizzazione aggressiva** come strategia per restare nel piano gratuito: richiede
    che le pagine pubbliche siano ISR con revalidate giornaliero.

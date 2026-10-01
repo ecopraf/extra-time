@@ -24,8 +24,14 @@ via `neon.ts`. Riferimenti ufficiali: https://neon.com/docs/cli
 
 ## Progetto Neon di questo repo
 
-- Project ID: `wispy-math-49040720`
-- Branch collegato: `production`
+- Endpoint di produzione in uso (da `DATABASE_URL`): `ep-noisy-math-b19jbljg` (pooler,
+  regione `eu-central-1`, database `neondb`).
+- **Lo stesso DB è usato sia in locale (`.env.local`) sia da Vercel in produzione.** Non
+  c'è ancora un branch Neon separato per lo sviluppo: attenzione, le modifiche fatte in
+  locale toccano i dati di produzione. Un branch di dev dedicato è un miglioramento aperto.
+- Project ID storicamente annotato: `wispy-math-49040720` (branch `production`) — **da
+  riverificare**: non combacia con l'endpoint attuale `noisy-math`. Confermare con
+  `neon projects list` quando il CLI è disponibile.
 
 ## Regole operative
 

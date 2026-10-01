@@ -4,8 +4,9 @@
 > Complementare a `hosting-e-archivio.md` (che spiega *perché* certe scelte): qui c'è il
 > *come*, nell'ordine in cui va fatto.
 >
-> Stato attuale: il codice gira in locale, il repository e' privato, nessun servizio e'
-> ancora collegato.
+> Stato attuale: **già online**. Il progetto è deployato su Vercel
+> (`extra-time-fawn.vercel.app`) con database **Neon** (lo stesso usato in locale). I passi
+> sotto restano utili come runbook/riferimento e per aggiungere dominio, R2 e Resend.
 
 ## 0. Cosa serve, in ordine
 
@@ -47,7 +48,9 @@ richiesta dopo la pausa c'e' qualche secondo di risveglio. Accettabile in valida
 2. Vercel riconosce il monorepo pnpm. Imposta la **Root Directory** su `apps/web`.
 3. Aggiungi le **Environment Variables** (Production e Preview):
    - `DATABASE_URL` — la stringa di Neon
-   - `ADMIN_TOKEN` — un token lungo e casuale per il backoffice
+   - (l'accesso all'Hub Impostazioni usa l'**auth custom**: utenti e sessioni sul DB, non
+     servono token in env. Crea un admin con `node scripts/create-admin.mjs`. Il vecchio
+     `ADMIN_TOKEN` non è più usato.)
 4. **Deploy**. Da qui in avanti ogni push su `main` pubblica automaticamente.
 
 Le pagine del portale leggono dal database gia' in fase di build (prerender ISR): se
@@ -134,7 +137,8 @@ Dettagli completi in `hosting-e-archivio.md` §4. In sintesi:
 
 - [ ] Database Neon creato e schema applicato
 - [ ] Repository importato su Vercel, Root Directory = `apps/web`
-- [ ] Environment: `DATABASE_URL`, `ADMIN_TOKEN`
+- [ ] Environment: `DATABASE_URL` (l'Hub usa auth custom su DB, nessun token in env)
+- [ ] Utente admin creato (`node scripts/create-admin.mjs`)
 - [ ] Deploy verde, sito raggiungibile su `*.vercel.app`
 - [ ] (dopo) Dominio registrato, nameserver su Cloudflare, HTTPS attivo
 - [ ] (dopo) Bucket R2 creato e sottodominio pubblico

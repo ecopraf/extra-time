@@ -29,7 +29,7 @@ competitions (categoria, es. "U15 Regionali")
 - `federations` — FIGC, LND, comitati (con eventuale livello regionale).
 - `regions` / `provinces` — anagrafica territoriale (pensata per l'Italia).
 - `competitions` — la categoria/competizione (struttura).
-- `seasons` — stagione sportiva (es. 2025/2026).
+- `seasons` — stagione sportiva (quella corrente del pilota: 2026/2027).
 - `competition_groups` — il girone, cioè la competizione concreta in una stagione.
 
 ## 3. Entità canoniche e alias
@@ -118,7 +118,11 @@ Nessuna vista applicativa legge direttamente dalla fonte: tutte leggono dal core
 SUPER ADMIN → ADMIN → REDAZIONE → LIVE OPERATOR → SCOUT → CLUB → COACH → USER
 ```
 
-Non tutti implementati subito, ma il modello li supporta.
+**Implementato** (migrazione `0003_auth_users`): tabelle `users`, `roles`, `user_roles` e
+`user_sessions` (sessioni server-side). Auth **custom** (hashing scrypt, cookie `et_session`),
+non Supabase/NextAuth. I 7 ruoli esistono; oggi è attivo soprattutto ADMIN per l'Hub
+Impostazioni. La tabella `comunicati_seen` (migrazione `0004`) registra i comunicati LND
+applicati dall'UI.
 
 ## 12. Data Quality (da progettare)
 

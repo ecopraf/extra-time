@@ -22,7 +22,12 @@ inclusion: always
 - Frontend: **Next.js (App Router)** + TypeScript + React Server Components.
 - Stile: **CSS scritto a mano** in `apps/web/src/app/globals.css` (Tailwind/shadcn sono
   nello stack target ma NON ancora adottati — non introdurli senza accordo).
-- Database: **PostgreSQL** via `pg`. Storage/serverless: **Neon** (vedi `neon.md`).
+- Database: **PostgreSQL** via `pg`. Serverless: **Neon** (vedi `neon.md`). Lo stesso DB
+  Neon è condiviso tra sviluppo locale e produzione Vercel (nessun branch di dev dedicato
+  ancora). Il Postgres locale in Docker resta un'opzione secondaria.
+- Auth dell'Hub Impostazioni: **custom** (scrypt + sessioni server-side, cookie
+  `et_session`), **non** Supabase/NextAuth. Vedi `@extra-time/database/auth`.
+- Deploy: **Vercel** (root `apps/web`), dominio prod `extra-time-fawn.vercel.app`.
 
 ## Struttura del monorepo
 
@@ -32,7 +37,8 @@ extra-time/
 ├── packages/
 │   ├── types/                   tipi del Football Data Core
 │   ├── football-domain/         logica di dominio (classifiche) + test
-│   ├── database/                accesso al core (schema in db/)
+│   ├── database/                accesso al core (schema in db/) + ./auth (sessioni, RBAC)
+│   ├── ingest/                  import comunicati LND (parse/apply programma gare, pdf)
 │   └── ui/                      design system (palette, token, componenti)
 ├── db/
 │   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)
@@ -60,15 +66,16 @@ pnpm db:migrate:status                           # stato delle migrazioni
 - Gli script DB leggono `.env.local` (poi `.env`) dalla radice tramite `scripts/load-env.mjs`:
   non serve esportare `DATABASE_URL` a mano.
 - **`apps/web/next.config.ts` carica `.env.local` dalla radice**: senza, il prerender ISR fallisce.
-- Backoffice locale: `ADMIN_TOKEN=... pnpm --filter @extra-time/web dev`, poi
-  `http://localhost:3000/admin?token=...`.
+- Backoffice: Hub **`/impostazioni`** con login (auth custom). Crea un admin con
+  `node scripts/create-admin.mjs`. Il vecchio `/admin?token=...` è stato rimosso.
 
 ## Verifica dopo le modifiche
 
 - Se tocchi il dominio: `pnpm --filter @extra-time/football-domain test`.
 - Prima di dichiarare completato: `pnpm typecheck` e `pnpm lint` (girano anche in CI).
-- La CI (GitHub Actions) esegue migrate + smoke test + seed + typecheck + lint + test + build
-  contro un Postgres reale.
+- La CI (GitHub Actions, `ci.yml`) esegue migrate + smoke test + seed + typecheck + lint +
+  test + build contro un Postgres reale. Un secondo workflow (`watch-comunicati.yml`) gira
+  ogni giorno e apre una issue quando escono nuovi comunicati LND (non importa nulla).
 - Con Turbo, dopo modifiche alle pagine può servire `rm -rf apps/web/.next`: la cache può
   restituire output vecchio e far sembrare le modifiche non applicate.
 
