@@ -52,6 +52,15 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   scrive più un punteggio `finished` su una partita con calcio d'inizio nel futuro — una
   stessa coppia casa/ospite può ricorrere in giornate diverse (andata/ritorno). Corretti 3
   record U15 Elite che risultavano "giocati" con data futura in home ("ultimi risultati").
+- **Under 18 nei comunicati Dilettanti**: la LND Lazio pubblica l'Under 18 nei comunicati
+  Dilettanti (es. "Campionato Regionale Under 18"), pur essendo categoria giovanile. Tre
+  correzioni al parser/applicazione risultati per gestirla: (1) `categoryAllowed` ammette
+  U18 in entrambi i settori come già per U19/Juniores; (2) `CAT_LINE` riconosce i
+  qualificatori anteposti al token categoria ("Regionale"/"Campionato" + "Under 18");
+  (3) rimosso il prefisso nota di piè pagina `(n)` a inizio riga gara (es. "(1) W3
+  Maccarese"), che impediva il match della squadra di casa. Importati i risultati U18 del
+  CU57 (giornata 1, gironi A e B): 15/16 applicati — l'unico non applicato è dovuto a un
+  disallineamento del calendario (Tor Lupara vs Polisportiva Ostiense nel girone B).
 
 ### Portale pubblico — UI/UX
 - **Date delle giornate** sempre visibili in panoramica e calendario: data piena per le

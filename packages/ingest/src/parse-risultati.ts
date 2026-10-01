@@ -41,8 +41,11 @@ const STATO_CODE: Array<{ re: RegExp; stato: Risultato["stato"] }> = [
 ];
 
 // Righe che indicano la categoria del blocco risultati (denominazione piena LND).
+// La LND antepone talora qualificatori come "Campionato"/"Regionale" al token
+// categoria (es. "REGIONALE UNDER 18", "CAMPIONATO REGIONALE UNDER 18"): un
+// prefisso opzionale di parole è ammesso prima del token riconosciuto.
 const CAT_LINE =
-  /^(Eccellenza|Promozione|Prima Categoria|Seconda Categoria|Juniores[^\n]*|Under\s*\d{2}[^\n]*|Allievi[^\n]*|Giovanissimi[^\n]*)\s*$/i;
+  /^(?:(?:Campionato|Regionale|Elite|Nazionale|Provinciale)\s+)*(Eccellenza|Promozione|Prima Categoria|Seconda Categoria|Juniores[^\n]*|Under\s*\d{2}[^\n]*|Allievi[^\n]*|Giovanissimi[^\n]*)\s*$/i;
 
 /** Estrae tutti i risultati dal testo di un comunicato. */
 /**
@@ -185,6 +188,12 @@ export function parseRisultati(text: string): Risultato[] {
       teamsPart = t.replace(stCode.re, "").trim();
       stato = stCode.stato;
     }
+
+    // Nota di piè pagina a inizio riga: "(1) CASA - OSPITE N - N" rimanda a una
+    // chiosa in fondo al girone (es. "(1) - disputata il 19/09/2026"). Il numero
+    // non fa parte del nome squadra: va rimosso prima dello split, altrimenti il
+    // match della squadra di casa fallisce (es. "(1) W3 Maccarese").
+    teamsPart = teamsPart.replace(/^\(\d+\)\s*/, "").trim();
 
     // Separa casa/ospite sul trattino separatore. Lo spazio attorno al "-" è
     // incostante nei PDF LND: preferiamo " - " (spazi entrambi i lati), altrimenti

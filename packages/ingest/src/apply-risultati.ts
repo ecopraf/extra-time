@@ -54,8 +54,10 @@ function isFutureKickoff(kickoff: Date | string | null, now: Date = new Date()):
  */
 function categoryAllowed(category: string, settore: "giovanili" | "dilettanti" | undefined): boolean {
   if (!settore) return true;
-  // U19/Juniores vive a cavallo: sempre ammessa.
-  if (/^U19\b/i.test(category) || /juniores/i.test(category)) return true;
+  // U18 e U19/Juniores vivono a cavallo dei due settori: la LND Lazio le
+  // pubblica nei comunicati Dilettanti (es. "Campionato Regionale Under 18")
+  // pur essendo categorie nominalmente giovanili. Sempre ammesse in entrambi.
+  if (/^U1[89]\b/i.test(category) || /juniores/i.test(category)) return true;
   const isYouth = /^U\d{2}\b/i.test(category) || /allievi|giovanissimi/i.test(category);
   return settore === "giovanili" ? isYouth : !isYouth;
 }
