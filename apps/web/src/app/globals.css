@@ -2027,7 +2027,62 @@ table td.actions {
 }
 
 /* ── Import comunicato dal monitoraggio (Fase 3) ─────────────────────────── */
-.monitor-table col.c-azioni { width: 96px; }
+.monitor-table col.c-azioni { width: 150px; }
+.monitor-table td[data-label="Azioni"] { white-space: normal; }
+
+/* ── Monitoraggio responsive: su mobile la tabella diventa card compatte ──── */
+@media (max-width: 760px) {
+  /* table-layout fixed + colgroup non servono più: impiliamo tutto. */
+  .monitor-table,
+  .monitor-table thead,
+  .monitor-table tbody,
+  .monitor-table tr,
+  .monitor-table td {
+    display: block;
+    width: auto;
+  }
+  .monitor-table { table-layout: auto; }
+  /* intestazione tabella nascosta: ogni cella porta la propria etichetta. */
+  .monitor-table thead { display: none; }
+  .monitor-table colgroup { display: none; }
+
+  .monitor-table tr {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: var(--surface);
+  }
+  .monitor-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    padding: 5px 0;
+    border: none;
+    font-size: 0.9rem;
+  }
+  /* etichetta della cella (dal data-label) a sinistra, valore a destra. */
+  .monitor-table td::before {
+    content: attr(data-label);
+    flex: 0 0 42%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+  /* il titolo occupa tutta la larghezza, sopra le altre righe. */
+  .monitor-table td[data-label="Titolo"] { flex-direction: column; gap: 2px; }
+  .monitor-table td[data-label="Titolo"]::before { flex-basis: auto; }
+  .monitor-table td.monitor-title { font-weight: 600; }
+  /* azioni: bottone a piena larghezza, ben tappabile. */
+  .monitor-table td[data-label="Azioni"] { display: block; }
+  .monitor-table td[data-label="Azioni"]::before { display: block; margin-bottom: 6px; }
+  .monitor-table td[data-label="Azioni"] .monitor-apply-btn { width: 100%; padding: 10px; font-size: 0.9rem; }
+  /* nasconde il trattino segnaposto quando non c'è azione. */
+  .monitor-table td[data-label="Azioni"] .import-na { color: var(--muted); }
+}
 .import-na { color: var(--muted); }
 
 /* Bottone "Applica" in tabella: stile arancione coerente col resto. */

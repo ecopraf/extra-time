@@ -80,21 +80,21 @@ export default async function MonitoraggioPage() {
                 <tbody>
                   {mon.rilevanti.map((c) => (
                     <tr key={c.id}>
-                      <td>
+                      <td data-label="Stato">
                         {c.seen ? (
                           <span className="monitor-badge monitor-seen">Importato</span>
                         ) : (
                           <span className="monitor-badge monitor-todo">Da rivedere</span>
                         )}
                       </td>
-                      <td className="pos">{c.numero}</td>
-                      <td>{c.area}<br />{c.tipo}</td>
-                      <td className="monitor-title">{c.titolo}</td>
-                      <td>{TIPO_LABEL[c.tipoAggiornamento] ?? c.tipoAggiornamento}</td>
-                      <td>{c.data}</td>
-                      <td><a href={c.pdfUrl} target="_blank" rel="noopener" className="monitor-pdf">apri PDF ↗</a></td>
+                      <td className="pos" data-label="C.U.">{c.numero}</td>
+                      <td data-label="Area / Tipo">{c.area}<br />{c.tipo}</td>
+                      <td className="monitor-title" data-label="Titolo">{c.titolo}</td>
+                      <td data-label="Aggiornamento">{TIPO_LABEL[c.tipoAggiornamento] ?? c.tipoAggiornamento}</td>
+                      <td data-label="Data">{c.data}</td>
+                      <td data-label="PDF"><a href={c.pdfUrl} target="_blank" rel="noopener" className="monitor-pdf">apri PDF ↗</a></td>
                       {isAdmin && (
-                        <td>
+                        <td data-label="Azioni">
                           {c.tipoAggiornamento === "programma-gare" ? (
                             <ImportButton
                               pdfUrl={c.pdfUrl}
