@@ -41,6 +41,10 @@ const argVal = (flag, def) => {
 const BRANCH = argVal("--name", "dev");
 const PARENT = argVal("--parent", null); // default: branch primario del progetto
 let PROJECT_ID = argVal("--project-id", null);
+let ORG_ID = argVal("--org-id", null); // necessario se l'account appartiene a un'organizzazione
+
+// Flag org-id da aggiungere a ogni comando quando presente.
+const orgFlags = () => (ORG_ID ? ["--org-id", ORG_ID] : []);
 
 // Trova il binario del CLI Neon: "neon" o "neonctl".
 function cliName() {
@@ -62,7 +66,7 @@ function neonJson(cmdArgs) {
 
 function resolveProjectId() {
   if (PROJECT_ID) return PROJECT_ID;
-  const projects = neonJson(["projects", "list"]);
+  const projects = neonJson(["projects", "list", ...orgFlags()]);
   const list = Array.isArray(projects) ? projects : projects.projects ?? [];
   if (list.length === 0) { console.error("Nessun progetto Neon trovato per questo account."); process.exit(1); }
   if (list.length > 1) {
@@ -74,7 +78,7 @@ function resolveProjectId() {
 }
 
 function findBranch(projectId, name) {
-  const data = neonJson(["branches", "list", "--project-id", projectId]);
+  const data = neonJson(["branches", "list", "--project-id", projectId, ...orgFlags()]);
   const list = Array.isArray(data) ? data : data.branches ?? [];
   return list.find((b) => b.name === name) ?? null;
 }
@@ -88,7 +92,7 @@ function main() {
     console.error(`Branch "${BRANCH}" già esistente (${branch.id}): lo riuso.`);
   } else {
     console.error(`Creo il branch "${BRANCH}"${PARENT ? ` da "${PARENT}"` : ""}…`);
-    const createArgs = ["branches", "create", "--project-id", PROJECT_ID, "--name", BRANCH];
+    const createArgs = ["branches", "create", "--project-id", PROJECT_ID, ...orgFlags(), "--name", BRANCH];
     if (PARENT) createArgs.push("--parent", PARENT);
     execFileSync(NEON, createArgs, { stdio: "inherit" });
     branch = findBranch(PROJECT_ID, BRANCH);
@@ -96,7 +100,7 @@ function main() {
   }
 
   // Connection string del branch dev (pooled, pronta per l'app).
-  const connArgs = ["connection-string", BRANCH, "--project-id", PROJECT_ID, "--pooled"];
+  const connArgs = ["connection-string", BRANCH, "--project-id", PROJECT_ID, ...orgFlags(), "--pooled"];
   const connStr = execFileSync(NEON, connArgs, { encoding: "utf8" }).trim();
   if (!/^postgres/.test(connStr)) { console.error("Connection string non valida:", connStr); process.exit(1); }
 

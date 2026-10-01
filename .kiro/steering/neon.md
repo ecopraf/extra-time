@@ -24,12 +24,16 @@ via `neon.ts`. Riferimenti ufficiali: https://neon.com/docs/cli
 
 ## Progetto Neon di questo repo
 
-- Endpoint di **produzione** (branch principale, usato da Vercel): `ep-noisy-math-b19jbljg`
-  (pooler, regione `eu-central-1`, database `neondb`).
-- **Sviluppo locale su branch dedicato.** Per non toccare i dati di produzione in locale si
-  usa un **branch Neon "dev"**: `.env.local` punta al branch dev, Vercel resta sul main.
-- Project ID: ricavarlo con `neon projects list` (il valore storico `wispy-math-49040720`
-  è da riverificare — non combacia con l'endpoint `noisy-math`).
+- Project ID: **`wispy-math-49040720`** (nome "Extra-Time"), org **`org-red-credit-50029696`**
+  (`ecopraf`). Nota: il *project id* non coincide col nome dell'*endpoint* (è normale).
+- Branch **`production`** (`br-steep-butterfly-...`, default) → usato da **Vercel**,
+  endpoint `ep-noisy-math-b19jbljg`.
+- Branch **`dev`** (`br-noisy-credit-...`) → usato in **locale** (`.env.local`), endpoint
+  `ep-wandering-king-b1cqduux`. Copia isolata di produzione: i test in locale non toccano
+  i dati reali.
+- **Account con organizzazione**: i comandi Neon richiedono `--org-id org-red-credit-50029696`
+  (altrimenti il CLI chiede l'org in modo interattivo). `pnpm db:dev-branch` accetta
+  `--org-id`.
 
 ## Branch di sviluppo (separazione dati dev ↔ prod)
 
@@ -43,7 +47,8 @@ neon auth
 Poi, dalla radice del repo:
 
 ```
-pnpm db:dev-branch        # crea/riusa il branch "dev" e aggiorna .env.local
+# account con org: passa --org-id
+pnpm db:dev-branch -- --org-id org-red-credit-50029696
 ```
 
 Lo script `scripts/neon-setup-dev-branch.mjs`:
