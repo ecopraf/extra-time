@@ -1,4 +1,4 @@
-# EXTRA TIME — Open Questions (per Vittorio)
+# EXTRA TIME — Open Questions
 
 Domande ordinate per priorità. **Aggiornamento (fine Fase 1):** diverse domande di
 Priorità 1–2 sono ormai **risolte** dalla costruzione del pilota Lazio; sono marcate con

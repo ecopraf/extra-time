@@ -1,7 +1,7 @@
 # EXTRA TIME — Product & Development Master Plan v0.1
 
-Documento da condividere con Vittorio. Descrive il percorso **Fase 0 → Fase 10** con
-deliverable, funzionalità, dipendenze, KPI e ciò che **non** va ancora sviluppato.
+Descrive il percorso **Fase 0 → Fase 10** con deliverable, funzionalità, dipendenze, KPI e
+ciò che **non** va ancora sviluppato.
 
 > **Stato (ottobre 2026): fine Fase 1 / inizio Fase 2.** Fase 0 (modello/architettura) e
 > gran parte della Fase 1 (campionati/risultati, pilota Lazio) sono realizzate e online.
@@ -32,7 +32,7 @@ deliverable, funzionalità, dipendenze, KPI e ciò che **non** va ancora svilupp
 **Dipende da:** nulla.
 
 **KPI**
-- Vision approvata da Vittorio
+- Vision approvata
 - Decisione presa sugli **ID condivisi** YFM ↔ EXTRA TIME
 - Perimetro pilota (Lazio + categorie) confermato
 

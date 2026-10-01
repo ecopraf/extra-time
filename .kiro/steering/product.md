@@ -24,6 +24,9 @@ Perimetro pilota: **Lazio**.
 
 ## Regole sul rapporto con YFM
 
+- **Proprietà**: YFM (Youth Football Manager) è di **Raffaele**, proprietario anche di
+  EXTRA TIME. Vittorio è la persona che ha proposto la collaborazione su EXTRA TIME, **non**
+  è proprietario né di YFM né di EXTRA TIME.
 - **YFM non va rinominato**: resta il "Club Operating System" (B2B).
 - EXTRA TIME è il portale pubblico (B2C/media).
 - I due condividono il Football Data Core ma restano **database separati**.

@@ -194,18 +194,15 @@ KPI: partite live, utenti contemporanei, eventi registrati, engagement.
 FIGC, LND, Comitati Regionali, Società, Dirigenti, Osservatori, Redazione, API, import CSV/PDF.
 La gestione dell'ingestion è la vera difficoltà del progetto (vedi `architecture.md`).
 
-## 14. Da chiedere a Vittorio
+## 14. Struttura del documento di vision (storico Fase 0)
 
-Prima di scrivere codice, produrre:
-
-> **EXTRA TIME — Product Vision v0.1**
-
-con le sezioni: Vision; Problema; Utenti target; Perimetro geografico; Categorie; Fonti dati;
+Questo documento è nato per rispondere alla richiesta iniziale di una Product Vision con le
+sezioni: Vision; Problema; Utenti target; Perimetro geografico; Categorie; Fonti dati;
 Modello editoriale; Funzionamento LIVE; Scouting; Ruolo di YFM; Modello di partnership;
 Monetizzazione futura; Roadmap; Fase 0–3; KPI; Risorse necessarie; Rischi.
 
-Richiesta esplicita: _"Non mi serve l'index. Mi serve capire come immagini il prodotto tra 3
-anni e come arriviamo lì attraverso step che abbiano valore già da soli."_
+Principio di fondo: _"Non serve l'index. Serve capire come immaginiamo il prodotto tra 3
+anni e come arrivarci attraverso step che abbiano valore già da soli."_
 
 ## 15. Rischi
 

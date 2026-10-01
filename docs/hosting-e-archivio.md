@@ -8,8 +8,8 @@
 
 Tre fatti che condizionano le scelte:
 
-1. **YFM è su Vercel Pro** (progetto di Vittorio). Funziona, è a pagamento, e **resta
-   separato**.
+1. **YFM è su Vercel Pro** (progetto di Raffaele, proprietario di YFM). Funziona, è a
+   pagamento, e **resta separato**.
 2. **EXTRA TIME è un progetto distinto**, nasce adesso e coinvolge altre persone. Non
    condivide risorse con YFM: database separato, progetto Vercel separato, piani separati.
 3. **Si parte con tutto gratuito**, per validare l'idea. Si passa ai piani a pagamento
@@ -315,7 +315,7 @@ Per un archivio consultabile servono backup affidabili.
 ## 7. Decisioni
 
 **Prese:**
-- Database e ambiente **separati da YFM** (entità distinte; YFM resta di Vittorio).
+- Database e ambiente **separati da YFM** (entità distinte; YFM è di Raffaele).
 - **Tutto gratuito** per la validazione: Vercel Hobby + Neon Free + R2 Free + Resend.
 - Media su **Cloudflare R2** (uscita gratuita), non nel database.
 - CMS: **tabelle Postgres** ora, **Payload** (stesso Postgres) in Fase 3.
