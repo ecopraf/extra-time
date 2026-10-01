@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { PortalMatchRow } from "@extra-time/database";
-import { formatKickoff, slugify } from "@/lib/format";
+import { formatKickoff, formatTimeOnly, slugify } from "@/lib/format";
 import { TeamBadge } from "@/components/TeamBadge";
 
 /**
@@ -131,7 +131,7 @@ export function UpcomingCarousel({ matches }: { matches: PortalMatchRow[] }) {
         {slot.matches.map((m) => (
           <div key={m.id} className="portal-match">
             <span className="home"><TeamBadge name={m.homeName} logo={m.homeLogo} nameFirst /></span>
-            <span className="score next">{formatKickoff(m.kickoffAt).split(", ")[1] ?? ""}</span>
+            <span className="score next">{formatTimeOnly(m.kickoffAt)}</span>
             <span className="away"><TeamBadge name={m.awayName} logo={m.awayLogo} /></span>
           </div>
         ))}

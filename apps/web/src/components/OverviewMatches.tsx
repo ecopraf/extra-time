@@ -2,11 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { TeamBadge } from "@/components/TeamBadge";
+import { formatRoundDate, formatMatchCell } from "@/lib/format";
 
 /**
  * Card della Panoramica girone con due pill: "Ultimi risultati" e "Prossime
  * partite". Ogni pill mostra una giornata alla volta, navigabile con le frecce
  * ‹ ›. Default: "Prossime partite". Dati (già pronti dal server) passati come props.
+ *
+ * La data della giornata è derivata dalle partite mostrate: se la giornata è
+ * tutta lo stesso giorno mostra la data piena, se copre più giorni mostra un
+ * intervallo (es. "06/09 – 07/09") e ogni riga porta la propria data.
  */
 
 export interface OverviewMatch {
@@ -18,9 +23,7 @@ export interface OverviewMatch {
   awayLogo: string | null;
   homeScore: number | null;
   awayScore: number | null;
-  timeLabel: string; // orario/data già formattato per le prossime
-  dateLabel: string; // data della giornata (per l'intestazione)
-  sameDay: boolean; // true se la giornata è tutta lo stesso giorno
+  kickoffAt: string | null; // ISO calcio d'inizio (null = da definire)
 }
 
 type Tab = "results" | "upcoming";
@@ -64,10 +67,13 @@ export function OverviewMatches({
   const prev = () => setIdx((i) => Math.max(0, i - 1));
   const next = () => setIdx((i) => Math.min(rounds.length - 1, i + 1));
 
-  // La giornata mostra la data in testa se tutte le sue partite sono lo stesso giorno.
-  const dates = round ? [...new Set(round.matches.map((m) => m.dateLabel))] : [];
-  const roundSameDay = dates.length === 1;
-  const roundDate = roundSameDay ? dates[0] : "";
+  // Data della giornata: piena se un solo giorno, intervallo se più giorni.
+  const roundIsos = round ? round.matches.map((m) => m.kickoffAt) : [];
+  const roundDate = formatRoundDate(roundIsos);
+  const roundDays = new Set(
+    roundIsos.filter((x): x is string => !!x).map((x) => x.slice(0, 10)),
+  );
+  const roundMultiDay = roundDays.size > 1;
 
   return (
     <div className="portal-card portal-overview-card">
@@ -127,7 +133,7 @@ export function OverviewMatches({
                 <span className={`score${tab === "upcoming" ? " next" : ""}`}>
                   {tab === "results"
                     ? `${m.homeScore} - ${m.awayScore}`
-                    : m.timeLabel}
+                    : formatMatchCell(m.kickoffAt, roundMultiDay)}
                 </span>
                 <span className="away">
                   <TeamBadge name={m.awayName} logo={m.awayLogo} />

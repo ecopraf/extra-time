@@ -1,6 +1,6 @@
 import type { Match } from "@extra-time/types";
 import type { StandingRow } from "@extra-time/football-domain";
-import { formatKickoff, formatDateOnly, formatTimeOnly, sameDay } from "@/lib/format";
+import { formatRoundDate, formatMatchCell } from "@/lib/format";
 import { GroupTabs } from "@/components/GroupTabs";
 import { TeamBadge } from "@/components/TeamBadge";
 import { OverviewMatches, type OverviewMatch } from "@/components/OverviewMatches";
@@ -97,6 +97,8 @@ export function GroupView({
   );
 
   // Prepara i dati per la card Panoramica (pill Risultati/Prossime + frecce).
+  // Passiamo l'ISO grezzo: le etichette data/ora (incluso l'intervallo per le
+  // giornate su più giorni) sono calcolate dentro OverviewMatches.
   const toOverview = (list: Match[]): OverviewMatch[] =>
     list.map((m) => ({
       id: m.id,
@@ -107,14 +109,9 @@ export function GroupView({
       awayLogo: logoOf(m.awayTeamId),
       homeScore: m.homeScore,
       awayScore: m.awayScore,
-      timeLabel: formatTimeOnly(m.kickoffAt),
-      dateLabel: formatDateOnly(m.kickoffAt),
-      sameDay: false,
+      kickoffAt: m.kickoffAt,
     }));
 
-  // Per semplicita' usiamo lo stesso flag sameDay per riga (il componente
-  // raggruppa per giornata; il flag e' calcolato per l'intera lista qui,
-  // ma il label data viene comunque dalla giornata mostrata).
   const playedOv: OverviewMatch[] = toOverview(played);
   const upcomingOv: OverviewMatch[] = toOverview(upcoming);
 
@@ -139,13 +136,19 @@ export function GroupView({
       ) : (
         matchdays.map((md) => {
           const round = byMatchday.get(md)!;
-          const roundSameDay = sameDay(round.map((m) => m.kickoffAt));
-          const roundDate = round[0] ? formatDateOnly(round[0].kickoffAt) : "";
+          const roundDate = formatRoundDate(round.map((m) => m.kickoffAt));
+          const roundDays = new Set(
+            round
+              .map((m) => m.kickoffAt)
+              .filter((x): x is string => !!x)
+              .map((x) => x.slice(0, 10)),
+          );
+          const roundMultiDay = roundDays.size > 1;
           return (
             <div key={`md-${md}`} className="portal-round">
               <div key="head" className="portal-round-head">
                 Giornata {md || "?"}
-                {roundSameDay ? ` · ${roundDate}` : ""}
+                {roundDate ? ` · ${roundDate}` : ""}
               </div>
               {round.map((m) => (
                 <div key={m.id} className="portal-match">
@@ -153,9 +156,7 @@ export function GroupView({
                   <span className="score">
                     {m.status === "finished" && m.homeScore !== null
                       ? `${m.homeScore} - ${m.awayScore}`
-                      : roundSameDay
-                        ? formatTimeOnly(m.kickoffAt)
-                        : formatKickoff(m.kickoffAt)}
+                      : formatMatchCell(m.kickoffAt, roundMultiDay)}
                   </span>
                   <span className="away"><TeamBadge name={nameOf(m.awayTeamId)} logo={logoOf(m.awayTeamId)} /></span>
                 </div>
