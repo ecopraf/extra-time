@@ -2053,26 +2053,28 @@ table td.actions {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
-  /* righe metadato: etichetta e valore allineati a SINISTRA, uno accanto all'altro. */
+  /* righe metadato: ETICHETTA a sinistra, VALORE a destra (allineato al bordo). */
   .monitor-table td {
     display: flex;
-    justify-content: flex-start;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 12px;
     align-items: baseline;
     padding: 2px 0;
     border: none;
     font-size: 0.82rem;
     line-height: 1.3;
-    text-align: left;
+    text-align: right;
   }
+  /* etichetta: ancorata a sinistra, maiuscoletto grigio. */
   .monitor-table td::before {
     content: attr(data-label);
-    flex: 0 0 34%;
+    flex: 0 0 auto;
     font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     color: var(--muted);
+    text-align: left;
   }
 
   /* STATO + C.U. sulla stessa riga in testa, come header della card. */
