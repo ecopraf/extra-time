@@ -6,8 +6,10 @@
  * e riporta i NUOVI comunicati rilevanti (SGS/Dilettanti che toccano i calendari),
  * scaricandone i PDF in una cartella di lavoro.
  *
- * NON applica nulla al database: si limita a rilevare e scaricare. La pipeline
- * di import/seed resta a valle, con revisione umana.
+ * NON applica nulla al database: si limita a rilevare e scaricare. L'import
+ * resta a valle con revisione umana: i "programma gare" si applicano dalla UI
+ * (Impostazioni → Monitoraggio → Applica), gli import completi di un campionato
+ * dagli script (extract-* / build-seed-* / generate-ritorno-dilettanti).
  *
  * Uso:
  *   node scripts/import-sgs/watch-comunicati.mjs            # rileva e scarica i nuovi
