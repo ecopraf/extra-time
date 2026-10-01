@@ -10,4 +10,4 @@ export { parseRisultati } from "./parse-risultati";
 export type { Risultato } from "./parse-risultati";
 export { applyRisultati } from "./apply-risultati";
 export type { ApplyRisultatiResult } from "./apply-risultati";
-export { fetchPdfText } from "./fetch-comunicato";
+export { fetchComunicatoText, fetchPdfText } from "./fetch-comunicato";

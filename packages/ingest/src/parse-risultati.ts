@@ -28,9 +28,38 @@ const CAT_LINE =
   /^(Eccellenza|Promozione|Prima Categoria|Seconda Categoria|Juniores[^\n]*|Under\s*\d{2}[^\n]*|Allievi[^\n]*|Giovanissimi[^\n]*)\s*$/i;
 
 /** Estrae tutti i risultati dal testo di un comunicato. */
+/**
+ * Nei comunicati estratti da .docx una partita è spesso spezzata su 3 righe:
+ *   CASA
+ *   - OSPITE
+ *   N - N
+ * Qui le ricompattiamo nella forma a riga unica "CASA - OSPITE N - N" che il
+ * parser principale già gestisce (come nei PDF). Idempotente sulle righe già
+ * unite.
+ */
+function coalesceSplitRows(lines: string[]): string[] {
+  const out: string[] = [];
+  const isScoreOnly = (s: string) => /^\d{1,2}\s*-\s*\d{1,2}$/.test(s);
+  const startsWithDash = (s: string) => /^-\s+\S/.test(s);
+  const hasScoreTail = (s: string) => /\d{1,2}\s*-\s*\d{1,2}\s*$/.test(s);
+  for (let i = 0; i < lines.length; i++) {
+    const a = lines[i]!.trim();
+    const b = (lines[i + 1] ?? "").trim();
+    const c = (lines[i + 2] ?? "").trim();
+    // CASA / - OSPITE / N - N  → "CASA - OSPITE N - N"
+    if (a && !hasScoreTail(a) && !startsWithDash(a) && startsWithDash(b) && isScoreOnly(c)) {
+      out.push(`${a} ${b} ${c}`);
+      i += 2;
+      continue;
+    }
+    out.push(a);
+  }
+  return out;
+}
+
 export function parseRisultati(text: string): Risultato[] {
   const rows: Risultato[] = [];
-  const lines = text.split("\n");
+  const lines = coalesceSplitRows(text.split("\n"));
   let categoria: string | null = null;
   let girone: string | null = null;
   let giornata: number | null = null;

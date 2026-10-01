@@ -18,7 +18,7 @@ import { NextResponse } from "next/server";
 import { getPool, markComunicatoSeen } from "@extra-time/database";
 import { hasRole } from "@extra-time/database/auth";
 import {
-  fetchPdfText,
+  fetchComunicatoText,
   parseProgrammaGare,
   applyProgrammaGare,
   type Gara,
@@ -94,13 +94,13 @@ export async function POST(request: Request) {
   const tipo = typeof body.tipo === "string" ? body.tipo.trim() : null;
   const titolo = typeof body.titolo === "string" ? body.titolo.trim() : null;
 
-  if (!/^https:\/\/[^\s]+\.pdf$/i.test(pdfUrl)) {
-    return NextResponse.json({ ok: false, error: "URL del PDF non valido." }, { status: 400 });
+  if (!/^https:\/\/[^\s]+\.(pdf|zip)$/i.test(pdfUrl)) {
+    return NextResponse.json({ ok: false, error: "URL del comunicato non valido (atteso .pdf o .zip)." }, { status: 400 });
   }
 
   try {
-    // 3) Scarica + parsa.
-    const text = await fetchPdfText(pdfUrl);
+    // 3) Scarica + parsa (PDF o ZIP/DOCX).
+    const text = await fetchComunicatoText(pdfUrl);
     const gare = parseProgrammaGare(text);
     if (gare.length === 0) {
       return NextResponse.json({

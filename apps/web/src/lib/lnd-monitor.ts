@@ -59,7 +59,7 @@ function parseList(html: string): Omit<Comunicato, "seen">[] {
     const numbers = [...b.matchAll(/cu-box--number">([^<]+)</g)].map((m) => m[1]!.trim());
     const titles = [...b.matchAll(/cu-box--title">([^<]+)</g)].map((m) => m[1]!.trim());
     const dateM = b.match(/cu-box--data">([^<]+)</);
-    const pdfM = b.match(/href="(https:\/\/comunicatilazio\.it\/storage\/[^"]+\.pdf)"/);
+    const pdfM = b.match(/href="(https:\/\/comunicatilazio\.it\/storage\/[^"]+\.(?:pdf|zip))"/);
     if (numbers.length < 2 || !pdfM) continue;
     const numAreaM = numbers[0]!.match(/C\.U\.\s*(\d+)\s*-\s*(.+)/i);
     const numero = numAreaM ? parseInt(numAreaM[1]!, 10) : null;
