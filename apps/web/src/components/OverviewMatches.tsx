@@ -48,19 +48,25 @@ export function OverviewMatches({
   upcoming: OverviewMatch[];
 }) {
   const hasResults = played.length > 0;
-  const [tab, setTab] = useState<Tab>(hasResults ? "upcoming" : "upcoming");
+  // Default: se ci sono risultati parti da lì (si vede subito l'ultima giornata
+  // giocata), altrimenti dalle prossime partite.
+  const [tab, setTab] = useState<Tab>(hasResults ? "results" : "upcoming");
 
-  // giornate: risultati dal più recente, prossime dal più imminente
-  const resultRounds = useMemo(() => byMatchday(played, false), [played]);
+  // Entrambi i tab ordinati per giornata CRESCENTE (1 → N): così le frecce sono
+  // coerenti (‹ = giornata precedente, › = successiva) in entrambe le viste.
+  const resultRounds = useMemo(() => byMatchday(played, true), [played]);
   const upcomingRounds = useMemo(() => byMatchday(upcoming, true), [upcoming]);
 
   const rounds = tab === "results" ? resultRounds : upcomingRounds;
-  const [idx, setIdx] = useState(0);
+  // Indice iniziale: per i risultati l'ultima giornata giocata (la più recente),
+  // per le prossime la prima in programma.
+  const initialIdx = (t: Tab, rs: typeof rounds) => (t === "results" ? Math.max(0, rs.length - 1) : 0);
+  const [idx, setIdx] = useState(() => initialIdx(hasResults ? "results" : "upcoming", hasResults ? resultRounds : upcomingRounds));
 
-  // reset indice quando cambio tab
+  // reset indice quando cambio tab (risultati → ultima, prossime → prima)
   const switchTab = (t: Tab) => {
     setTab(t);
-    setIdx(0);
+    setIdx(initialIdx(t, t === "results" ? resultRounds : upcomingRounds));
   };
 
   const round = rounds[Math.min(idx, Math.max(0, rounds.length - 1))];
