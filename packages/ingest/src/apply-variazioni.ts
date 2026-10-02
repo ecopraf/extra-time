@@ -114,7 +114,18 @@ export async function applyVariazioni(
     const target = cand[0]!;
 
     // Calcola i nuovi valori.
-    const newKickoff = v.daDefinire ? null : (v.dataIso ? `${v.dataIso} ${v.ora ?? "00:00"}:00+02` : undefined);
+    //  - gara con nuova data/ora → la impone;
+    //  - "da definire" → azzera la data SOLO se la gara non ha già una data
+    //    valorizzata. Un comunicato più recente può aver fissato quella gara
+    //    (es. CU68 fissa ciò che il CU66 lasciava "da definire"): ri-applicando
+    //    il CU66 non dobbiamo cancellare la data più fresca. Nel dubbio, una
+    //    "da definire" non sovrascrive mai una data esistente.
+    let newKickoff: string | null | undefined;
+    if (v.daDefinire) {
+      newKickoff = target.kickoff_at ? undefined : null;
+    } else {
+      newKickoff = v.dataIso ? `${v.dataIso} ${v.ora ?? "00:00"}:00+02` : undefined;
+    }
     const newVenue = v.campo ?? undefined;
 
     // Idempotenza: se nulla cambia, non aggiornare.

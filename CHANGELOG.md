@@ -30,9 +30,13 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
 - **Variazioni al programma gare**: `parseVariazioni` + `applyVariazioni`. Legge la sezione
   "VARIAZIONI AL PROGRAMMA GARE DEL …" (e "PROGRAMMA GARE DI RECUPERO") e aggiorna
   data/orario (`kickoff_at`) e campo (`venue`) delle singole gare già calendarizzate;
-  "da definire" riporta la gara senza data. Match categoria→girone→squadre, idempotente,
-  non tocca lo status. Non gestisce il formato discorsivo "VARIAZIONI DEFINITIVE" (cambio
-  sede interno permanente di una società).
+  "da definire" riporta la gara senza data — ma **solo se la gara non ha già una data**:
+  così ri-applicare un comunicato vecchio non cancella un orario fissato da uno più recente.
+  Match categoria→girone→squadre, idempotente, non tocca lo status. Gestisce sia il formato
+  Dilettanti (en-dash assente, giornata dopo l'ora) sia quello **SGS** (squadre separate da
+  en-dash, ora con il punto `10.30`, anno a 4 cifre, giornata nell'header "GIRONE A - 3ª
+  andata"). Non gestisce il formato discorsivo "VARIAZIONI DEFINITIVE" (cambio sede interno
+  permanente di una società).
 - **Supporto ZIP/DOCX**: `fetchComunicatoText` gestisce sia i PDF sia gli archivi ZIP con
   dentro un `.docx` (estratto via `fflate`), per i comunicati non pubblicati in PDF.
 - **Vincolo di settore** nell'applicazione risultati: un comunicato SGS applica solo alle
