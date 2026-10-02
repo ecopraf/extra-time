@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface SectionResult {
-  tipo: "programma-gare" | "risultati";
+  tipo: "programma-gare" | "risultati" | "variazioni";
   parsed: number;
   updated: number;
   unchanged?: number;
@@ -32,6 +32,7 @@ type Phase = "idle" | "loading" | "preview" | "applying" | "done" | "error";
 const TIPO_LABEL: Record<string, string> = {
   "programma-gare": "Programma gare (orari/date)",
   risultati: "Risultati (punteggi)",
+  variazioni: "Variazioni (campo/orario/data)",
 };
 
 export function ImportFromUrl() {
@@ -70,8 +71,9 @@ export function ImportFromUrl() {
       <h3>Importa da URL</h3>
       <p className="muted import-url-hint">
         Per un comunicato non in elenco: incolla il link del PDF o dello ZIP del
-        comunicato LND. Riconosce da solo se contiene orari (programma gare) o
-        risultati, mostra un&apos;anteprima e poi applichi.
+        comunicato LND. Riconosce da solo se contiene orari (programma gare),
+        risultati o variazioni (cambi di campo/orario/data), mostra
+        un&apos;anteprima e poi applichi.
       </p>
       <div className="import-url-row">
         <input

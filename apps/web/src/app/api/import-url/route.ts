@@ -18,6 +18,8 @@ import {
   applyProgrammaGare,
   parseRisultati,
   applyRisultati,
+  parseVariazioni,
+  applyVariazioni,
 } from "@extra-time/ingest";
 import { currentUser } from "@/lib/session";
 
@@ -31,7 +33,7 @@ interface Body {
 }
 
 interface SectionResult {
-  tipo: "programma-gare" | "risultati";
+  tipo: "programma-gare" | "risultati" | "variazioni";
   parsed: number;
   updated: number;
   unchanged?: number;
@@ -70,11 +72,12 @@ export async function POST(request: Request) {
     const text = await fetchComunicatoText(url);
     const gare = parseProgrammaGare(text);
     const risultati = parseRisultati(text);
+    const variazioni = parseVariazioni(text);
 
-    if (gare.length === 0 && risultati.length === 0) {
+    if (gare.length === 0 && risultati.length === 0 && variazioni.length === 0) {
       return NextResponse.json({
         ok: false,
-        error: "Nel comunicato non ho riconosciuto né un programma gare né risultati ufficiali.",
+        error: "Nel comunicato non ho riconosciuto né un programma gare, né risultati ufficiali, né variazioni.",
       }, { status: 422 });
     }
 
@@ -105,6 +108,18 @@ export async function POST(request: Request) {
         ambiguous: r.ambiguous,
       });
     }
+    if (variazioni.length > 0) {
+      const r = await applyVariazioni(getPool(), variazioni, { dry });
+      sezioni.push({
+        tipo: "variazioni",
+        parsed: variazioni.length,
+        updated: r.updated,
+        unchanged: r.unchanged,
+        notFoundGroup: r.notFoundGroup,
+        notFoundMatch: r.notFoundMatch,
+        ambiguous: r.ambiguous,
+      });
+    }
 
     // Dopo un'applicazione reale, marca il comunicato come visto. L'id si
     // ricava dall'URL storage: .../<AREA>/<TIPO>/<N>/COMUNICATO_UFFICIALE_<N>.<ext>
@@ -127,9 +142,12 @@ export async function POST(request: Request) {
       }
     }
 
-    const parts = sezioni.map((s) =>
-      `${s.tipo === "risultati" ? "risultati" : "programma gare"}: ${s.updated}/${s.parsed}`,
-    );
+    const label: Record<SectionResult["tipo"], string> = {
+      "programma-gare": "programma gare",
+      risultati: "risultati",
+      variazioni: "variazioni",
+    };
+    const parts = sezioni.map((s) => `${label[s.tipo]}: ${s.updated}/${s.parsed}`);
     const verb = dry ? "Anteprima" : "Applicato";
     const payload: ImportResponse = {
       ok: true,

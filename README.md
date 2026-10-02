@@ -68,9 +68,10 @@ Già disponibile:
 - **Hub Impostazioni** (`/impostazioni`) con **login e auth custom** (scrypt + sessioni,
   7 ruoli): backoffice gerarchico Settore → Campionato → Girone, editor risultati,
   anagrafica, monitoraggio dei comunicati LND.
-- **Import calendari LND**: package `@extra-time/ingest` + `scripts/import-sgs/*` e
-  l'endpoint admin `/api/import-comunicato` per applicare un "programma gare" dall'UI
-  (anteprima + conferma). Un badge sull'icona Impostazioni segnala i comunicati da rivedere.
+- **Import calendari LND**: package `@extra-time/ingest` + `scripts/import-sgs/*` e gli
+  endpoint admin (`/api/import-comunicato`, `/api/import-risultati`, `/api/import-url`) per
+  applicare dall'UI programma gare, risultati e variazioni (cambi campo/orario/data), con
+  anteprima + conferma. Un badge sull'icona Impostazioni segnala i comunicati da rivedere.
 - CI GitHub Actions (`ci.yml`) con Postgres di servizio: migrazioni + seed + typecheck +
   lint + test + build. Un workflow `watch-comunicati.yml` apre una issue quando escono
   nuovi comunicati LND.
@@ -96,7 +97,7 @@ extra-time/
 │   ├── types/                   tipi del Football Data Core
 │   ├── football-domain/         logica di dominio (classifiche) + test
 │   ├── database/                accesso al core (schema in db/) + ./auth (sessioni, RBAC)
-│   ├── ingest/                  import comunicati LND (parse/apply programma gare, pdf)
+│   ├── ingest/                  import comunicati LND (programma gare, risultati, variazioni; pdf/zip)
 │   └── ui/                      design system (palette, token, componenti)
 ├── db/
 │   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)

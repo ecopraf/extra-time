@@ -21,7 +21,7 @@ frontend, in package dedicati:
 apps/web/                     Next.js — presentazione + Hub Impostazioni (app/, RSC)
 packages/football-domain/     logica di dominio pura (classifiche, calendario) + test
 packages/database/            accesso Neon Postgres (pg) + ./auth (scrypt, sessioni, RBAC)
-packages/ingest/              import comunicati LND (parse/apply programma gare, pdf)
+packages/ingest/              import comunicati LND (programma gare, risultati, variazioni; pdf/zip)
 packages/types/               tipi condivisi del Football Data Core (ID condivisi con YFM)
 packages/ui/                  design system (palette, token, componenti)
 db/migrations/ + db/seeds/    schema versionato e dati pilota (idempotenti)
@@ -208,7 +208,8 @@ Il backoffice è **fondamentale** fin dall'inizio. Oggi vive in `/impostazioni` 
 
 - **Data Management** — competizioni, squadre, giocatori, partite, risultati (editor
   risultati per girone; anagrafica per le creazioni) — *implementato*
-- **Monitoraggio calendari** — comunicati LND, con "Applica" per i programma gare — *implementato*
+- **Monitoraggio calendari** — comunicati LND, con "Applica" per programma gare, risultati e
+  variazioni (campo/orario/data) — *implementato*
 - **Editorial** — articoli, immagini, video, homepage — *Fase 3*
 - **Live** — gestione evento, cronaca, formazione — *Fase 4*
 - **Scout** — profili, report, segnalazioni — *Fase 6*

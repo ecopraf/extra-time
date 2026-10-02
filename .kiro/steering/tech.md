@@ -38,7 +38,7 @@ extra-time/
 │   ├── types/                   tipi del Football Data Core
 │   ├── football-domain/         logica di dominio (classifiche) + test
 │   ├── database/                accesso al core (schema in db/) + ./auth (sessioni, RBAC)
-│   ├── ingest/                  import comunicati LND (parse/apply programma gare, pdf)
+│   ├── ingest/                  import comunicati LND (programma gare, risultati, variazioni; pdf/zip)
 │   └── ui/                      design system (palette, token, componenti)
 ├── db/
 │   ├── migrations/              migrazioni versionate (scripts/migrate.mjs)
@@ -99,9 +99,11 @@ docs: documentazione
 
 ## Dati e sicurezza operativa
 
-- **Il DB Neon è condiviso tra locale e produzione**: ogni import/seed/migrazione eseguito
-  in locale tocca i dati reali. Usa sempre prima il **dry-run** per gli import comunicati
-  (orari, risultati) e applica solo dopo conferma.
+- **Branch Neon separati** (vedi `neon.md`): il locale (`.env.local`) usa il branch **`dev`**,
+  Vercel usa **`production`**. Per operare sui dati di PRODUZIONE da locale (correzioni,
+  import), usa esplicitamente l'URL prod conservato come commento `DATABASE_URL_PROD` in
+  `.env.local`. Usa sempre prima il **dry-run** per gli import comunicati (programma gare,
+  risultati, variazioni) e applica solo dopo conferma.
 - Gli import sono **idempotenti** e vincolati per girone+squadre; `comunicati_seen` traccia
   i comunicati applicati dall'UI.
 - **Push solo su conferma esplicita dell'utente** (commit sempre, push mai di iniziativa).

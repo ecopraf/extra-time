@@ -26,7 +26,13 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   `/api/import-risultati` e bottone "Importa risultati". Registra i punteggi, porta le
   partite a "finished" e aggiorna le classifiche (calcolate dal dominio).
 - **Importa da URL** (`/api/import-url` + card nell'Hub): incolla il link di un comunicato
-  (PDF o ZIP), auto-rileva se contiene programma gare e/o risultati e applica.
+  (PDF o ZIP), auto-rileva se contiene programma gare, risultati e/o variazioni e applica.
+- **Variazioni al programma gare**: `parseVariazioni` + `applyVariazioni`. Legge la sezione
+  "VARIAZIONI AL PROGRAMMA GARE DEL …" (e "PROGRAMMA GARE DI RECUPERO") e aggiorna
+  data/orario (`kickoff_at`) e campo (`venue`) delle singole gare già calendarizzate;
+  "da definire" riporta la gara senza data. Match categoria→girone→squadre, idempotente,
+  non tocca lo status. Non gestisce il formato discorsivo "VARIAZIONI DEFINITIVE" (cambio
+  sede interno permanente di una società).
 - **Supporto ZIP/DOCX**: `fetchComunicatoText` gestisce sia i PDF sia gli archivi ZIP con
   dentro un `.docx` (estratto via `fflate`), per i comunicati non pubblicati in PDF.
 - **Vincolo di settore** nell'applicazione risultati: un comunicato SGS applica solo alle

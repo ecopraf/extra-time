@@ -40,13 +40,21 @@ inclusion: always
   - **programma gare** (orari/date): `parseProgrammaGare`, `applyProgrammaGare(db, gare, {dry, source})`
   - **risultati**: `parseRisultati`, `applyRisultati(db, risultati, {dry, settore})`.
     `settore` ("giovanili"|"dilettanti") vincola il matching alle categorie del settore,
-    così lo stesso club in più campionati non causa falsi positivi.
+    così lo stesso club in più campionati non causa falsi positivi. Il fallback "solo
+    squadre" non scrive un risultato `finished` su una gara con kickoff futuro (una stessa
+    coppia ricorre in giornate diverse).
+  - **variazioni** (cambio campo/orario/data): `parseVariazioni`, `applyVariazioni(db, variazioni, {dry})`.
+    Gestisce la sezione tabellare "VARIAZIONI AL PROGRAMMA GARE DEL …" + "PROGRAMMA GARE DI
+    RECUPERO": aggiorna `kickoff_at`/`venue` della gara (match categoria→girone→squadre,
+    giornata se nota), azzera `kickoff_at` se "da definire", non tocca lo status. Non
+    gestisce il formato discorsivo "VARIAZIONI DEFINITIVE" (cambio sede interno permanente).
   - **fetch**: `fetchComunicatoText(url)` gestisce PDF **e** ZIP (con `.docx` dentro,
     estratto via `fflate`). `fetchPdfText` resta come alias.
 - Usata sia dagli script CLI (`scripts/import-sgs/*`) sia dal web. Endpoint admin:
   `/api/import-comunicato` (programma gare), `/api/import-risultati` (risultati),
-  `/api/import-url` (incolla un URL, auto-rileva e applica). Tutti con anteprima dry-run +
-  conferma e marcatura `comunicati_seen`. La parità con gli script `.mjs` è verificata.
+  `/api/import-url` (incolla un URL, auto-rileva programma gare / risultati / variazioni e
+  applica). Tutti con anteprima dry-run + conferma e marcatura `comunicati_seen`. La parità
+  con gli script `.mjs` è verificata.
 - `scripts/import-sgs/enumera-comunicati.mjs` + workflow `inventario-comunicati.yml`:
   enumerano lo storage LND (la pagina è JS-rendered) e classificano i comunicati; batch in CI.
 - Dipende da `pdf-parse` (importato come `pdf-parse/lib/pdf-parse.js` per evitare il

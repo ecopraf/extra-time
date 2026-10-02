@@ -10,4 +10,8 @@ export { parseRisultati } from "./parse-risultati";
 export type { Risultato } from "./parse-risultati";
 export { applyRisultati } from "./apply-risultati";
 export type { ApplyRisultatiResult } from "./apply-risultati";
+export { parseVariazioni } from "./parse-variazioni";
+export type { Variazione } from "./parse-variazioni";
+export { applyVariazioni } from "./apply-variazioni";
+export type { ApplyVariazioniResult } from "./apply-variazioni";
 export { fetchComunicatoText, fetchPdfText } from "./fetch-comunicato";

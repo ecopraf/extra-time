@@ -114,8 +114,10 @@ docs: documentazione
   (comunicati LND), `anagrafica` (creazioni), editor risultati per girone.
 - Le scritture di base passano da **Server Actions** (`apps/web/src/app/impostazioni/actions.ts`).
 - **API route** quando serve runtime Node o lavoro non banale: `/api/import-comunicato`
-  (admin) applica un singolo "programma gare" (fetch PDF → parse → apply, anteprima +
-  conferma) e marca il comunicato come visto (`comunicati_seen`, migrazione `0004`).
+  (programma gare), `/api/import-risultati` (risultati) e `/api/import-url` (incolla un URL,
+  auto-rileva programma gare / risultati / **variazioni** di campo-orario-data e applica).
+  Tutti con anteprima dry-run + conferma; marcano il comunicato come visto
+  (`comunicati_seen`, migrazione `0004`).
 - Il vecchio `/admin` con `ADMIN_TOKEN` è stato **rimosso**.
 
 ## Portale pubblico (`apps/web/src/app`)
