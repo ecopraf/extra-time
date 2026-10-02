@@ -91,6 +91,7 @@ export async function POST(request: Request) {
         tipo: "programma-gare",
         parsed: gare.length,
         updated: r.updated,
+        unchanged: r.unchanged,
         notFoundGroup: r.notFoundGroup,
         notFoundMatch: r.notFoundMatch,
         ambiguous: r.ambiguous,

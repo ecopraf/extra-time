@@ -21,7 +21,9 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
 - Nuovo package condiviso con la logica pura di parsing/applicazione, usata sia dagli
   script CLI sia dal web (parità verificata con gli script `.mjs`).
 - **Programma gare** (orari/date): endpoint admin `/api/import-comunicato` con anteprima
-  dry-run + conferma; bottone "Applica" nel monitoraggio.
+  dry-run + conferma; bottone "Applica" nel monitoraggio. `applyProgrammaGare` è idempotente
+  anche nel conteggio: salta le gare già con quella data/campo e le riporta come `unchanged`
+  invece di contarle tra gli `updated`.
 - **Risultati ufficiali**: `parseRisultati` + `applyRisultati`; endpoint
   `/api/import-risultati` e bottone "Importa risultati". Registra i punteggi, porta le
   partite a "finished" e aggiorna le classifiche (calcolate dal dominio).

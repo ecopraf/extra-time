@@ -71,6 +71,8 @@ const GIRONE_REMAP: Record<string, string> = {
 export interface ApplyResult {
   input: number;
   updated: number;
+  /** gara già con quella data/campo: nessuna scrittura. */
+  unchanged: number;
   notFoundGroup: number;
   notFoundMatch: number;
   ambiguous: number;
@@ -120,10 +122,11 @@ export async function applyProgrammaGare(
   }
   const matchesByGroup = new Map<string, {
     id: string; matchday: number | null; home_name: string; away_name: string;
+    kickoff_at: Date | string | null; venue: string | null;
   }[]>();
   for (const gid of neededGroupIds) {
-    const { rows } = await db.query<{ id: string; matchday: number | null; home_name: string; away_name: string }>(
-      `select m.id, m.matchday,
+    const { rows } = await db.query<{ id: string; matchday: number | null; home_name: string; away_name: string; kickoff_at: Date | string | null; venue: string | null }>(
+      `select m.id, m.matchday, m.kickoff_at, m.venue,
               ch.canonical_name as home_name, ca.canonical_name as away_name
          from matches m
          join teams th on th.id = m.home_team_id join clubs ch on ch.id = th.club_id
@@ -134,7 +137,7 @@ export async function applyProgrammaGare(
     matchesByGroup.set(gid, rows);
   }
 
-  const res: ApplyResult = { input: gare.length, updated: 0, notFoundGroup: 0, notFoundMatch: 0, ambiguous: 0, misses: [] };
+  const res: ApplyResult = { input: gare.length, updated: 0, unchanged: 0, notFoundGroup: 0, notFoundMatch: 0, ambiguous: 0, misses: [] };
 
   for (const gara of gare) {
     const gid = resolveGroup(gara.categoria, remapGirone(gara));
@@ -148,8 +151,20 @@ export async function applyProgrammaGare(
     if (cand.length === 0) { res.notFoundMatch++; res.misses.push(gara); continue; }
     if (cand.length > 1) res.ambiguous++;
     const target = cand[0]!;
+
+    // Idempotenza: salta la scrittura se data e campo sono già quelli attesi.
+    // Il campo usa coalesce (null = mantieni l'attuale), quindi il venue atteso
+    // è gara.campo quando fornito, altrimenti il venue corrente.
+    const kickoff = `${gara.dataIso} ${gara.ora}:00+02`;
+    const curKickoffIso = target.kickoff_at ? new Date(target.kickoff_at).toISOString() : null;
+    const nextKickoffIso = new Date(kickoff).toISOString();
+    const expectedVenue = gara.campo ?? (target.venue ?? null);
+    if (nextKickoffIso === curKickoffIso && expectedVenue === (target.venue ?? null)) {
+      res.unchanged++;
+      continue;
+    }
+
     if (!dry) {
-      const kickoff = `${gara.dataIso} ${gara.ora}:00+02`;
       await db.query(
         `update matches set kickoff_at = $1, venue = coalesce($2, venue), updated_at = now() where id = $3`,
         [kickoff, gara.campo, target.id],
