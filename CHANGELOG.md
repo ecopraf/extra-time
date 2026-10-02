@@ -47,6 +47,11 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   l'andata): 2958 partite a specchio con data "da definire", poi riempibili dai programma
   gare.
 - U19 Elite lasciato alle 6 giornate reali disponibili (nessun dato fabbricato).
+- **Under 18 Regionale** (6 gironi A-F, 80 squadre): nuovo campionato creato come livello
+  sotto l'Elite (nei comunicati "Fascia B"). Composizione gironi dal CU65; competizione,
+  gironi, squadre e appartenenze create via `scripts/import-sgs/seed-u18-regionale.mjs`
+  (idempotente, UUID deterministici, riuso dei club esistenti con alias per i duplicati
+  OCR). Le partite verranno aggiunte quando uscira' il programma gare del campionato.
 - **Fix risultati su gare future**: il fallback di `applyRisultati` (match per sole
   squadre, usato quando la giornata del comunicato non combacia con il calendario DB) non
   scrive più un punteggio `finished` su una partita con calcio d'inizio nel futuro — una
