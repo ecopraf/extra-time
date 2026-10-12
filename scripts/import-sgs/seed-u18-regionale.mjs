@@ -57,10 +57,13 @@ const GIRONI = {
       "Pro Calcio Tor Sapienza", "San Lorenzo Calcio", "Santa Lucia Calcio", "Vicovaro", "Vigor Rignano Flaminio"],
   C: ["Accademia Calcio Frascati", "Accademy Giovannicastello", "Albalonga", "Atletico Monteporzio",
       "Borghesiana", "Città di Anagni Calcio", "Città di Olevano Calcio", "Colonna", "Consalvo",
-      "Cynthia 1920", "Pol.Canarini 1926 Rdp", "Semprevisa", "Vis Artena", "Stelaudia"],
+      "Cynthia 1920", "Pol.Canarini 1926 Rdp", "Semprevisa", "Vis Artena"],
+  // Stelaudia: nella composizione CU65 (layout a 2 colonne) finiva ambigua tra C e D;
+  // il programma gare CU77 la colloca nel girone D.
   D: ["Atletico Veroli", "Boville Ernica Calcio", "Cassino Calcio 1924", "Ceccano Calcio 1920",
       "Deportivo", "La Cantera", "Latina Scalo 2020", "Minturno Calcio 1936", "Montello Calcio",
-      "Polisportiva Valcomino", "Real Sanvittorese", "Roccasecca T.San Tommaso", "Sporting Pontecorvo"],
+      "Polisportiva Valcomino", "Real Sanvittorese", "Roccasecca T.San Tommaso", "Sporting Pontecorvo",
+      "Stelaudia"],
   E: ["Academy Mundial F.C.", "Achillea 2002", "Atletico Torrenova 1986", "Autentica Roma",
       "Cvn Casal Bernocchi", "Football Jus", "Mysp", "Next Gen Lodigiani", "Pescatori Ostia",
       "Roma Team Sport Queens", "Saxa Flaminia Labaro", "Valle Martella Calcio", "Virtus Torre Maura",
