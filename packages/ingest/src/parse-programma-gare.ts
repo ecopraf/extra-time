@@ -20,6 +20,10 @@ export interface Gara {
 /** Categoria PDF → category EXTRA TIME (come nel DB). ECCELLENZA giovanile = Elite. */
 export function classifyCategoria(raw: string): string | null {
   const c = raw.toUpperCase().replace(/\s+/g, " ").trim();
+  // Il Core copre solo i campionati maschili: i campionati femminili
+  // ("… FEMMINILE", "… FEM.") non hanno controparte nel DB e vanno ignorati,
+  // altrimenti rischierebbero match errati con squadre maschili omonime.
+  if (/FEMMINIL|\bFEM\b|\bFEM\./.test(c)) return null;
   if (/\bECCELLENZA\b/.test(c) && !/UNDER/.test(c)) return "Eccellenza";
   if (/\bPROMOZIONE\b/.test(c) && !/UNDER/.test(c)) return "Promozione";
   if (/PRIMA CATEGORIA/.test(c)) return "Prima Categoria";

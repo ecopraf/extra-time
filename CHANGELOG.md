@@ -39,6 +39,10 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   en-dash, ora con il punto `10.30`, anno a 4 cifre, giornata nell'header "GIRONE A - 3ª
   andata"). Non gestisce il formato discorsivo "VARIAZIONI DEFINITIVE" (cambio sede interno
   permanente di una società).
+- **Esclusione campionati femminili**: `classifyCategoria` ignora le categorie femminili
+  ("… Femminile", "… Fem."), che non hanno controparte nel Core (solo maschile). Evita match
+  errati con squadre maschili omonime quando un comunicato tratta il femminile (es. CU44 SGS
+  "Allievi Under 17 Femminili", o i calendari Femminili dentro i comunicati Dilettanti).
 - **Supporto ZIP/DOCX**: `fetchComunicatoText` gestisce sia i PDF sia gli archivi ZIP con
   dentro un `.docx` (estratto via `fflate`), per i comunicati non pubblicati in PDF.
 - **Vincolo di settore** nell'applicazione risultati: un comunicato SGS applica solo alle
