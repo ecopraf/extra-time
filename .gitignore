@@ -50,3 +50,7 @@ db/seeds/_pending/
 # Credenziali temporanee (import loghi) — mai committare
 .yfm-source
 .r2-credentials
+
+# Backup logici del DB (pg_dump) — mai committare (possono essere grandi e contengono dati)
+backups/
+*.dump
