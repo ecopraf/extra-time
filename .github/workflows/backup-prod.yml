@@ -1,0 +1,61 @@
+name: Backup DB produzione
+
+# Backup logico giornaliero del database di PRODUZIONE (branch Neon `production`),
+# come rete di sicurezza indipendente dal "restore window" di Neon (che sul piano
+# attuale è di poche ore). Il dump è in formato custom pg_dump (-Fc), ripristinabile
+# con pg_restore, e viene conservato come artifact della run.
+#
+# Richiede il secret di repository DATABASE_URL_PROD (connection string del branch
+# production). NON scrive sul database: sola lettura.
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # ogni giorno alle 02:00 UTC
+  workflow_dispatch:
+    inputs:
+      label:
+        description: "Etichetta opzionale nel nome del file (es. pre-migrazione)"
+        required: false
+        default: ""
+
+concurrency:
+  group: backup-prod
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Il server Neon è PostgreSQL 18: serve un pg_dump della stessa major,
+      # altrimenti pg_dump rifiuta il dump di un server più recente.
+      - name: Installa PostgreSQL client 18
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-18
+          pg_dump --version
+
+      - name: Esegui il backup
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Secret DATABASE_URL_PROD non impostato. Aggiungilo in Settings → Secrets → Actions."
+            exit 1
+          fi
+          node scripts/backup-prod.mjs --out-dir backups --label "${{ github.event.inputs.label || 'daily' }}"
+
+      - name: Pubblica il dump come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup
+          path: backups/*.dump
+          retention-days: 30
+          if-no-files-found: error

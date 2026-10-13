@@ -103,6 +103,11 @@ AAAA-MM-GG. Il progetto segue un versionamento informale per fasi (vedi
   (`scripts/neon-setup-dev-branch.mjs`) per creare un branch "dev" isolato e farci puntare
   `.env.local`, così i test in locale non toccano più i dati di produzione (Vercel resta
   sul branch principale). Procedura in `.kiro/steering/neon.md`.
+- **Backup DB automatico**: `scripts/backup-prod.mjs` (`pnpm db:backup`) esegue un
+  `pg_dump -Fc` del database; la GitHub Action `.github/workflows/backup-prod.yml` lo lancia
+  ogni notte sul branch `production` (secret `DATABASE_URL_PROD`, client PostgreSQL 18) e
+  conserva il dump come artifact (30 giorni). Rete di sicurezza indipendente dal restore
+  window di Neon (sul piano attuale limitato a ~6 ore).
 
 ### Documentazione
 - Allineata tutta la documentazione allo stato reale: **Neon Postgres + auth custom**

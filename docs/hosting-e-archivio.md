@@ -297,11 +297,17 @@ risultati significa che si corregge da sola.
 
 Per un archivio consultabile servono backup affidabili.
 
-- **Neon**: offre branching e point-in-time restore (la finestra di ritenzione dipende dal
-  piano; sul Free è limitata). Da verificare quando il dataset cresce.
-- **In più (già in uso)**: dump logico periodico (`pg_dump`) — vedi la cartella `backups/`
-  nel repo — idealmente su R2. Costo quasi nullo ($0,015/GB/mese) e ci mette al riparo anche
-  da un errore del fornitore.
+- **Neon**: offre branching e point-in-time restore. La finestra di ritenzione dipende dal
+  piano: sul piano attuale è di poche ore (`history_retention_seconds` ≈ 6h), e portarla a
+  7 giorni richiede un piano a pagamento. Il parametro non è esposto dal CLI (`neon projects
+  update`): si cambia da console o via API REST (`PATCH /projects/{id}`,
+  `history_retention_seconds`).
+- **Backup logico automatico (in uso)**: `scripts/backup-prod.mjs` esegue un `pg_dump -Fc`
+  (formato custom, ripristinabile con `pg_restore`) del DB. Gira ogni notte via GitHub Action
+  `.github/workflows/backup-prod.yml` (secret `DATABASE_URL_PROD`, client PostgreSQL 18 come
+  il server Neon) e conserva il dump come artifact (retention 30 giorni) — rete di sicurezza
+  indipendente dal piano Neon. In locale: `pnpm db:backup --url "<connection string>"`.
+  Evoluzione: caricare i dump su R2 (costo ~$0,015/GB/mese) per conservazione a lungo termine.
 
 ## 6. Costi per fase (riepilogo)
 
