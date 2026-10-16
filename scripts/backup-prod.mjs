@@ -41,6 +41,7 @@ fs.mkdirSync(outDir, { recursive: true });
 // con major >= quella del server.
 function resolvePgDump() {
   const candidates = [
+    "/usr/lib/postgresql/18/bin/pg_dump", // Linux/CI (postgresql-client-18)
     "pg_dump",
     "/usr/local/Cellar/libpq/18.6/bin/pg_dump",
     "/opt/homebrew/opt/libpq/bin/pg_dump",

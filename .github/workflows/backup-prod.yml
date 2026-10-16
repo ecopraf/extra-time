@@ -40,7 +40,10 @@ jobs:
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
           sudo apt-get update
           sudo apt-get install -y postgresql-client-18
-          pg_dump --version
+          # Il comando `pg_dump` di Ubuntu è un wrapper che può scegliere una major
+          # più vecchia (16): metto in testa al PATH i binari della 18.
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/18/bin/pg_dump --version
 
       - name: Esegui il backup
         env:
